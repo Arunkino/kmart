@@ -1,0 +1,135 @@
+{% extends 'theme.html' %}
+
+{% load static %}
+{% block content %}
+
+<div class="row">
+    <br><br><br><br><br><br><br>
+</div>
+<div class="row">
+    <div class="col-md-1"></div>
+<div class="col-md-4 bg-white rounded-4 mt-5 p-3">
+  
+  
+
+    {% if messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {% for message in messages %}
+           {{message}}
+
+        {% endfor %}
+       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+     </div>
+     {% endif %}
+
+    <form action="{% url 'signup' %}" method="post">
+        {% csrf_token %}
+        <div class="mb-1">
+          
+          <label for="first_name" class="form-label">First Name  </label>
+          <br>
+          <span class="text-danger" style="display: none;" id="min-len">Enter aleast 4 Characters</span>
+          <span class="text-danger" style="display: none;" id="req">* This is required field</span>
+          <input type="text" class="form-control" id="first_name" name="first_name" > 
+        </div>
+        <div class="mb-1">
+            <label for="last_name" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" > 
+        </div>
+        <div class="mb-1">
+            <label for="username" class="form-label">Username</label>
+            <br>
+            <span class="text-danger" style="display: none;" id="min-len1">Enter aleast 4 Characters</span>
+            <span class="text-danger" style="display: none;" id="req1">* This is required field</span>
+            <input type="text" class="form-control" id="username" name="username" > 
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <br>
+            <span class="text-danger" style="display: none;" id="min-len2">Enter aleast 4 Characters</span>
+            <span class="text-danger" style="display: none;" id="req2">* This is required field</span>
+            <input type="email" class="form-control" id="email" name="email" placeholder="We'll never share your email with anyone else.">
+          </div>
+
+          <div class="mb-1">
+            <label for="mobile" class="form-label">Mobile No</label>
+            <input type="text" class="form-control" name="mobile" id="mobile">
+          </div>
+
+        <div class="mb-1">
+          <label for="password1" class="form-label">Password</label>
+          <br>
+            <span class="text-danger" style="display: none;" id="min-len3">Enter aleast 4 Characters</span>
+            <span class="text-danger" style="display: none;" id="req3">* This is required field</span>
+          <input type="password" class="form-control" name="password1" id="password1">
+        </div>
+        <div class="mb-1">
+            <label for="password2" class="form-label">Re-enter your password</label>
+            <input type="password" class="form-control" name="password2" id="password2">
+          </div>
+          <div class="mb-1">
+            <label for="domain" class="form-label">Domain</label>
+
+
+            
+
+
+            <select name="domain">
+              {% for domain in domains %}
+                  <option value="{{ domain.id }}">{{ domain.domain }}</option>
+              {% endfor %}
+            </select>
+          </div>
+         
+            
+         
+          
+         
+
+        <br><div class="d-flex justify-content-center"><button type="submit" class="btn btn-secondary">Submit</button></div>
+        
+      </form>
+    </div>
+    
+
+    <!-- image section started -->
+    <div class="col-md-5">
+        
+       <img src="{% static 'img/signup_img.svg' %}" alt="">
+    </div>
+    
+
+<!-- end of image section -->
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+ $(document).ready(function(){
+    function validateInput(inputElement,req,min) {
+        $(inputElement).blur(function(){
+            var check = $(this).val();
+            if(check.length == 0){
+                $(req).show();
+                $(min).hide();
+            }
+            else if(check.length < 4){
+                $(req).hide();
+                $(min).show();
+            } else {
+                $(req).hide();
+                $(min).hide();
+            }
+        });
+    }
+
+    validateInput("#first_name","#req","#min-len");
+    validateInput("#username","#req1","#min-len1");
+    validateInput("#email","#req2","#min-len2");
+    validateInput("#password1","#req3","#min-len3");
+});
+
+</script>
+
+{% endblock %}
