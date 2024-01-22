@@ -36,13 +36,7 @@
             <label for="last_name" class="form-label">Last Name</label>
             <input type="text" class="form-control" id="last_name" name="last_name" > 
         </div>
-        <div class="mb-1">
-            <label for="username" class="form-label">Username</label>
-            <br>
-            <span class="text-danger" style="display: none;" id="min-len1">Enter aleast 4 Characters</span>
-            <span class="text-danger" style="display: none;" id="req1">* This is required field</span>
-            <input type="text" class="form-control" id="username" name="username" > 
-        </div>
+       
         <div class="mb-3">
             <label for="email" class="form-label">Email address</label>
             <br>
@@ -67,20 +61,29 @@
             <label for="password2" class="form-label">Re-enter your password</label>
             <input type="password" class="form-control" name="password2" id="password2">
           </div>
-          <div class="mb-1">
-            <label for="domain" class="form-label">Domain</label>
+          
+        <div class="mb-1">
+            <label for="address" class="form-label">Address</label>
+            <br>
+            <span class="text-danger" style="display: none;" id="min-len1">Enter aleast 4 Characters</span>
+            <span class="text-danger" style="display: none;" id="req1">* This is required field</span>
+            <input type="text" class="form-control" id="address" name="address" > 
+        </div>
+        <div class="mb-1">
+          <label for="city" class="form-label">City</label>
+          <input type="text" class="form-control" name="city" id="city">
+        </div>
 
+        <div class="mb-1">
+          <label for="landmark" class="form-label">Landmark</label>
+          <input type="text" class="form-control" name="landmark" id="landmark">
+        </div>
 
-            
-
-
-            <select name="domain">
-              {% for domain in domains %}
-                  <option value="{{ domain.id }}">{{ domain.domain }}</option>
-              {% endfor %}
-            </select>
-          </div>
-         
+        <div class="mb-1">
+          <label for="pin" class="form-label">PIN</label>
+          <input type="password" class="form-control" name="pin" id="pin">
+        </div>
+       
             
          
           
@@ -125,7 +128,7 @@
     }
 
     validateInput("#first_name","#req","#min-len");
-    validateInput("#username","#req1","#min-len1");
+    validateInput("#address","#req1","#min-len1");
     validateInput("#email","#req2","#min-len2");
     validateInput("#password1","#req3","#min-len3");
 });
