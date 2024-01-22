@@ -1,0 +1,94 @@
+{% extends 'theme.html' %}
+
+{% load static %}
+{% block content %}
+
+<div class="row">
+    <br><br><br><br><br><br><br>
+</div>
+<div class="row">
+    <div class="col-md-1"></div>
+<div class="col-md-4 bg-white rounded-4 mt-5 p-3">
+  
+  
+
+    {% if messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {% for message in messages %}
+           {{message}}
+
+        {% endfor %}
+       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+     </div>
+     {% endif %}
+
+    <form action="{% url 'login_user' %}" method="post">
+        {% csrf_token %}
+        <div class="mb-1">
+          
+          <label for="mob_email" class="form-label">Mobile/Email  </label>
+          <br>
+          <span class="text-danger" style="display: none;" id="min-len">Enter aleast 4 Characters</span>
+          <span class="text-danger" style="display: none;" id="req">* This is required field</span>
+          <input type="text" class="form-control" id="mob_email" name="mob_email" > 
+        </div>
+    
+       
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <br>
+            <span class="text-danger" style="display: none;" id="min-len2">Enter aleast 4 Characters</span>
+            <span class="text-danger" style="display: none;" id="req2">* This is required field</span>
+            <input type="password" class="form-control" id="password" name="password" >
+          </div>
+
+        
+         
+
+        <br><div class="d-flex justify-content-center"><button type="submit" class="btn btn-secondary">Submit</button></div>
+        
+      </form>
+    </div>
+    
+
+    <!-- image section started -->
+    <div class="col-md-5">
+        
+       <img src="{% static 'img/signup_img.svg' %}" alt="">
+    </div>
+    
+
+<!-- end of image section -->
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+ $(document).ready(function(){
+    function validateInput(inputElement,req,min) {
+        $(inputElement).blur(function(){
+            var check = $(this).val();
+            if(check.length == 0){
+                $(req).show();
+                $(min).hide();
+            }
+            else if(check.length < 4){
+                $(req).hide();
+                $(min).show();
+            } else {
+                $(req).hide();
+                $(min).hide();
+            }
+        });
+    }
+
+    validateInput("#first_name","#req","#min-len");
+    validateInput("#address","#req1","#min-len1");
+    validateInput("#email","#req2","#min-len2");
+    validateInput("#password1","#req3","#min-len3");
+});
+
+</script>
+
+{% endblock %}
