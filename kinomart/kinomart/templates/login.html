@@ -7,8 +7,16 @@
     <br><br><br><br><br><br><br>
 </div>
 <div class="row">
+  <!-- image section started -->
+  <div class="col-md-5">
+        
+    <img src="{% static 'img/signin_img.png' %}" style="width: 700px;" alt="">
+ </div>
+ 
+
+<!-- end of image section -->
     <div class="col-md-1"></div>
-<div class="col-md-4 bg-white rounded-4 mt-5 p-3">
+<div class="col-md-4 bg-white rounded-4 mt-5 p-3" style="border: 1px solid greenyellow;">
   
   
 
@@ -40,6 +48,7 @@
             <span class="text-danger" style="display: none;" id="min-len2">Enter aleast 4 Characters</span>
             <span class="text-danger" style="display: none;" id="req2">* This is required field</span>
             <input type="password" class="form-control" id="password" name="password" >
+            <a href="#">Forgot Password</a>
           </div>
 
         
@@ -47,18 +56,13 @@
 
         <br><div class="d-flex justify-content-center"><button type="submit" class="btn btn-secondary">Submit</button></div>
         
+<br><br>
+        <p>If you don't have an account <br> You can <a href="{% url 'signup' %}">Register Here</a></p>
       </form>
     </div>
     
 
-    <!-- image section started -->
-    <div class="col-md-5">
-        
-       <img src="{% static 'img/signup_img.svg' %}" alt="">
-    </div>
     
-
-<!-- end of image section -->
 </div>
 
 
