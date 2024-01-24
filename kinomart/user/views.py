@@ -18,9 +18,14 @@ def signup(request):
         email=request.POST['email']
         phone=request.POST['mobile']
         password=request.POST['password1']
+        address_line=request.POST['address']
+        city=request.POST['city']
+        landmark=request.POST['landmark']
         pin=request.POST['pin']
-
-
+        
+        if password != request.POST['password2']:
+            messages.info(request,'Password not matching!')
+            return redirect('signup')
 
 
     
@@ -35,17 +40,15 @@ def signup(request):
             messages.info(request,'Already registered with this phone number')
             return redirect('signup')
         
-        if password != request.POST['password2']:
-            messages.info(request,'Password not matching!')
-            return redirect('signup')
-        address_line='Kottarappattu'
+        
+        
 
-        us=User(first_name=first_name,email=email,phone=phone,password=password)
+        us=User(first_name=first_name,last_name=last_name,email=email,phone=phone,password=password)
         us.save()
-        ad=UserAddress(pin=pin,address_line=address_line,user_id=us)
+        ad=UserAddress(pin=pin,address_line=address_line,city=city,landmark=landmark,user_id=us)
         ad.save()
 
-        # creating session when user registered succussfully
+        # creating session when user registered succussfully with auto login
         
         request.session['user_email']=us.email
 
