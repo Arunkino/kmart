@@ -46,7 +46,8 @@ def signup(request):
         ad.save()
 
         # creating session when user registered succussfully
-        request.session['user']=us
+        
+        request.session['user_email']=us.email
 
         return redirect('home')
     
@@ -58,9 +59,9 @@ def login(request):
     if request.method=='POST':
 
         input=request.POST['mob_email']
-
         # validating the email or phone exising
         if User.objects.filter(Q(email__iexact=input) | Q(phone__iexact=input)).exists():
+
             us=User.objects.get(Q(email__iexact=input) | Q(phone__iexact=input))
             if us.password!=request.POST['password']:
                 messages.info(request,'Incorrect Password!')
