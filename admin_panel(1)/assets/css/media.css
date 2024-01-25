@@ -1,0 +1,148 @@
+@media(max-width:1110px) {
+    .select2-container {
+        min-width: unset;
+    }
+}
+
+@media(max-width:976px) {
+    .itemselect_filter {
+        margin-top: 10px;
+    }
+
+    .type_pages_list {
+        padding-bottom: 10px;
+        padding-top: 0px;
+    }
+
+    .check_checkbox {
+
+        margin-top: 20px;
+    }
+
+    .current_logo>img {
+        width: 100%;
+    }
+}
+
+@media(max-width:747px) {
+    .header_heading {
+        width: 100%;
+        float: unset;
+        text-align: center;
+        display: block;
+    }
+
+    aside {
+        padding-top: 0px;
+        margin-top: 108px;
+    }
+
+    .head_nav {
+        margin-left: 0;
+    }
+
+    .removeres {
+        display: none;
+    }
+
+    .content_body {
+        overflow: hidden;
+        display: flex;
+    }
+}
+
+@media(max-width:727px) {
+    .linksuserprofilelist {
+        display: flex;
+        justify-content: center;
+    }
+
+    .linksuserprofilelist>li { 
+        margin-right: 15px;
+    }
+    .image_frame{ 
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            margin-bottom: 20px;
+    }
+}
+
+@media(max-width:522px) {}
+
+@media(max-width:492px) {
+    .pagination_table {
+        float: unset;
+        display: flex;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .showing_data {
+        text-align: center;
+    }
+}
+
+
+
+@media(max-width:406px) {
+    .list_drop_wrapper {
+        padding: 10px 0px;
+    }
+
+    .box_list_drop_wrapper>span {
+
+        font-size: 13px;
+    }
+
+    .listbox_web>h4 {
+        float: unset;
+        display: block;
+        text-align: center;
+    }
+
+    .collaps_right_box {
+        float: unset;
+        text-align: center;
+        margin-top: 10px;
+    }
+}
+
+
+@media(max-width:379px) {
+    .login_wrapper {
+        width: 100%;
+        margin: 0px 18px;
+    }
+
+    .section_head_titile>h2 {
+        float: unset;
+    }
+
+    .section_head_titile>ul {
+        list-style: none;
+        display: flex;
+        float: unset;
+        padding-left: 0;
+        background-color: #d2d6de;
+        padding: 10px;
+        border-radius: 5px;
+    }
+}
+
+
+
+
+@media(max-width:298px) {
+    .head_nav>ul>li {
+        font-size: 14px;
+        margin-top: 3px;
+        font-size: small;
+    }
+
+    .head_nav {
+        display: flex;
+    }
+
+
+}

@@ -1,0 +1,114 @@
+{% extends 'admin_theme.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="card mb-4 mt-5 pt-3 col-md-8">
+        <div class="card-header">
+            <i class="fa-solid fa-users"></i>
+            Add New Product
+        </div>
+        <div class="card-body">
+            
+            <form action="{% url 'add_product' %}" method="post" enctype="multipart/form-data">
+
+                {% csrf_token %}
+            <div class="mb-1">
+            
+            <label for="first_name" class="form-label">Product Name</label>
+            <br>
+            <input type="text" class="form-control" id="product_name" name="product_name" > 
+            </div>
+
+            <div class="mb-1">
+            
+                <label for="first_name" class="form-label">Description</label>
+                <br>
+                <input type="text" class="form-control" id="description" name="description" > 
+            </div>
+            
+            <div class="mb-1">
+                <div class="row">
+                    <div class="col-md-6 col-sm-6">
+                        <label for="category" class="form-label">Category</label>
+                    <br>
+                    <select name="category">
+                          {% for category in categories %}
+                              <option value="{{ category.id }}">{{ category.category }}</option>
+                          {% endfor %}
+                    </select>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        <label for="sub_category" class="form-label">Sub Category</label>
+                    <br>
+                    <select name="sub_category">
+                          {% for sub_category in sub_categories %}
+                              <option value="{{ sub_category.id }}">{{ sub_category.sub_category }}</option>
+                          {% endfor %}
+                    </select>
+                    </div>
+                </div>
+                
+                
+            </div>
+                
+
+                <label class="form-label" for="customFile">Upload Images</label>
+                <input type="file" class="form-control" id="image1" name="image1" />
+                <input type="file" class="form-control" id="image2" name="image2" />
+                <input type="file" class="form-control" id="image3" name="image3" />
+                <br>
+<!-- adding varients dynamically -->
+
+                <div class="mb-1">
+            
+                    <label for="first_name" class="form-label">Varient</label>
+                    <button type="button" id="addButton">Add</button>
+                    <br>
+                    <div id="variantContainer">
+                        <div class="variant">
+                            <input type="text" name="quantity1" placeholder="Quantity">
+                            <input type="text" name="stock1" placeholder="Stock">
+                            <input type="text" name="price1" placeholder="Price">
+                            <!-- Add more fields as needed -->
+                        </div>
+                        <br>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="variantCount" name="variantCount" value="1">
+                <button class="btn btn-secondary" type="submit">Upload</button>
+
+                
+               
+
+
+            </form>
+
+
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+
+    
+    
+    $(document).ready(function() {
+        var variantCount = 1;
+        $('#addButton').click(function() {
+            variantCount++;
+            var newVariant = '<div class="variant">' +
+                '<input type="text" placeholder="quantity" name="quantity' + variantCount + '">' +
+                '<input type="text" placeholder="stock" name="stock' + variantCount + '">' +
+                '<input type="text" placeholder="price" name="price' + variantCount + '">' +
+                '</div>';
+            $('#variantContainer').append(newVariant);
+            $('#variantCount').val(variantCount);
+        });
+    });
+    </script>
+{% endblock %}
+
