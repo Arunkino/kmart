@@ -1,0 +1,77 @@
+{% extends 'admin_theme.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fa-solid fa-users"></i>
+        Edit Categories
+        <!-- <a href="{% url 'add_category' %}"> Add new category</a> -->
+    </div>
+    <div class="card-body">
+
+
+
+        {% for category in categories %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    {{ category.category_name }}
+                </div>
+                <div class="card-body">
+                    {% for subcategory in category.subcategories %}
+
+                    <h6>{{subcategory.subcategory_name}}</h6>
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Brand</th>
+                                    <th>Stock Bal</th>
+                                    <th>Price</th>
+                                    <th>Image</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                
+                            </tfoot>
+                            <tbody>
+                                {% for product in subcategory.products %}
+                                    {% for variant in product.variants %}
+
+                                        <tr>
+                                            <td>{{variant.id}}</td>
+                                            <td>{{product.product_name}}</td>
+                                            <td>{{category.category_name}}</td>
+                                            <td>{{variant.description}}</td>
+                                            <td>{{variant.brand}}</td>
+                                            <td>{{variant.stock}}</td>
+                                            <td>{{variant.price}}</td>
+                                            <td><img src="{{variant.image}}" style="height: 50px;" alt=""></td>
+                                            <td>edit/hold</td>
+                                            
+                                        </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endfor %}
+                    
+                
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+           

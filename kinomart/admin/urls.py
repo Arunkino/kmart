@@ -27,6 +27,8 @@ urlpatterns = [
     path('index', views.index,name='index'),
     path('users/block/<int:id>/', views.block_user,name='block_user'), 
     path('users/unblock/<int:id>/', views.unblock_user,name='unblock_user'), 
+    path('edit_categories/', views.edit_catagories,name='edit_catagories'), 
+    
 
     
 ]

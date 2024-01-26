@@ -6,8 +6,70 @@
     <div class="card-header">
         <i class="fa-solid fa-users"></i>
         PRODUCTS LIST
+    
     </div>
     
+    <!-- <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown">Categories
+        <span class="caret"></span></button>
+        <ul class="dropdown-menu">
+            {% for category in categories %}
+            <li class="dropdown-submenu">
+              <a class="test" tabindex="-1" href="#">{{category.category}}<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                {% for sub_category in category.subcategories.all %}
+                  <li><a tabindex="-1" href="#">{{sub_category.sub_category}}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% endfor %}
+          
+        </ul>
+      </div>
+    
+    
+    -->
+    <div class="dropdown">
+        <button
+                class="btn btn-secondary dropdown-toggle bg-transparent text-dark btn-sm ms-3"
+                type="button"
+                id="MyAccountDDM"
+                data-bs-toggle="dropdown"
+                data-bs-auto-close="outside"
+                aria-expanded="false">
+            Categories
+        </button>
+    
+        <ul class="dropdown-menu" aria-labelledby="MyAccountDDM" id="AppDropDownId">
+            {% for category in categories %}
+            <li>
+                <div class="btn-group dropend">
+                    <a type="button" class="dropdown-item dropdown-toggle p-0" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                       {{category.category}}
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% for sub_category in category.subcategories.all %}
+
+                        <li><a class="dropdown-item" href="#">{{sub_category.sub_category}}</a></li>
+                        {% endfor %}
+                        
+                    </ul>
+                </div>
+            </li>
+            {% endfor %}
+
+
+
+            
+    
+            <li><hr class="dropdown-divider"/></li>
+            <li><a href="{% url 'edit_catagories' %}">Edit Categories</a></li>
+        </ul>
+    <a class="btn btn-primary" href="{% url 'add_product' %}">Add Product</a>
+
+    </div>
+
       
     <div class="card-body">
         <table id="datatablesSimple">
@@ -47,6 +109,14 @@
     </div>
 </div>
 
-
+<script>
+    $(document).ready(function(){
+      $('.dropdown-submenu a.test').on("click", function(e){
+        $(this).next('ul').toggle();
+        e.stopPropagation();
+        e.preventDefault();
+      });
+    });
+</script>
 {% endblock %}
 
