@@ -7,6 +7,8 @@
         <i class="fa-solid fa-users"></i>
         PRODUCTS LIST
     </div>
+    
+      
     <div class="card-body">
         <table id="datatablesSimple">
             <thead>
@@ -16,6 +18,7 @@
                     <th>Category</th>
                     <th>Description</th>
                     <th>Brand</th>
+                    <th>Stock Bal</th>
                     <th>Price</th>
                     <th>Image</th>
                     <th>Actions</th>
@@ -31,7 +34,8 @@
                     <td>{{variant.name}}</td>
                     <td>{{variant.category}}</td>
                     <td>{{variant.description}}</td>
-                    <td>ITC</td>
+                    <td>{{variant.brand}}</td>
+                    <td>{{variant.stock}}</td>
                     <td>{{variant.price}}</td>
                     <td><img src="{{variant.image}}" style="height: 50px;" alt=""></td>
                     <td>edit/hold</td>
@@ -42,6 +46,7 @@
         </table>
     </div>
 </div>
+
 
 {% endblock %}
 

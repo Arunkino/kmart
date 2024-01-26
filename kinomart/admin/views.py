@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from user.models import User,UserAddress
-from products.models import Category,SubCategory,ProductImages,Products,ProductVarient,Unit
+from products.models import Category,SubCategory,ProductImages,Products,ProductVarient,Unit,Brand
 
 # Create your views here.
 def index(request):
@@ -29,11 +29,13 @@ def user_list(request):
     
     return render(request,'userlist.html',{'users':users})
 def list_product(request):
-    variants = ProductVarient.objects.select_related('product_id', 'product_id__sub_category', 'product_id__sub_category__category').all()
+    categories=Category.objects.prefetch_related('subcategories').all()
+    variants = ProductVarient.objects.select_related('product_id', 'product_id__sub_category','product_id__brand', 'product_id__sub_category__category').all()
     variant_data = []
     for variant in variants:
         product = variant.product_id
         sub_category = product.sub_category
+        brand=product.brand
         category = sub_category.category
         images = ProductImages.objects.filter(product_id=product).first()
         image = images.image.url if images else None
@@ -43,9 +45,11 @@ def list_product(request):
             'description': product.description,
             'category': category.category,
             'price': variant.price,
+            'stock' : variant.stock,
+            'brand' : brand.brand_name,
             'image': image,
         })
-    return render(request, 'list_product.html', {'variants': variant_data})
+    return render(request, 'list_product.html', {'variants': variant_data,'categories':categories})
 
 def block_user(request,id):
     us=User.objects.get(id=id)
@@ -61,7 +65,9 @@ def unblock_user(request,id):
 
 def add_product(request):
     if request.method=='POST':
-        image = request.FILES['image1']
+        image1 = request.FILES['image1']
+        image2 = request.FILES['image2']
+        image3 = request.FILES['image3']
         name=request.POST['product_name']
         desc=request.POST['description']
         cat=Category.objects.get(id=request.POST['category'])
@@ -69,7 +75,9 @@ def add_product(request):
 
         pr=Products(product_name=name,description=desc,sub_category=sub)
         pr.save()
-        ProductImages.objects.create(product_id=pr,image=image)
+        ProductImages.objects.create(product_id=pr,image=image1)
+        ProductImages.objects.create(product_id=pr,image=image2)
+        ProductImages.objects.create(product_id=pr,image=image3)
 
 # for getting the number of varients
         variant_count = int(request.POST.get('variantCount'))
@@ -92,5 +100,6 @@ def add_product(request):
         categories=Category.objects.all()
         sub_categories=SubCategory.objects.all()
         units=Unit.objects.all()
+        brands=Brand.objects.all()
 
-        return render(request,'add_product.html',{'categories':categories,'sub_categories':sub_categories,'units':units})
+        return render(request,'add_product.html',{'categories':categories,'sub_categories':sub_categories,'units':units,'brands':brands})

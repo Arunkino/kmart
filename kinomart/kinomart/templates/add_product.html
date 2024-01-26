@@ -30,7 +30,7 @@
             
             <div class="mb-1">
                 <div class="row">
-                    <div class="col-md-6 col-sm-6">
+                    <div class="col-md-4 col-sm-4">
                         <label for="category" class="form-label">Category</label>
                     <br>
                     <select name="category">
@@ -39,12 +39,23 @@
                           {% endfor %}
                     </select>
                     </div>
-                    <div class="col-md-6 col-sm-6">
+                    <div class="col-md-4 col-sm-4">
                         <label for="sub_category" class="form-label">Sub Category</label>
                     <br>
                     <select name="sub_category">
                           {% for sub_category in sub_categories %}
                               <option value="{{ sub_category.id }}">{{ sub_category.sub_category }}</option>
+                          {% endfor %}
+                    </select>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <label for="brand" class="form-label">Brand</label>
+                    <br>
+                    <select name="brand">
+                             <option value="">None</option>
+
+                          {% for brand in brands %}
+                              <option value="{{ brand.id }}">{{ brand.brand_name }}</option>
                           {% endfor %}
                     </select>
                     </div>
