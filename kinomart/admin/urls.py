@@ -27,8 +27,11 @@ urlpatterns = [
     path('index', views.index,name='index'),
     path('users/block/<int:id>/', views.block_user,name='block_user'), 
     path('users/unblock/<int:id>/', views.unblock_user,name='unblock_user'), 
-    path('edit_categories/', views.edit_catagories,name='edit_catagories'), 
-    
+    path('edit_categories/', views.edit_catagories,name='edit_catagories'),
+    path('edit_categories/delete_subcategory/<int:id>/', views.delete_subcategory,name='delete_subcategory'), 
+    path('edit_categories/delete_category/<int:id>/', views.delete_category,name='delete_category'), 
+
+    path('add_category/', views.add_category,name='add_category'), 
 
     
 ]

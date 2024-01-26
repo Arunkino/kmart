@@ -5,9 +5,9 @@
 
 <div class="card mb-4">
     <div class="card-header">
-        <i class="fa-solid fa-users"></i>
+        <i class="fa-solid fa-layer-group"></i>
         Edit Categories
-        <!-- <a href="{% url 'add_category' %}"> Add new category</a> -->
+        <a class="btn btn-success" href="{% url 'add_category' %}"> Add new category</a>
     </div>
     <div class="card-body">
 
@@ -16,12 +16,21 @@
         {% for category in categories %}
             <div class="card mb-4">
                 <div class="card-header">
-                    {{ category.category_name }}
+                    <h5 style="display: inline;">{{ category.category_name }}</h5>
+
+                    <div style="display: inline;" class="d-grid gap-2 d-md-flex justify-content-md-end">
+
+                        <a class="btn btn-outline-success" href="">Add new sub category</a>
+                        <a class="btn btn-outline-danger" href="delete_category/{{ category.category_id }}" onclick="return confirm('You are deleting this category and its sub categories for ever. The products will be moved to holded list \n\n Are you sure?');"> Delete {{ category.category_name }}</a>
+                    </div>
+                    
                 </div>
                 <div class="card-body">
                     {% for subcategory in category.subcategories %}
 
-                    <h6>{{subcategory.subcategory_name}}</h6>
+                    <h6 style="display: inline;">{{subcategory.subcategory_name}}</h6>
+                    <a class="btn btn-outline-danger btn-sm" href="delete_subcategory/{{ subcategory.subcategory_id }}" onclick="return confirm('You are deleting this sub category for ever. The products will be moved to holded list \n\n Are you sure?');"> Delete {{ subcategory.subcategory_name }}</a>
+
                         <table class="table table-striped table-hover">
                             <thead>
                                 <tr>

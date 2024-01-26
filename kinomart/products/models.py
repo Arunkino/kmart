@@ -20,8 +20,8 @@ class Brand(models.Model):
 class Products(models.Model):
     product_name=models.CharField(max_length=50)
     description=models.CharField(max_length=100)
-    sub_category = models.ForeignKey(SubCategory,on_delete=models.CASCADE, related_name='products')
-    brand=models.ForeignKey(Brand,on_delete=models.CASCADE,null=True)
+    sub_category = models.ForeignKey(SubCategory,on_delete=models.SET_NULL,null=True, related_name='products')
+    brand=models.ForeignKey(Brand,on_delete=models.SET_NULL,null=True)
     
 
 class ProductImages(models.Model):
@@ -32,7 +32,7 @@ class ProductImages(models.Model):
 
 class ProductVarient(models.Model):
     quantity=models.FloatField()
-    unit=models.ForeignKey(Unit,on_delete=models.CASCADE)
+    unit=models.ForeignKey(Unit,on_delete=models.SET_NULL,null=True)
     stock=models.FloatField()
     price=models.FloatField()
     product_id=models.ForeignKey(Products,on_delete=models.CASCADE, related_name='varients')

@@ -148,10 +148,43 @@ def edit_catagories(request):
             })
             
         category_data.append({
-            
+            'category_id' : category.id,
             'category_name': category.category,
             'subcategories': subcategory_data,
         })
         
 
     return render(request, 'edit_categories.html', {'categories': category_data})
+
+
+def add_category(request):
+    pass
+
+def delete_subcategory(request,id):
+    sub_category=SubCategory.objects.get(id=id)
+    products=sub_category.products.all()
+
+    product_variants = [product.varients.all() for product in products]
+    for product_variant in product_variants:
+        for variant in product_variant:
+            variant.is_holded=True
+            variant.save()
+    sub_category.delete()
+    return redirect('edit_catagories')
+
+def delete_category(request, id):
+    category = Category.objects.get(id=id)
+    subcategories = category.subcategories.all()
+
+    for subcategory in subcategories:
+        products = subcategory.products.all()
+
+        for product in products:
+            product_variants = product.varients.all()
+
+            for variant in product_variants:
+                variant.is_holded = True
+                variant.save()
+
+    category.delete()
+    return redirect('edit_catagories')
