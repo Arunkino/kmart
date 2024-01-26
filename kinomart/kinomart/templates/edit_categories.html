@@ -7,7 +7,19 @@
     <div class="card-header">
         <i class="fa-solid fa-layer-group"></i>
         Edit Categories
-        <a class="btn btn-success" href="{% url 'add_category' %}"> Add new category</a>
+        <button id="add-category-btn" class="btn btn-success btn-sm" > Add new category</button>
+
+        <div style="display: inline;" class="d-grid gap-2 d-md-flex justify-content-md-end">
+
+        <a id="add-category-btn" href="{% url 'add_product' %}" class="btn btn-success btn-sm" ><i class="fa-regular fa-square-plus"></i> Add Products</a>
+        </div>
+        <form id="add-category-form" action="{% url 'add_category' %}" method="post" style="display: none;">
+            {% csrf_token %}
+            <input type="text" name="category_name" placeholder="Enter new category" required>
+            <input type="submit" value="Submit">
+          </form>
+
+
     </div>
     <div class="card-body">
 
@@ -17,11 +29,19 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 style="display: inline;">{{ category.category_name }}</h5>
-
+                    <form class="add-subcategory-form" action="{% url 'add_subcategory' %}" method="post" style="display: none;">
+                        {% csrf_token %}
+                        <input type="text" name="subcategory_name" placeholder="Enter new subcategory" required>
+                        <input type="hidden" name="category_id" value="{{category.category_id}}">
+                        <input type="submit" value="Submit">
+                      </form>
                     <div style="display: inline;" class="d-grid gap-2 d-md-flex justify-content-md-end">
 
-                        <a class="btn btn-outline-success" href="">Add new sub category</a>
+                        <button class="btn btn-outline-success add-subcategory-btn" id="">Add new sub category</button>
                         <a class="btn btn-outline-danger" href="delete_category/{{ category.category_id }}" onclick="return confirm('You are deleting this category and its sub categories for ever. The products will be moved to holded list \n\n Are you sure?');"> Delete {{ category.category_name }}</a>
+                       
+                        
+                        
                     </div>
                     
                 </div>
@@ -80,6 +100,8 @@
     </div>
 
 </div>
+
+
 
 {% endblock %}
 

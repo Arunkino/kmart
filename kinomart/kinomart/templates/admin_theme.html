@@ -19,7 +19,7 @@
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">KINO MART Admin</a>
+            <a class="navbar-brand ps-3" href="{% url 'index' %}">KINO MART Admin</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -37,7 +37,7 @@
                         <li><a class="dropdown-item" href="#!">Settings</a></li>
                         <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                         <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#!">Logout</a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                     </ul>
                 </li>
             </ul>
@@ -48,8 +48,8 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">Core</div>
-                            <a class="nav-link" href="index.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            <a class="nav-link" href="{% url 'index' %}">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-square-poll-vertical"></i></div>
                                 Dashboard
                             </a>
                             <a class="nav-link" href="{% url 'admin_userlist' %}">
@@ -64,19 +64,20 @@
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="{% url 'list_product' %}">
-                                        <div class="sb-nav-link-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                                        <div class="sb-nav-link-icon"><i class="fa-solid fa-list"></i></i></div>
                                         View Products
                                     </a>
                                     <a class="nav-link" href="{% url 'add_product' %}">
-                                        <div class="sb-nav-link-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                                        <div class="sb-nav-link-icon"><i class="fa-regular fa-square-plus"></i></div>
                                         Add Products
                                     </a>
                                     
                                 </nav>
                             </div>
-                            <a class="nav-link" href="{% url 'admin_userlist' %}">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
-                                Products
+                            <a class="nav-link" href="{% url 'edit_categories' %}">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-layer-group"></i>
+                                </div>
+                                Categories
                             </a>
                             <div class="sb-sidenav-menu-heading">Interface</div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
@@ -168,5 +169,20 @@
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="{% static 'adm_temp_files/js/datatables-simple-demo.js' %}"></script>       
 
+
+        <script>
+            $(document).ready(function(){
+                $('#add-category-btn').click(function(){
+                    $('#add-category-form').show();
+                });
+                $('.add-subcategory-btn').click(function(){
+                    $('.add-subcategory-form').show();
+                });
+                
+            
+            
+            });
+
+        </script>
     </body>
 </html>
