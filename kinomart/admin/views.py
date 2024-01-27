@@ -38,6 +38,7 @@ def user_list(request):
     if 'admin_email' in request.session:
 
         users=User.objects.all()
+        add=UserAddress.objects.all()
         
         return render(request,'userlist.html',{'users':users})
     return redirect('admin_login')

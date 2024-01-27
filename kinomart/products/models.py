@@ -10,6 +10,8 @@ class SubCategory(models.Model):
     sub_category=models.CharField(max_length=50)
     category=models.ForeignKey(Category,on_delete=models.CASCADE,related_name='subcategories')
 
+    
+
 class Unit(models.Model):
     unit=models.CharField(max_length=10)
 
