@@ -31,11 +31,11 @@
                     <td>{{user.first_name}}</td>
                     <td>{{user.phone}}</td>
                     <td>{{user.email}}</td>
-                    {% if user.is_active %}
-                    <td>Active</td>
+                    {% if user.is_active == True %}
+                    <td>Active {{user.is_active}}   </td>
                     <td>
                         
-                        <a href="block/{{ user.id }}" style="margin-left: 20px;" onclick="return confirm('Are you sure? want to block this user?');"><i title="Block User" class="fa-solid fa-user-lock" style="color: #cd1354;"></i></a>
+                        <a href="/admin/block/{{ user.id }}" style="margin-left: 20px;" onclick="return confirm('Are you sure? want to block this user?');"><i title="Block User" class="fa-solid fa-user-lock" style="color: #cd1354;"></i></a>
                     </td>
                         
                     {% else %}

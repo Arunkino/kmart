@@ -75,6 +75,8 @@ def block_user(request,id):
         us.is_active=False
         us.save()
         return redirect('admin_userlist')
+    return redirect('admin_login')
+    
 
 def unblock_user(request,id):
     if 'admin_email' in request.session:
@@ -83,6 +85,8 @@ def unblock_user(request,id):
         us.is_active=True
         us.save()
         return redirect('admin_userlist')
+    return redirect('admin_login')
+    
 
 def add_product(request):
     if 'admin_email' in request.session:
@@ -135,6 +139,8 @@ def add_product(request):
             brands=Brand.objects.all().order_by('id')
 
             return render(request,'add_product.html',{'categories':categories,'sub_categories':sub_categories,'units':units,'brands':brands})
+    return redirect('admin_login')
+    
         
 def edit_categories(request):
     if 'admin_email' in request.session:
@@ -187,6 +193,8 @@ def edit_categories(request):
             
 
         return render(request, 'edit_categories.html', {'categories': category_data})
+    return redirect('admin_login')
+    
 
 
 def add_category(request):
@@ -196,6 +204,8 @@ def add_category(request):
             category_name = request.POST.get('category_name')
             Category.objects.create(category=category_name)
         return redirect('edit_categories')
+    return redirect('admin_login')
+    
 
 def add_subcategory(request):
     if 'admin_email' in request.session:
@@ -207,6 +217,8 @@ def add_subcategory(request):
             SubCategory.objects.create(sub_category=sub_category,category=category)
 
             return redirect('edit_categories')
+    return redirect('admin_login')
+    
 
 def delete_subcategory(request,id):
     if 'admin_email' in request.session:
@@ -221,6 +233,8 @@ def delete_subcategory(request,id):
                 variant.save()
         sub_category.delete()
         return redirect('edit_categories')
+    return redirect('admin_login')
+    
 
 def delete_category(request, id):
     if 'admin_email' in request.session:
@@ -240,3 +254,5 @@ def delete_category(request, id):
 
         category.delete()
         return redirect('edit_categories')
+    return redirect('admin_login')
+    

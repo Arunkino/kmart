@@ -3,7 +3,8 @@ from django.http import HttpResponse
 from . models import User,UserAddress
 from django.contrib import messages
 from django.db.models import Q
-
+from django.contrib.auth import get_user_model,authenticate,login,logout
+from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 
@@ -13,6 +14,10 @@ def index(request):
 
 def signup(request):
     if request.method=='POST':
+
+        User=get_user_model()
+
+
         first_name=request.POST['first_name']
         last_name=request.POST['last_name']
         email=request.POST['email']
@@ -43,8 +48,11 @@ def signup(request):
         
         
 
-        us=User(first_name=first_name,last_name=last_name,email=email,phone=phone,password=password)
+        us=User(first_name=first_name,last_name=last_name,email=email,phone=phone,username=email)
+        us.password=make_password(password)
+        
         us.save()
+
         ad=UserAddress(pin=pin,address_line=address_line,city=city,landmark=landmark,user_id=us)
         ad.save()
 
@@ -58,32 +66,39 @@ def signup(request):
         return render(request,'signup.html')
 
 
-def login(request):
+def login_user(request):
     if request.method=='POST':
 
         input=request.POST['mob_email']
+        password=request.POST['password']
         # validating the email or phone exising
-        if User.objects.filter(Q(email__iexact=input) | Q(phone__iexact=input)).exists():
 
-            us=User.objects.get(Q(email__iexact=input) | Q(phone__iexact=input))
-            if us.password!=request.POST['password']:
-                messages.info(request,'Incorrect Password!')
+        user=authenticate(request,username=input,password=password)
+
+        if user is not None:
+            if user.is_active:
+                login(request,user)
+                print("login success")
+                request.session['user_email']=user.email
+
+                return redirect('home')
+            
+            else:
+                messages.info(request,'Your account is blocked by the admin!!!\n please contact customercare.')
                 return redirect('login_user')
-            print('login success')
-            request.session['user_email']=us.email
-            return redirect('home')
-
+            
         else:
             messages.info(request,'Invalid Email/Password')
             return redirect('login_user')
-
-    else:
-        return render(request,'login.html')
+        
+# for get method
+    return render(request,'login.html')
     
 
 
-def logout(request):
+def logout_user(request):
     request.session.clear()
+    logout(request)
     return redirect('home')
 
 def user_page(request):
