@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from . models import User,UserAddress
+from products.models import Category,ProductImages,Products
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth import get_user_model,authenticate,login,logout
@@ -13,7 +14,55 @@ from django.conf import settings
 
 
 def index(request):
-    return render(request,'index.html')
+
+    categories = Category.objects.prefetch_related('subcategories').all()
+    category_data = []
+
+    for category in categories:
+        subcategories = category.subcategories.all()
+        subcategory_data = []
+        
+        for subcategory in subcategories:
+            products = subcategory.products.all()
+            product_data = []
+            
+            for product in products:
+                images = ProductImages.objects.filter(product_id=product).first()
+                image = images.image.url if images else None
+                variant = product.varients.first()
+                
+                
+                
+                        
+                    
+                    
+                product_data.append({
+                    'product_id': product.id,
+                    'product_name': product.product_name,
+                    'description': product.description,
+                    'price': variant.price,
+                    'quantity':variant.quantity,
+                    'unit':variant.unit, 
+                    'brand': product.brand.brand_name,
+
+                    'image': image,
+                    
+                })
+                
+            subcategory_data.append({
+                'subcategory_id': subcategory.id,
+                'subcategory_name': subcategory.sub_category,
+                'products': product_data,
+            })
+            
+        category_data.append({
+            'category_id' : category.id,
+            'category_name': category.category,
+            'subcategories': subcategory_data,
+        })
+
+
+    return render(request,'index.html',{'categories': category_data,})
 
 def signup(request):
     if request.method=='POST':
@@ -168,3 +217,12 @@ def user_page(request):
     
     else:
         return redirect('login_user')
+    
+
+
+def view_product(request,id):
+    product=Products.objects.get(id=id)
+    
+
+
+    return render(request,'view_product.html')

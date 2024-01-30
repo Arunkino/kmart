@@ -26,6 +26,7 @@ urlpatterns = [
     path('profile/', views.user_page,name='user_page'),
     path('logout/', views.logout_user,name='logout_user'),
     path('verify_your_account/', views.otp_user,name='otp_user'),
+    path('product/<int:id>', views.view_product,name='view_product'),
 ]
 
 

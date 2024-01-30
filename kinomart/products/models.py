@@ -5,6 +5,9 @@ from django.db import models
 class Category(models.Model):
     category=models.CharField(max_length=50)
 
+    def __str__(self) -> str:
+        return self.category
+
 
 class SubCategory(models.Model):
     sub_category=models.CharField(max_length=50)
@@ -14,6 +17,8 @@ class SubCategory(models.Model):
 
 class Unit(models.Model):
     unit=models.CharField(max_length=10)
+    def __str__(self) -> str:
+        return f'{self.unit}'
 
 class Brand(models.Model):
     brand_name=models.CharField(max_length=50)
