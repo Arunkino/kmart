@@ -93,7 +93,7 @@ def add_product(request):
 
         if request.method=='POST':
 
-            image1 = request.FILES['image1']
+            image1 = request.FILES.get('image1')
 
             
             

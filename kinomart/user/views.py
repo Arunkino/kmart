@@ -5,6 +5,9 @@ from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth import get_user_model,authenticate,login,logout
 from django.contrib.auth.hashers import make_password
+import random
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Create your views here.
 
@@ -35,35 +38,91 @@ def signup(request):
 
     
     # checking email taken
-        if User.objects.filter(email__iexact=email).exists():
-            messages.info(request,'Already registerd with this email')
-            return redirect('signup')
+        if User.objects.filter(Q(email__iexact=email)|Q(phone__iexact=phone)).exists():
+            user= User.objects.filter(Q(email__iexact=email)|Q(phone__iexact=phone)).first()
+            if user.is_active:
+                messages.info(request,'Already registerd with this email/phone ')
+                return redirect('login')
+            else:
+                messages.info(request,'Already registerd with this email. Please verify your email with otp to compleate the registration')
+                otp=random.randint(10000,99999)
+                request.session['otp']=otp
+
+
+                subject = 'Thank you for registering on Kino Mart'
+                message = f' Your otp for registration is {otp}'
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = [email,]   
+                send_mail( subject, message, email_from, recipient_list )
+                print("email send success")
+                request.session['user_id']=user.id
+                return render(request,'otp.html',{'email':email})
+
+
+
         
 
-    # checking for mobile number taken
-        if User.objects.filter(phone__iexact=phone).exists():
-            messages.info(request,'Already registered with this phone number')
-            return redirect('signup')
+   
         
         
+# we need to send email for otp verification
         
+        otp=random.randint(10000,99999)
+        request.session['otp']=otp
 
-        us=User(first_name=first_name,last_name=last_name,email=email,phone=phone,username=email)
+
+        subject = 'Thank you for registering on Kino Mart'
+        message = f' Your otp for registration is {otp}'
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [email,]   
+        send_mail( subject, message, email_from, recipient_list )
+        print("email send success")
+
+
+        User=get_user_model()
+        us=User(first_name=first_name,last_name=last_name,email=email,phone=phone,username=email,is_active=False)
         us.password=make_password(password)
-        
         us.save()
-
         ad=UserAddress(pin=pin,address_line=address_line,city=city,landmark=landmark,user_id=us)
         ad.save()
+        request.session['user_id']=us.id
+        request.session['user_address']=ad.id
 
-        # creating session when user registered succussfully with auto login
+
         
-        request.session['user_email']=us.email
 
-        return redirect('home')
+        return render(request,'otp.html',{'email':email})
     
     else:
         return render(request,'signup.html')
+    
+
+def otp_user(request):
+    if request.method=='POST':
+        print(request.POST['otp'])
+        print("Generated OTP:",request.session['otp'])
+        if request.POST['otp']==str(request.session['otp']):
+            print("OTP VALIDATED SUCCESSFULLY")
+
+
+
+# When otp validation is successfull, create user instance. 
+            user=User.objects.get(id=request.session['user_id'])
+            user.is_active=True
+            user.save()
+
+            
+            # creating session when user registered succussfully with auto login
+            
+            request.session['user_email']=user.email
+            return redirect('home')
+        else:
+            messages.info(request,'Incorrect OTP entered!!')
+            return redirect('otp_user')
+
+
+
+    return render(request,'otp.html')
 
 
 def login_user(request):

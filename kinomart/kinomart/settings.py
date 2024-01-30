@@ -139,18 +139,22 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'kinomart/media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-ACCOUNT_SID='YOUR ACCOUNT SID'
-AUTH_TOKEN='YOUR AUTH TOKEN'
-COUNTRY_CODE='+country code of your choice'
-TWILIO_WHATSAPP_NUMBER='whatsapp:+14155238886'
-TWILIO_PHONE_NUMBER='number you get from Twilio'
 
 
 
 AUTH_USER_MODEL = 'user.User'
+
+
 AUTHENTICATION_BACKENDS = [
     'user.email_or_phone.EmailPhoneBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
 
+# for email verification while signup
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'arunsubrahmanyan@gmail.com'
+EMAIL_HOST_PASSWORD = 'vbfthvmzqzjiifhl'

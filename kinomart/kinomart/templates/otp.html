@@ -1,0 +1,62 @@
+{% extends 'theme.html' %}
+
+{% load static %}
+{% block content %}
+
+<div class="row">
+    <br><br><br><br><br><br><br>
+</div>
+<div class="row">
+    <div class="col-md-1"></div>
+<div class="col-md-4 bg-white rounded-4 mt-5 p-3">
+  
+  
+
+    {% if messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {% for message in messages %}
+           {{message}}
+
+        {% endfor %}
+       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+     </div>
+     {% endif %}
+
+     <p>OTP send sussecfully to <span style="color: #679d06;">{{email}}</span></p>
+
+    <form action="{% url 'otp_user' %}" method="post">
+        {% csrf_token %}
+        <div class="mb-1">
+          
+          <label for="otp" class="form-label">Enter OTP  </label>
+          <br>
+          <input type="text" class="form-control" id="otp" name="otp" > 
+        </div>
+      
+       
+            
+         
+          
+         
+
+        <br><div class="d-flex justify-content-center"><button type="submit" class="btn btn-secondary">Submit</button></div>
+        
+      </form>
+    </div>
+    
+
+    <!-- image section started -->
+    <div class="col-md-5">
+        
+       <img src="{% static 'img/signup_img.svg' %}" alt="">
+    </div>
+    
+
+<!-- end of image section -->
+</div>
+
+
+
+
+
+{% endblock %}
