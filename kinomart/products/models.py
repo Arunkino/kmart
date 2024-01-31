@@ -33,7 +33,7 @@ class Products(models.Model):
 
 class ProductImages(models.Model):
     image=models.ImageField()
-    product_id=models.ForeignKey(Products,on_delete=models.CASCADE,null=True)
+    product_id=models.ForeignKey(Products,on_delete=models.CASCADE,null=True,related_name='images')
 
 
 

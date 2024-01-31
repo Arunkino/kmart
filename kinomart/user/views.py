@@ -221,8 +221,9 @@ def user_page(request):
 
 
 def view_product(request,id):
-    product=Products.objects.get(id=id)
+    product=Products.objects.prefetch_related('varients','images').get(id=id)
+
     
 
 
-    return render(request,'view_product.html')
+    return render(request,'view_product.html',{'product':product})
