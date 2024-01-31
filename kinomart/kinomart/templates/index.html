@@ -148,7 +148,10 @@
                                                 <div class="fruite-img">
                                                     <a href="product/{{product.product_id}}"><img src="{{product.image}}" style="height: 300px;" class="img-fluid w-100 rounded-top" alt=""></a>
                                                 </div>
-                                                <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">Sale</div>
+                                                {% if product.is_offer %}
+
+                                                <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">Offer</div>
+                                                {% endif %}
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom" style="height: 250px;">
                                                     <h4>{{product.product_name}}</h4>
                                                     <p>{{product.description}}</p>
@@ -189,7 +192,10 @@
                                                 <div class="fruite-img">
                                                     <a href="product/{{product.product_id}}"><img src="{{product.image}}" style="height: 300px;" class="img-fluid w-100 rounded-top" alt=""></a>
                                                 </div>
-                                                <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">Sale</div>
+
+                                                {% if product.is_offer %}
+                                                <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">Offer</div>
+                                                {% endif %}
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom" style="height: 250px;">
                                                     <h4>{{product.product_name}}</h4>
                                                     <p>{{product.description}}</p>

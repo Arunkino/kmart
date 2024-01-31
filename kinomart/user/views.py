@@ -44,6 +44,7 @@ def index(request):
                     'quantity':variant.quantity,
                     'unit':variant.unit, 
                     'brand': product.brand.brand_name,
+                    'is_offer':product.is_offer,
 
                     'image': image,
                     
@@ -223,7 +224,18 @@ def user_page(request):
 def view_product(request,id):
     product=Products.objects.prefetch_related('varients','images').get(id=id)
 
+    varients=product.varients.all()
+    varient_data=[]
+    for varient in varients:
+        varient_data.append({
+            'id':varient.id,
+            'qty':varient.quantity,
+            'unit':varient.unit,
+            'price':varient.price,
+
+        })
+        
     
 
 
-    return render(request,'view_product.html',{'product':product})
+    return render(request,'view_product.html',{'product':product,'varient_data':varient_data})

@@ -12,6 +12,9 @@ class Category(models.Model):
 class SubCategory(models.Model):
     sub_category=models.CharField(max_length=50)
     category=models.ForeignKey(Category,on_delete=models.CASCADE,related_name='subcategories')
+   
+    def __str__(self) -> str:
+        return self.sub_category
 
     
 
@@ -25,10 +28,11 @@ class Brand(models.Model):
 
 
 class Products(models.Model):
-    product_name=models.CharField(max_length=50)
-    description=models.CharField(max_length=100)
+    product_name=models.CharField(max_length=100)
+    description=models.TextField(max_length=300)
     sub_category = models.ForeignKey(SubCategory,on_delete=models.SET_NULL,null=True, related_name='products')
     brand=models.ForeignKey(Brand,on_delete=models.SET_NULL,null=True)
+    is_offer=models.BooleanField(default=False)
     
 
 class ProductImages(models.Model):
