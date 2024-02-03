@@ -75,6 +75,11 @@ def signup(request):
         last_name=request.POST['last_name']
         email=request.POST['email']
         phone=request.POST['mobile']
+# validating mobile number
+        if len(phone)!=10:
+            messages.info(request,'Mobile number must be 10 digits')
+
+            return redirect('signup')
         password=request.POST['password1']
         address_line=request.POST['address']
         city=request.POST['city']
@@ -92,7 +97,7 @@ def signup(request):
             user= User.objects.filter(Q(email__iexact=email)|Q(phone__iexact=phone)).first()
             if user.is_active:
                 messages.info(request,'Already registerd with this email/phone ')
-                return redirect('login')
+                return redirect('login_user')
             else:
                 messages.info(request,'Already registerd with this email. Please verify your email with otp to compleate the registration')
                 otp=random.randint(10000,99999)

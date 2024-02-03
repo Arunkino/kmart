@@ -34,6 +34,7 @@ urlpatterns = [
 
     path('add_category/', views.add_category,name='add_category'), 
     path('add_subcategory/', views.add_subcategory,name='add_subcategory'), 
+    path('ajax_load_subcategories/', views.load_subcategories, name='ajax_load_subcategories'),
 
     
 ]

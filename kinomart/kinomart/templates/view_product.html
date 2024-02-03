@@ -1,6 +1,6 @@
 {% extends 'theme.html' %}
 {% load static %}
-
+{% block title %} Product{% endblock %}
 {% block content %}
         <!-- Modal Search End -->
 
@@ -29,14 +29,15 @@
 
                                     <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
                                         <div class="carousel-inner" role="listbox">
-                                            {% with image=product.images.first %}
+                                            {% with images=product.images.all %}
+                                            {% with image=images.first %}
                                             
 
                                             <div class="carousel-item active rounded">
                                                 <img src="{{image.image.url}}" class="img-fluid w-100 h-100 rounded" alt="Second slide">
                                             </div>
                                             {% endwith %}
-                                            {% for image in product.images.all %}
+                                            {% for image in images|slice:"1:" %}
 
 
                                             <div class="carousel-item rounded">
@@ -44,6 +45,7 @@
                                             </div>
 
                                             {% endfor %}
+                                            {% endwith %}
 
                                         </div>
                                         <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
@@ -77,13 +79,13 @@
 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
     {% for varient in varient_data %}
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="pills-varient-{{varient.id}}-tab" data-bs-toggle="pill" data-bs-target="#varient-{{varient.id}}" type="button" role="tab" aria-controls="pills-varient-{{varient.id}}" aria-selected="true">{{varient.qty}}{{varient.unit}}</button>
+        <button class="nav-link {% if forloop.first %}active{% endif %}" id="pills-varient-{{varient.id}}-tab" data-bs-toggle="pill" data-bs-target="#varient-{{varient.id}}" type="button" role="tab" aria-controls="pills-varient-{{varient.id}}" aria-selected="true">{{varient.qty}}{{varient.unit}}</button>
       </li>
     {% endfor %}
     </ul>
     <div class="tab-content" id="pills-tabContent">
     {% for varient in varient_data %}
-      <div class="tab-pane fade show " id="varient-{{varient.id}}" role="tabpanel" aria-labelledby="pills-varient-{{varient.id}}-tab"><h5 class="fw-bold mb-3">₹{{varient.price}}</h5></div>
+      <div class="tab-pane fade show {% if forloop.first %}active{% endif %}" id="varient-{{varient.id}}" role="tabpanel" aria-labelledby="pills-varient-{{varient.id}}-tab"><h5 class="fw-bold mb-3">₹{{varient.price}}</h5></div>
     {% endfor %}
     </div>
     
@@ -111,8 +113,45 @@
                                         </button>
                                     </div>
                                 </div>
-                                <a href="#" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                <a href="" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
                             </div>
+
+
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+        $(document).ready(function(){
+            $(".btn-minus").click(function(){
+            var qty = $(".form-control").val();
+            qty--;
+            $(".form-control").val(qty);
+            });
+        
+            $(".btn-plus").click(function(){
+            var qty = $(".form-control").val();
+            qty++;
+            $(".form-control").val(qty);
+            });
+        
+            $(".btn.border").click(function(e){
+            e.preventDefault();
+            var qty = $(".form-control").val();
+            var activeVariantId = $(".nav-link.active").attr("id").split("-")[2];
+            console.log("Quantity: " + qty);
+            console.log("Active Variant ID: " + activeVariantId);
+            // Perform the cart operation here with qty and activeVariantId
+            });
+        });
+        </script> -->
+                            
+
+
+
+
+
+
+
+
+
                             <div class="col-lg-12">
                                 <nav>
                                     <div class="nav nav-tabs mb-3">
@@ -126,10 +165,7 @@
                                 </nav>
                                 <div class="tab-content mb-5">
                                     <div class="tab-pane active" id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
-                                        <p>The generated Lorem Ipsum is therefore always free from repetition injected humour, or non-characteristic words etc. 
-                                            Susp endisse ultricies nisi vel quam suscipit </p>
-                                        <p>Sabertooth peacock flounder; chain pickerel hatchetfish, pencilfish snailfish filefish Antarctic 
-                                            icefish goldeye aholehole trumpetfish pilot fish airbreathing catfish, electric ray sweeper.</p>
+                                        <p>Best ever products from the trusted store, Kino Mart. <br> {{product.description}}</p>
                                         <div class="px-2">
                                             <div class="row g-4">
                                                 <div class="col-6">

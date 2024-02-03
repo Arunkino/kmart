@@ -27,13 +27,27 @@
                 <br>
                 <input type="text" class="form-control" id="description" name="description" > 
             </div>
+
+            <div class="mb-1">
+            
+                <label for="is_offer" class="form-label">Special Offer</label>
+                <br>
+                <label for="choice1" class="form-label">Yes</label>
+
+                <input type="radio" class="" id="choice1" name="is_offer" value="True" > 
+                <label for="choice2" class="form-label">No</label>
+
+                <input type="radio" class="active" id="choice2" name="is_offer" value="False" checked > 
+            </div>
+            
+              
             
             <div class="mb-1">
                 <div class="row">
                     <div class="col-md-4 col-sm-4">
                         <label for="category" class="form-label">Category</label>
                     <br>
-                    <select name="category">
+                    <select name="category" id="category">
                           {% for category in categories %}
                               <option value="{{ category.id }}">{{ category.category }}</option>
                           {% endfor %}
@@ -42,7 +56,7 @@
                     <div class="col-md-4 col-sm-4">
                         <label for="sub_category" class="form-label">Sub Category</label>
                     <br>
-                    <select name="sub_category">
+                    <select name="sub_category" id="sub_category">
                           {% for sub_category in sub_categories %}
                               <option value="{{ sub_category.id }}">{{ sub_category.sub_category }}</option>
                           {% endfor %}
@@ -91,6 +105,21 @@
                         </div>
                         <br>
                     </div>
+
+                    
+
+
+
+
+
+
+
+
+
+
+
+
+
                 </div>
                 
                 <input type="hidden" id="variantCount" name="variantCount" value="1">
@@ -107,29 +136,13 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-<script>
 
-    
-    
-    $(document).ready(function() {
-        var variantCount = 1;
-        $('#addButton').click(function() {
-            variantCount++;
-            var newVariant = '<div class="variant">' +
-                '<input type="text" placeholder="quantity" name="quantity' + variantCount + '">' +
-                '<select name="unit'+variantCount+'">'+
-                                '{% for unit in units %}'+
-                                    '<option value="{{ unit.id }}">{{ unit.unit }}</option>'+
-                                '{% endfor %}'+
-                            '</select>'+
-                '<input type="text" placeholder="stock" name="stock' + variantCount + '">' +
-                '<input type="text" placeholder="price" name="price' + variantCount + '">' +
-                '</div>';
-            $('#variantContainer').append(newVariant);
-            $('#variantCount').val(variantCount);
-        });
-    });
-    </script>
+
+
+
+
+
+
+
 {% endblock %}
 

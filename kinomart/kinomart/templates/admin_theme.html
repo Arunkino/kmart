@@ -10,6 +10,9 @@
         <meta name="author" content="" />
         <title>Dashboard - SB Admin</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+
+        <link rel="icon" type="image/x-icon" href="{% static '/adm_temp_files/favicon.ico' %}">
+
 <link href="{% static 'adm_temp_files/css/styles.css' %}" rel="stylesheet" />
 <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" crossorigin="anonymous">
@@ -162,13 +165,75 @@
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="{% static 'adm_temp_files/js/scripts.js' %}"></script>
+        <script src="/static/adm_temp_files/js/scripts.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-        <script src="{% static 'adm_temp_files/assets/demo/chart-area-demo.js' %}"></script>
-        <script src="{% static 'adm_temp_files/assets/demo/chart-bar-demo.js' %}"></script>
+        <script src="/static/adm_temp_files/assets/demo/chart-area-demo.js"></script>
+        <script src="/static/adm_temp_files/assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-        <script src="{% static 'adm_temp_files/js/datatables-simple-demo.js' %}"></script>       
+        <script src="/static/adm_temp_files/js/datatables-simple-demo.js"></script>
+        
 
+        <script>
+
+    
+    
+            $(document).ready(function() {
+                var variantCount = 1;
+                $('#addButton').click(function() {
+                    variantCount++;
+                    var newVariant = '<div class="variant">' +
+                        '<input type="text" placeholder="quantity" name="quantity' + variantCount + '">' +
+                        '<select name="unit'+variantCount+'">'+
+                                        '{% for unit in units %}'+
+                                            '<option value="{{ unit.id }}">{{ unit.unit }}</option>'+
+                                        '{% endfor %}'+
+                                    '</select>'+
+                        '<input type="text" placeholder="stock" name="stock' + variantCount + '">' +
+                        '<input type="text" placeholder="price" name="price' + variantCount + '">' +
+                        '</div>';
+                    $('#variantContainer').append(newVariant);
+                    $('#variantCount').val(variantCount);
+                });
+        
+        
+        
+        
+                $('#category').change(function() {
+    console.log('Category changed'); // Add this line
+
+    var url = "/admin/ajax_load_subcategories/";  // get the url of the `load_subcategories` view
+    var categoryId = $(this).val();  // get the selected category ID from the HTML input
+
+    $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= /hr/ajax/load-subcategories/)
+        data: {
+            'category': categoryId       // add the category id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_subcategories` view function
+            $("#sub_category").html(data);  // replace the contents of the subcategory input with the data that came from the server
+        },
+        error: function (jqXHR, textStatus, errorThrown) { // Add this
+            console.log(textStatus, errorThrown);
+        },
+        complete: function (jqXHR, textStatus) { // And this
+            console.log('AJAX call completed with status: ' + textStatus);
+        }
+    
+
+
+
+
+
+
+                });
+        
+            });
+        
+        
+        
+        
+            });
+            </script>
 
         <script>
             $(document).ready(function(){

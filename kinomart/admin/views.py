@@ -141,6 +141,13 @@ def add_product(request):
             return render(request,'add_product.html',{'categories':categories,'sub_categories':sub_categories,'units':units,'brands':brands})
     return redirect('admin_login')
     
+
+def load_subcategories(request):
+    category_id = request.GET.get('category')
+    subcategories = SubCategory.objects.filter(category_id=category_id).order_by('sub_category')
+
+    return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})
+
         
 def edit_categories(request):
     if 'admin_email' in request.session:
