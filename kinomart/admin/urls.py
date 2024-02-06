@@ -33,6 +33,8 @@ urlpatterns = [
     path('edit_categories/delete_category/<int:id>/', views.delete_category,name='delete_category'), 
 
     path('add_category/', views.add_category,name='add_category'), 
+    path('update_category/', views.update_category,name='update_category'), 
+    path('update_subcategory/', views.update_subcategory,name='update_subcategory'), 
     path('add_subcategory/', views.add_subcategory,name='add_subcategory'), 
     path('ajax_load_subcategories/', views.load_subcategories, name='ajax_load_subcategories'),
 

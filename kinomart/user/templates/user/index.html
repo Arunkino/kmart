@@ -1,4 +1,4 @@
-{% extends 'theme.html' %}
+{% extends 'user/theme.html' %}
 {% load static %}
 {% block title %}Home{% endblock %}
 {% block content %}
@@ -114,6 +114,7 @@
                                     </a>
                                 </li>
                                 {% for category in categories %}
+        
                                 <li class="nav-item">
                                     <a class="d-flex m-2 py-2 bg-light rounded-pill" data-bs-toggle="pill" href="#tab-{{category.category_id}}">
                                         <span class="text-dark" style="width: 130px;">{{category.category_name}}</span>

@@ -171,83 +171,24 @@
         <script src="/static/adm_temp_files/assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="/static/adm_temp_files/js/datatables-simple-demo.js"></script>
+        {% block scripts %}
+
+
+        {% endblock %}
+
         
-
-        <script>
-
-    
-    
-            $(document).ready(function() {
-                var variantCount = 1;
-                $('#addButton').click(function() {
-                    variantCount++;
-                    var newVariant = '<div class="variant">' +
-                        '<input type="text" placeholder="quantity" name="quantity' + variantCount + '">' +
-                        '<select name="unit'+variantCount+'">'+
-                                        '{% for unit in units %}'+
-                                            '<option value="{{ unit.id }}">{{ unit.unit }}</option>'+
-                                        '{% endfor %}'+
-                                    '</select>'+
-                        '<input type="text" placeholder="stock" name="stock' + variantCount + '">' +
-                        '<input type="text" placeholder="price" name="price' + variantCount + '">' +
-                        '</div>';
-                    $('#variantContainer').append(newVariant);
-                    $('#variantCount').val(variantCount);
-                });
-        
-        
-        
-        
-                $('#category').change(function() {
-    console.log('Category changed'); // Add this line
-
-    var url = "/admin/ajax_load_subcategories/";  // get the url of the `load_subcategories` view
-    var categoryId = $(this).val();  // get the selected category ID from the HTML input
-
-    $.ajax({                       // initialize an AJAX request
-        url: url,                    // set the url of the request (= /hr/ajax/load-subcategories/)
-        data: {
-            'category': categoryId       // add the category id to the GET parameters
-        },
-        success: function (data) {   // `data` is the return of the `load_subcategories` view function
-            $("#sub_category").html(data);  // replace the contents of the subcategory input with the data that came from the server
-        },
-        error: function (jqXHR, textStatus, errorThrown) { // Add this
-            console.log(textStatus, errorThrown);
-        },
-        complete: function (jqXHR, textStatus) { // And this
-            console.log('AJAX call completed with status: ' + textStatus);
-        }
-    
-
-
-
-
-
-
-                });
-        
-            });
-        
-        
-        
-        
-            });
-            </script>
-
-        <script>
-            $(document).ready(function(){
-                $('#add-category-btn').click(function(){
-                    $('#add-category-form').show();
-                });
-                $('.add-subcategory-btn').click(function(){
-                    $('.add-subcategory-form').show();
-                });
-                
-            
-            
-            });
-
-        </script>
     </body>
 </html>
+<style>
+    select {
+        width: 200px;
+        padding: 10px;
+        border: 1px solid  rgb(190, 158, 158) ;
+        border-radius: 4px;
+        background-color: #f1f1f1;
+        font-size: 16px;
+    }
+    select:focus {
+        outline: none;
+    }
+</style>

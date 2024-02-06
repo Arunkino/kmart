@@ -1,0 +1,40 @@
+{% extends 'user/theme.html' %}
+
+{% load static %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<br><br><br>
+<br><br><br>
+<br><br><br>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 bg-light">
+            <h3>Hello Ajas</h3>
+            <ul class="list-group">
+                <li class="list-group-item"><a href="#">Edit Profile</a></li>
+                <li class="list-group-item"><a href="{% url 'user_address' %}">Shopping Address</a></li>
+                <li class="list-group-item"><a href="#">Order History</a></li>
+                <li class="list-group-item"><a href="#">My Wishlist</a></li>
+                <li class="list-group-item"><a href="#">Wallet</a></li>
+                <li class="list-group-item"><a href="{% url 'logout_user' %}">Log Out</a></li>
+            </ul>
+        </div>
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <h2>Profile page</h2>
+            
+        </div>
+    </div>
+</div>
+    
+
+
+
+
+
+               
+
+
+{% endblock %}

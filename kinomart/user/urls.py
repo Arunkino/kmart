@@ -27,6 +27,10 @@ urlpatterns = [
     path('logout/', views.logout_user,name='logout_user'),
     path('verify_your_account/', views.otp_user,name='otp_user'),
     path('product/<int:id>', views.view_product,name='view_product'),
+    path('user_address/', views.user_address,name='user_address'),
+    path('add_address/', views.add_address,name='add_address'),
+    path('delete_address/', views.delete_address, name='delete_address'),
+
     
 ]
 

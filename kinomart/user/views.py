@@ -9,33 +9,25 @@ from django.contrib.auth.hashers import make_password
 import random
 from django.core.mail import send_mail
 from django.conf import settings
+from django.http import JsonResponse
 
 # Create your views here.
 
 
 def index(request):
-
     categories = Category.objects.prefetch_related('subcategories').all()
     category_data = []
-
     for category in categories:
         subcategories = category.subcategories.all()
-        subcategory_data = []
-        
+        subcategory_data = []    
         for subcategory in subcategories:
             products = subcategory.products.all()
-            product_data = []
-            
+            product_data = []        
             for product in products:
                 images = ProductImages.objects.filter(product_id=product).first()
                 image = images.image.url if images else None
                 variant = product.varients.first()
-                
-                
-                
-                        
-                    
-                    
+    
                 product_data.append({
                     'product_id': product.id,
                     'product_name': product.product_name,
@@ -45,25 +37,19 @@ def index(request):
                     'unit':variant.unit, 
                     'brand': product.brand.brand_name,
                     'is_offer':product.is_offer,
-
-                    'image': image,
-                    
-                })
-                
+                    'image': image,      
+                })             
             subcategory_data.append({
                 'subcategory_id': subcategory.id,
                 'subcategory_name': subcategory.sub_category,
                 'products': product_data,
             })
-            
         category_data.append({
             'category_id' : category.id,
             'category_name': category.category,
             'subcategories': subcategory_data,
         })
-
-
-    return render(request,'index.html',{'categories': category_data,})
+    return render(request,'user/index.html',{'categories': category_data,})
 
 def signup(request):
     if request.method=='POST':
@@ -111,7 +97,7 @@ def signup(request):
                 send_mail( subject, message, email_from, recipient_list )
                 print("email send success")
                 request.session['user_id']=user.id
-                return render(request,'otp.html',{'email':email})
+                return render(request,'user/otp.html',{'email':email})
 
 
 
@@ -146,10 +132,10 @@ def signup(request):
 
         
 
-        return render(request,'otp.html',{'email':email})
+        return render(request,'user/otp.html',{'email':email})
     
     else:
-        return render(request,'signup.html')
+        return render(request,'user/signup.html')
     
 
 def otp_user(request):
@@ -177,7 +163,7 @@ def otp_user(request):
 
 
 
-    return render(request,'otp.html')
+    return render(request,'user/otp.html')
 
 
 def login_user(request):
@@ -206,7 +192,7 @@ def login_user(request):
             return redirect('login_user')
         
 # for get method
-    return render(request,'login.html')
+    return render(request,'user/login.html')
     
 
 
@@ -215,15 +201,6 @@ def logout_user(request):
     logout(request)
     return redirect('home')
 
-def user_page(request):
-
-
-    if 'user_email' in request.session:
-        return render(request,'user_profile.html')
-    
-    else:
-        return redirect('login_user')
-    
 
 
 def view_product(request,id):
@@ -243,4 +220,49 @@ def view_product(request,id):
     
 
 
-    return render(request,'view_product.html',{'product':product,'varient_data':varient_data})
+    return render(request,'user/view_product.html',{'product':product,'varient_data':varient_data})
+
+
+
+
+
+# User profile page related
+
+def user_page(request):
+
+
+    if 'user_email' in request.session:
+        return render(request,'user/user_profile.html')
+    
+    else:
+        return redirect('login_user')
+    
+def user_address(request):
+    user=User.objects.get(email=request.session['user_email'])
+    
+    addresses=UserAddress.objects.filter(user_id__exact=user)
+    return render(request,'user/user_address.html',{'addresses':addresses,'user':user})
+
+
+def add_address(request):
+    if request.method == 'POST':
+        address = request.POST.get('address')
+        landmark = request.POST.get('landmark')
+        city = request.POST.get('city')
+        pin = request.POST.get('pin')
+        state = request.POST.get('state')
+
+        user=User.objects.get(email=request.session['user_email'])
+        # Create a new address instance
+        new_address = UserAddress.objects.create(city=city,landmark=landmark,state=state,pin=pin,address_line=address,user_id=user)
+        new_address.save()
+        return JsonResponse({'message': 'Address added successfully!'}) 
+        # return redirect('user_address')
+
+
+
+def delete_address(request):
+    if request.method == 'POST':
+        address_id = request.POST.get('address_id')
+        UserAddress.objects.filter(id=address_id).delete()
+        return JsonResponse({'message': 'Address deleted successfully!'})

@@ -14,6 +14,7 @@ class UserAddress(models.Model):
     pin= models.BigIntegerField()
     address_line=models.TextField()
     user_id=models.ForeignKey(User,on_delete=models.CASCADE)
+    is_default=models.BooleanField(default=True,null=True)
 
 
     

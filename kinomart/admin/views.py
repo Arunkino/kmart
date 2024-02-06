@@ -6,7 +6,7 @@ from products.models import Category,SubCategory,ProductImages,Products,ProductV
 # Create your views here.
 def index(request):
     if 'admin_email' in request.session:
-        return render(request,'index_admin.html')
+        return render(request,'admin/index_admin.html')
     return redirect('admin_login')
 
 def login(request):
@@ -27,7 +27,7 @@ def login(request):
         if 'admin_email' in request.session:
             return redirect('index')
 
-        return render(request,'admin_login.html')
+        return render(request,'admin/admin_login.html')
     
 def logout(request):
     request.session.clear()
@@ -40,7 +40,7 @@ def user_list(request):
         users=User.objects.all()
         add=UserAddress.objects.all()
         
-        return render(request,'userlist.html',{'users':users})
+        return render(request,'admin/userlist.html',{'users':users})
     return redirect('admin_login')
 def list_product(request):
     if 'admin_email' in request.session:
@@ -65,7 +65,7 @@ def list_product(request):
                 'brand' : brand.brand_name,
                 'image': image,
             })
-        return render(request, 'list_product.html', {'variants': variant_data,'categories':categories})
+        return render(request, 'admin/list_product.html', {'variants': variant_data,'categories':categories})
     return redirect('admin_login')
 
 def block_user(request,id):
@@ -138,7 +138,7 @@ def add_product(request):
             units=Unit.objects.all()
             brands=Brand.objects.all().order_by('id')
 
-            return render(request,'add_product.html',{'categories':categories,'sub_categories':sub_categories,'units':units,'brands':brands})
+            return render(request,'admin/add_product.html',{'categories':categories,'sub_categories':sub_categories,'units':units,'brands':brands})
     return redirect('admin_login')
     
 
@@ -146,17 +146,17 @@ def load_subcategories(request):
     category_id = request.GET.get('category')
     subcategories = SubCategory.objects.filter(category_id=category_id).order_by('sub_category')
 
-    return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})
+    return render(request, 'admin/subcategory_dropdown_list_options.html', {'subcategories': subcategories})
 
         
 def edit_categories(request):
     if 'admin_email' in request.session:
         
-        categories = Category.objects.prefetch_related('subcategories').all()
+        categories = Category.objects.prefetch_related('subcategories').all().order_by('category')
         category_data = []
 
         for category in categories:
-            subcategories = category.subcategories.all()
+            subcategories = category.subcategories.all().order_by('sub_category')
             subcategory_data = []
             
             for subcategory in subcategories:
@@ -199,7 +199,7 @@ def edit_categories(request):
             })
             
 
-        return render(request, 'edit_categories.html', {'categories': category_data})
+        return render(request, 'admin/edit_categories.html', {'categories': category_data})
     return redirect('admin_login')
     
 
@@ -210,6 +210,31 @@ def add_category(request):
         if request.method == 'POST':
             category_name = request.POST.get('category_name')
             Category.objects.create(category=category_name)
+        return redirect('edit_categories')
+    return redirect('admin_login')
+
+
+def update_category(request):
+    if 'admin_email' in request.session:
+
+        if request.method == 'POST':
+            category_name = request.POST.get('category_name')
+            category_id = request.POST.get('category_id')
+            cat=Category.objects.get(id=category_id)
+            cat.category=category_name
+            cat.save()
+        return redirect('edit_categories')
+    return redirect('admin_login')
+
+def update_subcategory(request):
+    if 'admin_email' in request.session:
+
+        if request.method == 'POST':
+            subcategory_name = request.POST.get('subcategory_name')
+            subcategory_id = request.POST.get('subcategory_id')
+            cat=SubCategory.objects.get(id=subcategory_id)
+            cat.sub_category=subcategory_name
+            cat.save()
         return redirect('edit_categories')
     return redirect('admin_login')
     

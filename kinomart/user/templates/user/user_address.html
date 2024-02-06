@@ -1,0 +1,179 @@
+{% extends 'user/theme.html' %}
+
+{% load static %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<br><br><br>
+<br><br><br>
+<br><br><br>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 bg-light">
+            <h3>Hello {{user.first_name}}</h3>
+            <ul class="list-group">
+                <li class="list-group-item"><a href="#">Edit Profile</a></li>
+                <li class="list-group-item"><a href="#">Shopping Address</a></li>
+                <li class="list-group-item"><a href="#">Order History</a></li>
+                <li class="list-group-item"><a href="#">My Wishlist</a></li>
+                <li class="list-group-item"><a href="#">Wallet</a></li>
+                <li class="list-group-item"><a href="{% url 'logout_user' %}">Log Out</a></li>
+            </ul>
+        </div>
+        <!-- Main Content -->
+        <div class="col-md-9">
+            
+        {% for address in addresses %}
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{address.address_line}}</h5>
+                    <p class="card-text">{{address.landmark}}<br>{{address.city}}<br>PIN : {{address.pin}}<br>{{address.state}}<br>
+                        ph :+91 {{user.phone}}<br>email : {{user.email}}</p>
+                    <input type="radio" id="defaultAddress1" name="defaultAddress" value="1">
+                    <label for="defaultAddress1">Set as default</label><br>
+                    <a href="#" class="card-link">Edit</a>
+                    {% if addresses|length > 1 %}
+                 <a href="#" class="card-link delete-address" data-address-id="{{address.id}}" onclick="return confirm('Are you sure? Do you really want to delete this address?');">Delete</a>
+                 {% endif %}
+                </div>
+            </div>
+            
+        {% endfor %}
+
+        
+            <!-- <button class="btn btn-primary mt-3">Add Address</button> -->
+
+
+
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Add Address
+  </button>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Address</h5>
+          <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Your form goes here -->
+          <form action="{% url 'add_address' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="address">Address</label>
+              <input type="text" class="form-control" id="address" name="address" placeholder="Enter address">
+            </div>
+            
+            
+            <div class="form-group">
+              <label for="landmark">Landmark</label>
+              <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Enter landmark">
+            </div>
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" class="form-control" id="city" name="city" placeholder="Enter city">
+            </div>
+            <div class="form-group">
+              <label for="pin">PIN</label>
+              <input type="text" class="form-control" id="pin" name="pin" placeholder="Enter pincode">
+            </div>
+            <div class="form-group">
+                <label for="state">State</label>
+                <input type="text" class="form-control" name="state" id="state" placeholder="Enter state">
+              </div>
+            <!-- Add more fields as needed -->
+          <button type="submit" class="btn btn-primary">Save changes</button>
+
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+        </div>
+    </div>
+</div>
+    
+
+
+
+
+
+               
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function(){
+        $("form").on('submit', function(event){
+            event.preventDefault(); // Prevent the form from being submitted normally
+            $.ajax({
+                url: "{% url 'add_address' %}", // The URL you're posting to
+                type: "POST",
+                data: {
+                    address: $('#address').val(), // Get the value of the address field
+                    landmark: $('#landmark').val(),
+                    city: $('#city').val(),
+                    pin: $('#pin').val(),
+                    state: $('#state').val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(), // Get the CSRF token
+                },
+                success: function(response){
+                if(response.message){
+                    alert(response.message); // Show a success message
+                    window.location.href = "{% url 'user_address' %}"; // Redirect to the old page
+                }else if(response.error){
+                    alert(response.error); // Show an error message
+                }
+            }
+        });
+    });
+
+    $(".delete-address").click(function(event){
+        event.preventDefault(); // Prevent the link from being followed
+        var addressId = $(this).data('address-id'); // Get the id of the address to be deleted
+        $.ajax({
+            url: "{% url 'delete_address' %}", // The URL of your Django view
+            type: "POST",
+            data: {
+                'address_id': addressId,
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(), // Get the CSRF token
+            },
+            success: function(response){
+                if(response.message){
+                    alert(response.message); // Show a success message
+                    location.reload(); // Reload the page
+                }else if(response.error){
+                    alert(response.error); // Show an error message
+                }
+            }
+        });
+    });
+});
+    </script>
+    
+
+    {% endblock %}
