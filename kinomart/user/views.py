@@ -11,6 +11,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
@@ -255,7 +257,7 @@ def add_address(request):
 
         user=User.objects.get(email=request.session['user_email'])
         # Create a new address instance
-        new_address = UserAddress.objects.create(city=city,landmark=landmark,state=state,pin=pin,address_line=address,user_id=user)
+        new_address = UserAddress.objects.create(city=city,landmark=landmark,state=state,pin=pin,address_line=address,user_id=user,is_default=False)
         new_address.save()
         return JsonResponse({'message': 'Address added successfully!'}) 
         # return redirect('user_address')
@@ -312,5 +314,82 @@ def default_address(request):
         ad.is_default=True
         ad.save()
 
-        print(f'The value of default is {ad.is_default} now')
+        
         return JsonResponse({'status': 'success'})
+    
+
+def order_history(request):
+
+
+    return render(request,'user/order_history.html')
+
+
+def wishlist(request):
+
+
+    return render(request,'user/wishlist.html')
+
+
+def wallet(request):
+
+
+    return render(request,'user/wallet.html')
+
+
+
+
+
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+
+        user = request.user  # Get the logged in user
+
+        # Validate the data
+        if not first_name or not last_name or not email or not phone:
+            return JsonResponse({'error': 'All fields are required'})
+
+        # Update user details
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.phone = phone
+
+        # Save the user and handle potential errors
+        try:
+            user.full_clean()  # Validate the model
+            user.save()
+        except ValidationError as e:
+            return JsonResponse({'error': str(e)})
+
+        return JsonResponse({'message': 'Profile updated successfully!'})
+    
+
+
+def change_password(request):
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        new_password1 = request.POST.get('new_password1')
+        new_password2 = request.POST.get('new_password2')
+
+        user = User.objects.get(email=request.session['user_email'])
+
+        # Validate old password
+        if not user.check_password(old_password):
+            return JsonResponse({'message': 'You have entered a wrong old password!!!'})
+
+        # Check if new passwords match
+        if new_password1 != new_password2:
+            return JsonResponse({'message': 'New passwords not matching!'})
+
+        # Edit user password
+        user.set_password(new_password1)
+        user.save()
+
+        return JsonResponse({'message': 'Password changed successfully!'})
+    

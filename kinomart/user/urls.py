@@ -24,6 +24,8 @@ urlpatterns = [
     path('signup/', views.signup,name='signup'),
     path('login/', views.login_user,name='login_user'),
     path('profile/', views.user_page,name='user_page'),
+    path('edit_profile/', views.edit_profile,name='edit_profile'),
+    path('change_password/', views.change_password,name='change_password'),
     path('logout/', views.logout_user,name='logout_user'),
     path('verify_your_account/', views.otp_user,name='otp_user'),
     path('product/<int:id>', views.view_product,name='view_product'),
@@ -32,6 +34,10 @@ urlpatterns = [
     path('update_address/', views.update_address,name='update_address'),
     path('delete_address/', views.delete_address, name='delete_address'),
     path('default_address/', views.default_address, name='default_address'),
+    path('order_history/', views.order_history, name='order_history'),
+    path('wishlist/', views.wishlist, name='wishlist'),
+    path('wallet/', views.wallet, name='wallet'),
+    
 
     
 ]
