@@ -3,6 +3,25 @@
 {% load static %}
 {% block title %}Profile{% endblock %}
 {% block content %}
+<SCript>
+  function updateDefaultAddress(addressId) {
+    $.ajax({
+        url: "{% url 'default_address' %}",  // URL of your Django view
+        type: 'POST',
+        data: {
+            'address_id': addressId,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(data) {
+            // Handle success (optional)
+        },
+        error: function(data) {
+            // Handle error (optional)
+        }
+    });
+}
+
+</SCript>
 <br><br><br>
 <br><br><br>
 <br><br><br>
@@ -31,76 +50,138 @@
                     <h5 class="card-title">{{address.address_line}}</h5>
                     <p class="card-text">{{address.landmark}}<br>{{address.city}}<br>PIN : {{address.pin}}<br>{{address.state}}<br>
                         ph :+91 {{user.phone}}<br>email : {{user.email}}</p>
-                    <input type="radio" id="defaultAddress1" name="defaultAddress" value="1">
-                    <label for="defaultAddress1">Set as default</label><br>
-                    <a href="#" class="card-link">Edit</a>
+                    
+                    
+                        <input type="radio" id="defaultAddress{{address.id}}" name="defaultAddress" value="{{address.id}}" onclick="updateDefaultAddress('{{address.id}}')" {% if address.is_default %} checked {% endif %}>
+                    <label for="defaultAddress{{address.id}}">Set as default</label><br>
+                    <a href="#" class="card-link edit-address" data-bs-toggle="modal" data-bs-target="#editModal{{address.id}}" data-address-id="{{address.id}}">Edit</a>
+
                     {% if addresses|length > 1 %}
                  <a href="#" class="card-link delete-address" data-address-id="{{address.id}}" onclick="return confirm('Are you sure? Do you really want to delete this address?');">Delete</a>
                  {% endif %}
                 </div>
             </div>
             
+
+
+    <!-- model for update address form with values -->
+    <div class="modal fade" id="editModal{{address.id}}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit Address</h5>
+            <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Your form goes here -->
+            <form action="{% url 'update_address' %}" class="update-address-form" method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" class="form-control" id="address-{{address.id}}" name="address" value="{{address.address_line}}" placeholder="Enter address">
+              </div>
+              
+              
+              <div class="form-group">
+                <label for="landmark">Landmark</label>
+                <input type="text" class="form-control" id="landmark-{{address.id}}" name="landmark" value="{{address.landmark}}" placeholder="Enter landmark">
+              </div>
+              <div class="form-group">
+                  <label for="city">City</label>
+                  <input type="text" class="form-control" id="city-{{address.id}}" name="city" value="{{address.city}}" placeholder="Enter city">
+              </div>
+              <div class="form-group">
+                <label for="pin">PIN</label>
+                <input type="text" class="form-control" id="pin-{{address.id}}" name="pin" value="{{address.pin}}" placeholder="Enter pincode">
+              </div>
+              <div class="form-group">
+                  <label for="state">State</label>
+                  <input type="text" class="form-control" name="state" id="state-{{address.id}}" value="{{address.state}}" placeholder="Enter state">
+                </div>
+
+                <input type="hidden" class="form-control" name="ad-id" id="ad-id" value="{{address.id}}" >
+              
+              <!-- Add more fields as needed -->
+            <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" id="update_address">Save changes</button>
+  
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </form>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+            
         {% endfor %}
 
-        
-            <!-- <button class="btn btn-primary mt-3">Add Address</button> -->
+           
+
+
+    <!-- Modal -->
 
 
 
 
 
-<!-- Button trigger modal -->
+
+
+<!-- Button trigger modal for adding address -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
     Add Address
   </button>
 
   <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Add Address</h5>
-          <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <!-- Your form goes here -->
-          <form action="{% url 'add_address' %}" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-              <label for="address">Address</label>
-              <input type="text" class="form-control" id="address" name="address" placeholder="Enter address">
-            </div>
-            
-            
-            <div class="form-group">
-              <label for="landmark">Landmark</label>
-              <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Enter landmark">
-            </div>
-            <div class="form-group">
-                <label for="city">City</label>
-                <input type="text" class="form-control" id="city" name="city" placeholder="Enter city">
-            </div>
-            <div class="form-group">
-              <label for="pin">PIN</label>
-              <input type="text" class="form-control" id="pin" name="pin" placeholder="Enter pincode">
-            </div>
-            <div class="form-group">
-                <label for="state">State</label>
-                <input type="text" class="form-control" name="state" id="state" placeholder="Enter state">
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Address</h5>
+                <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
               </div>
-            <!-- Add more fields as needed -->
-          <button type="submit" class="btn btn-primary">Save changes</button>
+              <div class="modal-body">
+                <!-- Your form goes here -->
+                <form class="add-address-form" >
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" class="form-control" id="address" name="address" placeholder="Enter address">
+                  </div>
+                  
+                  
+                  <div class="form-group">
+                    <label for="landmark">Landmark</label>
+                    <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Enter landmark">
+                  </div>
+                  <div class="form-group">
+                      <label for="city">City</label>
+                      <input type="text" class="form-control" id="city" name="city" placeholder="Enter city">
+                  </div>
+                  <div class="form-group">
+                    <label for="pin">PIN</label>
+                    <input type="text" class="form-control" id="pin" name="pin" placeholder="Enter pincode">
+                  </div>
+                  <div class="form-group">
+                      <label for="state">State</label>
+                      <input type="text" class="form-control" name="state" id="state" placeholder="Enter state">
+                    </div>
+                  <!-- Add more fields as needed -->
+                <div class="modal-footer">
+                <button type="submit" id="" class="add_address_form_submit btn btn-primary">Save changes</button>
 
-          </form>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+                </form>
+              </div>
+              
+            </div>
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -128,7 +209,7 @@
 {% block scripts %}
 <script>
     $(document).ready(function(){
-        $("form").on('submit', function(event){
+        $(".add-address-form").on('submit', function(event){
             event.preventDefault(); // Prevent the form from being submitted normally
             $.ajax({
                 url: "{% url 'add_address' %}", // The URL you're posting to
@@ -172,6 +253,14 @@
             }
         });
     });
+
+    
+
+
+
+
+
+
 });
     </script>
     

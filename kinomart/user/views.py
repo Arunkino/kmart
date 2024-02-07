@@ -10,6 +10,7 @@ import random
 from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -240,7 +241,7 @@ def user_page(request):
 def user_address(request):
     user=User.objects.get(email=request.session['user_email'])
     
-    addresses=UserAddress.objects.filter(user_id__exact=user)
+    addresses=UserAddress.objects.filter(user_id__exact=user).order_by('-is_default',)
     return render(request,'user/user_address.html',{'addresses':addresses,'user':user})
 
 
@@ -258,11 +259,58 @@ def add_address(request):
         new_address.save()
         return JsonResponse({'message': 'Address added successfully!'}) 
         # return redirect('user_address')
+    
+
+def update_address(request):
+    if request.method=='POST':
+        address = request.POST.get('address')
+        landmark = request.POST.get('landmark')
+        city = request.POST.get('city')
+        pin = request.POST.get('pin')
+        state = request.POST.get('state')
+        
+        ad=UserAddress.objects.get(id=int(request.POST.get('ad-id')))
+        
+
+        # Update address instance
+        ad.address_line=address
+        ad.landmark=landmark
+        ad.city=city
+        ad.pin=pin
+        ad.state=state
+
+        ad.save()
+
+        return redirect('user_address')
+
 
 
 
 def delete_address(request):
     if request.method == 'POST':
         address_id = request.POST.get('address_id')
-        UserAddress.objects.filter(id=address_id).delete()
+        address=UserAddress.objects.get(id=address_id)
+        if address.is_default:
+            return JsonResponse({'message': 'This is your default address, Change it and try again!!'})
+
+        address.delete()
         return JsonResponse({'message': 'Address deleted successfully!'})
+    
+
+@csrf_exempt
+def default_address(request):
+    if request.method == 'POST':
+        address_id = request.POST.get('address_id')
+        # Fetch the UserAddress instance
+        ad = UserAddress.objects.get(id=address_id)
+        addresses=UserAddress.objects.filter(user_id__exact=ad.user_id)
+
+        for address in addresses:
+            address.is_default=False
+            address.save()
+
+        ad.is_default=True
+        ad.save()
+
+        print(f'The value of default is {ad.is_default} now')
+        return JsonResponse({'status': 'success'})
