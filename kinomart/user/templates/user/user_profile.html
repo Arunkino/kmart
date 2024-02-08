@@ -18,6 +18,7 @@
                 <li class="list-group-item"><a href="{% url 'user_address' %}">Shopping Address</a></li>
                 <li class="list-group-item"><a href="{% url 'order_history' %}">Order History</a></li>
                 <li class="list-group-item"><a href="{% url 'wishlist' %}">My Wishlist</a></li>
+                <li class="list-group-item"><a href="{% url 'cart' %}">My Cart</a></li>
                 <li class="list-group-item"><a href="{% url 'wallet' %}">Wallet</a></li>
                 <li class="list-group-item"><a href="{% url 'logout_user' %}">Log Out</a></li>
             </ul>
@@ -249,7 +250,7 @@
                 } else if(response.error) {
                     alert(response.error); // Show an error message
                 }
-            } // Closing parenthesis was missing here
+            } 
         });
     });
 });

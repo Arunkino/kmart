@@ -626,13 +626,29 @@
         if(response.error === 'login_required') {
             window.location.href = "{% url 'login_user' %}";
         } else if(response.message) {
-            alert(response.message);
+            // alert(response.message);
+
+// for changing the count on cart icon
+            updateCartCount();
         }
     }
         });
     });
 });
 
+
+
+function updateCartCount() {
+    // AJAX request to get the cart count
+    $.ajax({
+        url: "{% url 'cart_count' %}",
+        type: "GET",
+        success: function(response) {
+            // Update the count on the page
+            $(".cart-count").text(response.count);
+        }
+    });
+}
 
 
 </script>

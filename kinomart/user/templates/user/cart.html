@@ -1,0 +1,148 @@
+{% extends 'user/theme.html' %}
+
+{% load static %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+
+<br><br><br>
+<br><br><br>
+<br><br><br>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 bg-light">
+            <h3>Hello {{user.first_name}}</h3>
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{% url 'user_page' %}">Profile</a></li>
+                <li class="list-group-item"><a href="{% url 'user_address' %}">Shopping Address</a></li>
+                <li class="list-group-item"><a href="{% url 'order_history' %}">Order History</a></li>
+                <li class="list-group-item"><a href="{% url 'wishlist' %}">My Wishlist</a></li>
+                <li class="list-group-item"><a href="{% url 'cart' %}">My Cart</a></li>
+                <li class="list-group-item"><a href="{% url 'wallet' %}">Wallet</a></li>
+                <li class="list-group-item"><a href="{% url 'logout_user' %}">Log Out</a></li>
+            </ul>
+        </div>
+        <!-- Main Content -->
+        <div class="col-md-9">
+
+
+
+
+
+
+            <h1>Cart Page</h1>
+         
+<table class="table table-striped">
+  <thead>
+    
+  </thead>
+  <tbody>
+    
+    {% for item in cart_items %}
+    <tr>
+      <td><a href="{% url 'view_product' item.product_id %}"><img src="{{item.image}}" alt="Product Image" style="height: 100px;"></a></td>
+      <td><a style="color: black;" href="{% url 'view_product' item.product_id %}">{{item.product_name}} <br>{{item.unit}}</a></td>
+      
+      <td>
+        <div class="input-group quantity mb-5" style="width: 100px;">
+            <div class="input-group-btn">
+                <button data-cartid="{{item.id}}" class="btn btn-sm btn-minus rounded-circle bg-light border" >
+                    <i class="fa fa-minus"></i>
+                </button>
+            </div>
+            <input type="text" class="form-control form-control-sm text-center border-0" id="quantity{{item.id}}" value="{{item.quantity}}">
+            <div class="input-group-btn">
+                <button data-cartid="{{item.id}}" class="btn btn-sm btn-plus rounded-circle bg-light border">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </div>
+        </div>
+        
+        </td>
+      <td>₹{{item.price}}</td>
+    </tr>
+    {% endfor %}
+    
+  </tbody>
+</table>
+        </div>
+    </div>
+</div>
+    
+
+
+
+
+
+               
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(".btn-minus").on('click', function() {
+  var cartid = $(this).data('cartid');
+  var quantityInput = $("#quantity" + cartid);
+  var newQuantity = parseInt(quantityInput.val()); // Decrement quantity
+
+  if (newQuantity === 0) {
+    if (confirm("Are you sure you want to remove this item from your cart?")) {
+      quantityInput.val(newQuantity);
+      $.ajax({
+        url: "/user/update_cart/", // Use the appropriate URL for removing
+        type: "POST",
+        data: {
+          'cartid': cartid,
+          'quantity': newQuantity,
+
+          'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+        },
+        success: function(response) {
+          // Handle success, likely removing the item from the cart display
+        }
+      });
+    }
+  } else {
+    quantityInput.val(newQuantity);
+    $.ajax({
+      url: "/user/update_cart/",
+      type: "POST",
+      data: {
+        'cartid': cartid,
+        'quantity': newQuantity,
+        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+      },
+      success: function(response) {
+        // Handle success
+      }
+    });
+  }
+});
+
+
+$(".btn-plus").on('click', function() {
+    var cartid = $(this).data('cartid');
+    var quantityInput = $("#quantity" + cartid);
+    var newQuantity = parseInt(quantityInput.val());
+    quantityInput.val(newQuantity);
+
+    $.ajax({
+        url: "/user/update_cart/",  // Update this to your URL
+        type: "POST",
+        data: {
+            'cartid': cartid,
+            'quantity': newQuantity,
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+        },
+        success: function(response) {
+            // Handle success
+        }
+    });
+});
+
+    </script>
+    
+
+    {% endblock %}

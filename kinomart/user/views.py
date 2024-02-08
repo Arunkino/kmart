@@ -13,6 +13,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.contrib.auth import update_session_auth_hash
 
 # Create your views here.
 
@@ -52,7 +53,7 @@ def index(request):
             'category_name': category.category,
             'subcategories': subcategory_data,
         })
-    return render(request,'user/index.html',{'categories': category_data,})
+    return render(request,'user/index.html',{'categories': category_data,'count':9})
 
 def signup(request):
     if request.method=='POST':
@@ -378,7 +379,7 @@ def change_password(request):
         new_password2 = request.POST.get('new_password2')
 
         user = User.objects.get(email=request.session['user_email'])
-
+        
         # Validate old password
         if not user.check_password(old_password):
             return JsonResponse({'message': 'You have entered a wrong old password!!!'})
@@ -390,8 +391,41 @@ def change_password(request):
         # Edit user password
         user.set_password(new_password1)
         user.save()
+        update_session_auth_hash(request, user)
 
         return JsonResponse({'message': 'Password changed successfully!'})
+    
+@login_required
+def cart(request):
+    user=request.user
+    cart_items=Cart.objects.filter(user=user).order_by('id')
+    item_details=[]
+
+    for item in cart_items:
+        variant=item.product
+        quantity=item.quantity
+        price=item.price
+        product=variant.product_id
+        image=ProductImages.objects.filter(product_id=product).first()
+
+
+        item_details.append(
+            {
+                'id':item.id,
+                'product_name':product.product_name,
+                'product_id':product.id,
+                'image':image.image.url if image else None,
+                'quantity':quantity,
+                'unit':f'{variant.quantity}/{variant.unit}',
+                'price':price,
+
+            }
+        )
+        print("product_id",product.id)
+
+
+
+    return render(request,'user/cart.html',{'cart_items':item_details})
 
 
 # add_to_cart ajax call now from detail page
@@ -413,11 +447,25 @@ def add_to_cart(request):
 
         if not product_id or not quantity or not variantId or not user:
             return JsonResponse({'error': 'An error occured!!'})
-
         
 
+        # If the variant is already in the cart for same user, then we can add to that
+        cart_item = Cart.objects.filter(user=user, product=variantId).first()
+        var=ProductVarient.objects.get(id=variantId)
+
+
+                
+
         try:
-            var=ProductVarient.objects.get(id=variantId)
+            if cart_item:
+                print("cart already exists")
+                cart_item.quantity+=quantity
+                cart_item.price=var.price*cart_item.quantity
+                cart_item.save()
+                print("cart added")
+                return JsonResponse({'message': 'Product added to cart successfully!'})
+
+
             price=var.price*quantity
 
             new_cart=Cart.objects.create(user=user,product=var,quantity=quantity,price=price)
@@ -428,6 +476,48 @@ def add_to_cart(request):
         except:
             return JsonResponse({'message': 'Product not added to cart. Some error occured!!'})
 
+
+# cart quantity updating from the cart page
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def update_cart(request):
+    if request.method == 'POST':
+        cart_id = request.POST.get('cartid')
+        new_quantity = int(request.POST.get('quantity'))
+
+        print("cartid",cart_id)
+        print(new_quantity)
+
+            
+
+        # Fetch the cart item
+        cart_item = Cart.objects.get(id=cart_id)
+        if new_quantity==0:
+            cart_item.delete()
+            return JsonResponse({'message': 'Item removed from the cart!'})
+
+        product_variant = cart_item.product
+
+        # Update the quantity
+        cart_item.quantity = new_quantity
+        cart_item.price= new_quantity*product_variant.price
+        cart_item.save()
+
+        return JsonResponse({'message': 'Cart updated successfully!'})
+
+    else:
+        return JsonResponse({'error': 'Invalid request'})
+
         
+
+
+def cart_count(request):
+    if request.user.is_authenticated:
+        count = Cart.objects.filter(user=request.user).count()
+        return JsonResponse({'count': count})
+    else:
+        return JsonResponse({'count': 0})
 
         
