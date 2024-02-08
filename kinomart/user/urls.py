@@ -19,6 +19,7 @@ from django.urls import path,include
 from . import views
 
 
+
 urlpatterns = [
     path('', views.index,name='home'),
     path('signup/', views.signup,name='signup'),
@@ -37,6 +38,14 @@ urlpatterns = [
     path('order_history/', views.order_history, name='order_history'),
     path('wishlist/', views.wishlist, name='wishlist'),
     path('wallet/', views.wallet, name='wallet'),
+
+
+
+
+    path('add_to_cart/', views.add_to_cart, name='add_to_cart'),
+
+
+
     
 
     

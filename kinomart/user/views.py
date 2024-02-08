@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from . models import User,UserAddress
-from products.models import Category,ProductImages,Products
+from . models import User,UserAddress,Cart
+from products.models import Category,ProductImages,Products,ProductVarient
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth import get_user_model,authenticate,login,logout
@@ -392,4 +392,42 @@ def change_password(request):
         user.save()
 
         return JsonResponse({'message': 'Password changed successfully!'})
-    
+
+
+# add_to_cart ajax call now from detail page
+@csrf_exempt
+def add_to_cart(request):
+    if request.method == 'POST':
+
+        product_id = int(request.POST.get('product_id'))
+        quantity = int(request.POST.get('quantity'))
+        variantId = int(request.POST.get('variantId'))
+
+# finding rate from database, not from template.
+        
+        if not request.user.is_authenticated:
+            messages.info(request,'You need to login first for adding items to the cart')
+
+            return JsonResponse({'error': 'login_required'})
+        user=request.user
+
+        if not product_id or not quantity or not variantId or not user:
+            return JsonResponse({'error': 'An error occured!!'})
+
+        
+
+        try:
+            var=ProductVarient.objects.get(id=variantId)
+            price=var.price*quantity
+
+            new_cart=Cart.objects.create(user=user,product=var,quantity=quantity,price=price)
+            new_cart.save()
+            print("cart added")
+            return JsonResponse({'message': 'Product added to cart successfully!'})
+
+        except:
+            return JsonResponse({'message': 'Product not added to cart. Some error occured!!'})
+
+        
+
+        

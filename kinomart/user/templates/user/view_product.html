@@ -106,14 +106,17 @@
                                             <i class="fa fa-minus"></i>
                                         </button>
                                     </div>
-                                    <input type="text" class="form-control form-control-sm text-center border-0" value="1">
+                                    <input type="text" class="form-control form-control-sm text-center border-0" id="quantity" value="1">
                                     <div class="input-group-btn">
                                         <button class="btn btn-sm btn-plus rounded-circle bg-light border">
                                             <i class="fa fa-plus"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <a href="" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                <a href="" data-product-id="{{product.id}}" class="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary add-to-cart">
+                                    <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                                </a>
+                                
                             </div>
 
 
@@ -483,7 +486,7 @@
                                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt</p>
                                 <div class="d-flex justify-content-between flex-lg-wrap">
                                     <p class="text-dark fs-5 fw-bold">$4.99 / kg</p>
-                                    <a href="#" class="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                    <a href="" class="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
                                 </div>
                             </div>
                         </div>
@@ -593,4 +596,46 @@
     
 
         <!-- Footer Start -->
+       {% endblock %}
+
+       {% block scripts %}
+<script>
+   $(document).ready(function() {
+    $(".add-to-cart").click(function(e) {
+        e.preventDefault();
+
+        var quantity = $("#quantity").val();
+
+        // Get the product id
+        var productId = $(this).data("product-id");
+
+        // Get the id of the currently active variant
+        var variantId = $(".nav-pills .active").attr("id").split('-')[2];
+
+        // AJAX request to add to cart
+        $.ajax({
+            url: "{% url 'add_to_cart' %}",
+            type: "POST",
+            data: {
+                product_id: productId,
+                quantity: quantity,  // Include the quantity in the data
+                variantId: variantId,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function(response) {
+        if(response.error === 'login_required') {
+            window.location.href = "{% url 'login_user' %}";
+        } else if(response.message) {
+            alert(response.message);
+        }
+    }
+        });
+    });
+});
+
+
+
+</script>
+
+
        {% endblock %}
