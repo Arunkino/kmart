@@ -34,6 +34,8 @@ class Products(models.Model):
     brand=models.ForeignKey(Brand,on_delete=models.SET_NULL,null=True)
     is_offer=models.BooleanField(default=False)
     
+    def __str__(self) -> str:
+        return self.product_name
 
 class ProductImages(models.Model):
     image=models.ImageField()
@@ -48,3 +50,6 @@ class ProductVarient(models.Model):
     price=models.FloatField()
     product_id=models.ForeignKey(Products,on_delete=models.CASCADE, related_name='varients')
     is_holded=models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f'{self.product_id}'

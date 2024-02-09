@@ -321,8 +321,56 @@ def default_address(request):
 
 def order_history(request):
 
+    user=request.user
+    orders=Order.objects.filter(user=user).prefetch_related('items')
 
-    return render(request,'user/order_history.html')
+    orders_list=[]
+    for order in orders:
+        order_id=order.id
+        order_date=order.order_date
+        total=order.total_price
+        payment_method=order.payment_method
+        status=order.status
+
+        item_details=[]
+
+        for item in order.items.all():
+            image=ProductImages.objects.filter(product_id=item.product.product_id.id).first()
+
+            product=item.product
+            product_id=product.product_id.id
+            quantity=item.quantity
+            price=item.price
+            item_details.append(
+                {
+                    'product':product,
+                    'product_id':product_id,
+                    'quantity':quantity,
+                    'price':price,
+                    'image':image,
+                    
+
+
+                }
+            )
+
+        
+
+        orders_list.append(
+            {
+                'order_id':order_id,
+                'order_date':order_date,
+                'total':total,
+                'payment_method':payment_method,
+                'status':status,
+
+                'items':item_details,
+
+            }
+        )
+
+            
+    return render(request,'user/order_history.html',{'orders':orders_list,})
 
 
 def wishlist(request):

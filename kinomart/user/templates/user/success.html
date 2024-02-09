@@ -1,1 +1,45 @@
-<h3>Success</h3>
+{% extends 'user/theme.html' %}
+
+{% load static %}
+{% block content %}
+
+<div class="row">
+    <br><br><br><br><br><br><br>
+</div>
+<div class="row">
+    <div class="col-md-1"></div>
+<div class="col-md-4 bg-white rounded-4 mt-5 p-3">
+  
+  
+
+    {% if messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {% for message in messages %}
+           {{message}}
+
+        {% endfor %}
+       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+     </div>
+     {% endif %}
+
+     <br><br><br><br><br><h2 style="margin-left: 50px; color:rgb(0, 114, 19);">Order Placed Successfully</h2>
+
+    
+    </div>
+    
+
+    <!-- image section started -->
+    <div class="col-md-5">
+        
+       <img style="width: 100%;" src="{% static 'img/banner-fruits.jpg' %}" alt="">
+    </div>
+    
+
+<!-- end of image section -->
+</div>
+
+
+
+
+
+{% endblock %}

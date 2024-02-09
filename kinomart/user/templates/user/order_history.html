@@ -28,10 +28,58 @@
 
 
 
-
-
-
             <h1>Order history page</h1>
+
+    
+
+{% for order in orders %}
+    <h2>Order ID: {{ order.order_id }}</h2>
+    <p>Order Date: {{ order.order_date }}</p>
+    <p>Total Price: ₹{{ order.total }}</p>
+    <p>Payment Method: {{ order.payment_method }}</p>
+    <!-- <p>Delivery Instructions: {{ order.delivery_instructions }}</p> -->
+    <p>Status: {{ order.status }}</p>
+    <button class="btn btn-outline-secondary toggleButton" data-orderid="{{ order.order_id }}">Show Details</button>
+    <div class="details" id="details{{ order.order_id }}" style="display: none;">
+    
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Product Image</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+
+                    <tr>
+                        {% if item.image %}
+
+                        <td><a href="{% url 'view_product' item.product_id %}"><img src="{{ item.image.image.url }}" alt="Product Image" style="height: 50px;"></a></td>
+                        {% endif %}
+                        
+                        <td><a style="color: black;" href="{% url 'view_product' item.product_id %}">{{item.product}}</a></td>
+                        <td>{{ item.quantity }}</td>
+                        <td>₹{{ item.price }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endfor %}
+
+
+
+            
+
+
+
+
+
         </div>
     </div>
 </div>
@@ -48,8 +96,20 @@
 
 {% block scripts %}
 <script>
-   
-    </script>
-    
+$(document).ready(function(){
+    $(".toggleButton").click(function(){
+        var orderId = $(this).data("orderid");
+        var detailsDiv = $("#details" + orderId);
+        
+        if (detailsDiv.is(":visible")) {
+            detailsDiv.fadeOut();
+            $(this).text("Show Details");
+        } else {
+            detailsDiv.fadeIn();
+            $(this).text("Hide Details");
+        }
+    });
+});
+</script>
 
     {% endblock %}
