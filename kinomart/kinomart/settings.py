@@ -32,13 +32,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user.apps.UserConfig'
+    'user.apps.UserConfig',
+    'admin.apps.AdminAppConfig',
+    'products.apps.ProductsConfig'
 ]
 
 MIDDLEWARE = [
@@ -56,7 +59,8 @@ ROOT_URLCONF = 'kinomart.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'kinomart','templates')],
+        'DIRS': [],
+        # 'DIRS': [os.path.join(BASE_DIR,'kinomart','templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,8 +81,11 @@ WSGI_APPLICATION = 'kinomart.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'kinomart',
+        'USER': 'postgres',
+        'PASSWORD' : '1234',
+        'HOST' : 'localhost'
     }
 }
 
@@ -121,10 +128,36 @@ STATICFILES_DIRS = [
     BASE_DIR / 'kinomart'/'templates',
 ]
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'kinomart/media')
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
+
+AUTH_USER_MODEL = 'user.User'
+
+
+AUTHENTICATION_BACKENDS = [
+    'user.email_or_phone.EmailPhoneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
+# for email verification while signup
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'arunsubrahmanyan@gmail.com'
+EMAIL_HOST_PASSWORD = 'vbfthvmzqzjiifhl'
+
+

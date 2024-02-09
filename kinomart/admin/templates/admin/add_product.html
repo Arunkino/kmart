@@ -1,0 +1,217 @@
+{% extends 'admin/admin_theme.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="card mb-4 mt-5 pt-3 col-md-8">
+        <div class="card-header">
+            
+            <i class="fa-solid fa-boxes-stacked"></i>
+            
+            Add New Product
+        </div>
+        <div class="card-body">
+            
+            <form action="{% url 'add_product' %}" method="post" enctype="multipart/form-data">
+
+                {% csrf_token %}
+            <div class="mb-1">
+            
+            <label for="first_name" class="form-label">Product Name</label>
+            <br>
+            <input type="text" class="form-control" id="product_name" name="product_name" > 
+            </div>
+
+            <div class="mb-1">
+            
+                <label for="first_name" class="form-label">Description</label>
+                <br>
+                <input type="text" class="form-control" id="description" name="description" > 
+            </div>
+
+            <div class="mb-1">
+            
+                <label for="is_offer" class="form-label">Special Offer</label>
+                <br>
+                <label for="choice1" class="form-label">Yes</label>
+
+                <input type="radio" class="" id="choice1" name="is_offer" value="True" > 
+                <label for="choice2" class="form-label">No</label>
+
+                <input type="radio"  id="choice2" name="is_offer" value="False" checked > 
+            </div>
+            
+              
+            
+            <div class="mb-1">
+                <div class="row">
+                    <div class="col-md-4 col-sm-4">
+                        <label for="category" class="form-label">Category</label>
+                    <br>
+                    <select name="category" id="category">
+                          {% for category in categories %}
+                              <option value="{{ category.id }}">{{ category.category }}</option>
+                          {% endfor %}
+                    </select>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <label for="sub_category" class="form-label">Sub Category</label>
+                    <br>
+                    <select name="sub_category" id="sub_category">
+                          {% for sub_category in sub_categories %}
+                              <option value="{{ sub_category.id }}">{{ sub_category.sub_category }}</option>
+                          {% endfor %}
+                    </select>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <label for="brand" class="form-label">Brand</label>
+                    <br>
+                    <select name="brand">
+                           
+
+                          {% for brand in brands %}
+                              <option value="{{ brand.id }}">{{ brand.brand_name }}</option>
+                          {% endfor %}
+                    </select>
+                    </div>
+                </div>
+                
+                
+            </div>
+                
+
+                <label class="form-label" for="customFile">Upload Images</label>
+                <input type="file" class="form-control" id="image1" name="image1" />
+                <input type="file" class="form-control" id="image2" name="image2" />
+                <input type="file" class="form-control" id="image3" name="image3" />
+                <br>
+<!-- adding varients dynamically -->
+
+                <div class="mb-1">
+            
+                    <label for="" class="form-label">Varient</label>
+                    <button class="btn btn-sm btn-outline-success" type="button" id="addButton"><i class="fa-solid fa-plus"></i>Add</button>
+                    <br>
+                    <div id="variantContainer">
+                        <div class="variant" style="display: flex; justify-content: space-between;">
+                            <input type="text" class="form-control" name="quantity1" placeholder="Quantity" required>
+                            <select name="unit1">
+                                {% for unit in units %}
+                                    <option class="form-control" value="{{ unit.id }}">{{ unit.unit }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="text" name="stock1" class="form-control" placeholder="Stock" required>
+                            <input type="text" name="price1" class="form-control" placeholder="Price" required>
+                            <!-- Add more fields as needed -->
+                        </div>
+                        
+                    </div>
+
+                    
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+                
+                <input type="hidden" id="variantCount" name="variantCount" value="1">
+                <button class="btn btn-secondary" type="submit">Upload</button>
+
+                
+               
+
+
+            </form>
+
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+    
+    
+    $(document).ready(function() {
+        var variantCount = 1;
+        $('#addButton').click(function() {
+            variantCount++;
+            var newVariant = '<div class="variant" style="display: flex; justify-content: space-between;">' +
+                '<input type="text" placeholder="Quantity" class="form-control" name="quantity' + variantCount + '">' +
+                '<select name="unit'+variantCount+'">'+
+                                '{% for unit in units %}'+
+                                    '<option value="{{ unit.id }}">{{ unit.unit }}</option>'+
+                                '{% endfor %}'+
+                            '</select>'+
+                '<input type="text" class="form-control" placeholder="Stock" name="stock' + variantCount + '">' +
+                '<input type="text" class="form-control" placeholder="Price" name="price' + variantCount + '">' +
+                '<button class="remove-variant btn btn-sm btn-outline-danger"><i class="fa-solid fa-xmark"></i></button>' +
+                '</div>';
+            $('#variantContainer').append(newVariant);
+            $('#variantCount').val(variantCount);
+        });
+
+        $(document).on('click', '.remove-variant', function() {
+        $(this).closest('.variant').remove();  
+        variantCount--;
+        $('#variantCount').val(variantCount);
+
+        });
+
+
+
+        $('#category').change(function() {
+console.log('Category changed'); // Add this line
+
+var url = "/admin/ajax_load_subcategories/";  // get the url of the `load_subcategories` view
+var categoryId = $(this).val();  // get the selected category ID from the HTML input
+
+$.ajax({                       // initialize an AJAX request
+url: url,                    // set the url of the request (= /hr/ajax/load-subcategories/)
+data: {
+    'category': categoryId       // add the category id to the GET parameters
+},
+success: function (data) {   // `data` is the return of the `load_subcategories` view function
+    $("#sub_category").html(data);  // replace the contents of the subcategory input with the data that came from the server
+},
+error: function (jqXHR, textStatus, errorThrown) { // Add this
+    console.log(textStatus, errorThrown);
+},
+complete: function (jqXHR, textStatus) { // And this
+    console.log('AJAX call completed with status: ' + textStatus);
+}
+
+
+
+
+
+
+
+        });
+
+    });
+
+
+
+
+    });
+    </script>
+
+
+
+{% endblock %}
