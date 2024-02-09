@@ -83,22 +83,53 @@
 
             </div>
             <div class="col-md-4">
-              <table class="table">
-                  <tbody>
-                      <tr>
-                          <td>Products total</td>
-                          <td>₹{{ product_total }}</td>
-                      </tr>
-                      <tr>
-                          <td>Delivery Charge</td>
-                          <td>₹{{ delivery }}</td>
-                      </tr>
-                      <tr>
-                          <th scope="row">Total</th>
-                          <th scope="row"><strong>₹{{total}}</strong></th>
-                      </tr>
-                  </tbody>
-              </table>
+
+
+              
+                
+                    <!-- <div class="bg-light rounded">
+                        <div class="p-4">
+                            <h1 class="display-6 mb-4">Cart <span class="fw-normal">Total</span></h1>
+                            <div class="d-flex justify-content-between mb-4">
+                                <h5 class="mb-0 me-4">Subtotal:</h5>
+                                <p class="mb-0">$96.00</p>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <h5 class="mb-0 me-4">Shipping</h5>
+                                <div class="">
+                                    <p class="mb-0">Flat rate: $3.00</p>
+                                </div>
+                            </div>
+                            <p class="mb-0 text-end">Shipping to Ukraine.</p>
+                        </div>
+                        <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
+                            <h5 class="mb-0 ps-4 me-4">Total</h5>
+                            <p class="mb-0 pe-4">$99.00</p>
+                        </div> -->
+                        
+                    <table class="table">
+                      <tbody>
+                          <tr>
+                              <td>Products total</td>
+                              <td>₹{{ product_total }}</td>
+                          </tr>
+                          <tr>
+                              <td>Delivery Charge</td>
+                              <td>₹{{ delivery }}</td>
+                          </tr>
+                          <tr>
+                              <th scope="row">Total</th>
+                              <th scope="row"><strong>₹{{total}}</strong></th>
+                          </tr>
+                      </tbody>
+                  </table>
+
+
+
+
+
+
+              
               <br><hr><br>
               <h3>Delevery Address</h3><hr>
               <p>{{address.address_line}}</p>
@@ -107,8 +138,10 @@
               <p>PIN:{{address.pin}}</p>
               <p>Mob:{{address.user_id.phone}}</p>
 
-              <a href="{% url 'user_address' %}" class="btn btn-outline-secondary">Change Address</a>
-              <a href="{% url 'user_address' %}" class="btn btn-outline-primary">Proceed to Payment</a>
+              <a href="{% url 'user_address' %}" class="btn btn-outline-secondary">Change Address</a><br><br>
+              
+              <button data-bs-toggle="modal" data-bs-target="#checkout" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</button>
+              
 
             </div>
           </div>
@@ -120,8 +153,76 @@
 
 
 
+<!-- model for checkout -->
+<div class="modal fade" id="checkout" tabindex="-1" role="dialog" aria-labelledby="checkoutLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+      <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Checkout Page</h5>
+          <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+          </button>
+      </div>
+      <div class="modal-body">
+          <!-- Your form goes here -->
+          <form class="checkout-form" action="{% url 'checkout' %}" method="post">
+          {% csrf_token %}
 
+          <table class="table">
+            <tbody>
+                <tr>
+                    <td>Products total</td>
+                    <td>₹{{ product_total }}</td>
+                </tr>
+                <tr>
+                    <td>Delivery Charge</td>
+                    <td>₹{{ delivery }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Total</th>
+                    <th scope="row"><strong>₹{{total}}</strong></th>
+                </tr>
+            </tbody>
+        </table>
+          <div class="form-group">
+              <h6>Choose Payment Option</h6><hr>
 
+              <input type="radio" id="card" name="payment" value="card" >
+              <label for="card">Credit/Debit card</label><br>
+
+              <input type="radio" id="upi" name="payment" value="upi" >
+              <label for="upi">BHIM UPI</label><br>
+
+              <input type="radio" id="wallet" name="payment" value="wallet" >
+              <label for="wallet">Wallet</label><br>
+
+              <input type="radio" id="cod" name="payment" value="cod" >
+              <label for="cod">Cash on Delivery</label><br>
+          
+          </div>
+          <hr>
+          
+          
+          <div class="form-group">
+              <label for="instructions">Delivery Instructions</label>
+              <input type="text" class="form-control" id="instructions" name="instructions" placeholder="Preffered time for delivery or any other instructions">
+          </div>
+          
+          
+          <!-- Add more fields as needed -->
+          <div class="modal-footer">
+
+            <input type="hidden" name="total_price" value="{{total}}">
+          <button type="submit" id="" class="btn btn-primary">Confirm Order</button>
+
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+          </form>
+      </div>
+      
+      </div>
+  </div>
+  </div>
                
 <style>
   .table td {

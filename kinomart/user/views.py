@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from . models import User,UserAddress,Cart
+from . models import User,UserAddress,Cart,Order,OrderItem
 from products.models import Category,ProductImages,Products,ProductVarient
 from django.contrib import messages
 from django.db.models import Q
@@ -401,6 +401,8 @@ def cart(request):
     cart_items=Cart.objects.filter(user=user).order_by('id')
     item_details=[]
     product_total=0
+    delivery=50
+
 
     address = UserAddress.objects.filter(Q(user_id=user) & Q(is_default=True)).first()
     print(address)
@@ -410,7 +412,6 @@ def cart(request):
         quantity=item.quantity
         price=item.price
         product_total+=price
-        delivery=50
 
         product=variant.product_id
         image=ProductImages.objects.filter(product_id=product).first()
@@ -526,5 +527,28 @@ def cart_count(request):
         return JsonResponse({'count': count})
     else:
         return JsonResponse({'count': 0})
+    
+
+def checkout(request):
+    if request.method == 'POST':
+        user=request.user
+        payment_method=request.POST['payment']
+        
+        instructions=request.POST.get('instructions')
+        total_price=request.POST['total_price']
+
+        order=Order.objects.create(user=user,payment_method=payment_method,delivery_instructions=instructions,total_price=total_price)
+        
+
+
+        cart_items=Cart.objects.filter(user=user)
+
+        for item in cart_items:
+            OrderItem.objects.create(order=order,product=item.product,quantity=item.quantity,price=item.price)
+            
+        cart_items.delete()
+        return render(request, 'user/success.html', {'message': 'Order placed successfully!'})
+
+
 
         
