@@ -400,11 +400,18 @@ def cart(request):
     user=request.user
     cart_items=Cart.objects.filter(user=user).order_by('id')
     item_details=[]
+    product_total=0
+
+    address = UserAddress.objects.filter(Q(user_id=user) & Q(is_default=True)).first()
+    print(address)
 
     for item in cart_items:
         variant=item.product
         quantity=item.quantity
         price=item.price
+        product_total+=price
+        delivery=50
+
         product=variant.product_id
         image=ProductImages.objects.filter(product_id=product).first()
 
@@ -421,11 +428,11 @@ def cart(request):
 
             }
         )
-        print("product_id",product.id)
+        
 
 
 
-    return render(request,'user/cart.html',{'cart_items':item_details})
+    return render(request,'user/cart.html',{'cart_items':item_details,'product_total':product_total,'delivery':delivery,'total':product_total+delivery,'address':address})
 
 
 # add_to_cart ajax call now from detail page

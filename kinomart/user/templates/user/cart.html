@@ -24,48 +24,95 @@
             </ul>
         </div>
         <!-- Main Content -->
-        <div class="col-md-9">
+        <div class="col-md-9 ">
+
+          <h3>Your Cart</h3>
+
+
+
+          {% if not cart_items %}
+          <br><br>
+          <div class="col-md-6 offset-md-3">
+            <h4>Your cart is empty... <br> <a href="/user/#tab-all">Add items to cart</a></h4>
+          </div>
+
+
+          {% else %}
 
 
 
 
-
-
-            <h1>Cart Page</h1>
+            
+          <div class="row">
+            <div class="col-md-8">
          
-<table class="table table-striped">
-  <thead>
-    
-  </thead>
-  <tbody>
-    
-    {% for item in cart_items %}
-    <tr>
-      <td><a href="{% url 'view_product' item.product_id %}"><img src="{{item.image}}" alt="Product Image" style="height: 100px;"></a></td>
-      <td><a style="color: black;" href="{% url 'view_product' item.product_id %}">{{item.product_name}} <br>{{item.unit}}</a></td>
-      
-      <td>
-        <div class="input-group quantity mb-5" style="width: 100px;">
-            <div class="input-group-btn">
-                <button data-cartid="{{item.id}}" class="btn btn-sm btn-minus rounded-circle bg-light border" >
-                    <i class="fa fa-minus"></i>
-                </button>
+              <table class="table table-striped">
+                <thead>
+                  
+                </thead>
+                <tbody>
+                  
+                  {% for item in cart_items %}
+                  <tr>
+                    <td><a href="{% url 'view_product' item.product_id %}"><img src="{{item.image}}" alt="Product Image" style="height: 100px;"></a></td>
+                    <td><a style="color: black;" href="{% url 'view_product' item.product_id %}">{{item.product_name}} <br>{{item.unit}}</a></td>
+                    
+                    <td>
+                      <div class="input-group quantity mb-5" style="width: 100px;">
+                          <div class="input-group-btn">
+                              <button data-cartid="{{item.id}}" class="btn btn-sm btn-minus rounded-circle bg-light border" >
+                                  <i class="fa fa-minus"></i>
+                              </button>
+                          </div>
+                          <input type="text" class="form-control form-control-sm text-center border-0" id="quantity{{item.id}}" value="{{item.quantity}}">
+                          <div class="input-group-btn">
+                              <button data-cartid="{{item.id}}" class="btn btn-sm btn-plus rounded-circle bg-light border">
+                                  <i class="fa fa-plus"></i>
+                              </button>
+                          </div>
+                      </div>
+                      
+                      </td>
+                    <td>₹{{item.price}}</td>
+                  </tr>
+                  {% endfor %}
+                  
+                </tbody>
+              </table>
+            <h5><a href="/user/#tab-all">Continue Shopping -></a></h5>
+
             </div>
-            <input type="text" class="form-control form-control-sm text-center border-0" id="quantity{{item.id}}" value="{{item.quantity}}">
-            <div class="input-group-btn">
-                <button data-cartid="{{item.id}}" class="btn btn-sm btn-plus rounded-circle bg-light border">
-                    <i class="fa fa-plus"></i>
-                </button>
+            <div class="col-md-4">
+              <table class="table">
+                  <tbody>
+                      <tr>
+                          <td>Products total</td>
+                          <td>₹{{ product_total }}</td>
+                      </tr>
+                      <tr>
+                          <td>Delivery Charge</td>
+                          <td>₹{{ delivery }}</td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Total</th>
+                          <th scope="row"><strong>₹{{total}}</strong></th>
+                      </tr>
+                  </tbody>
+              </table>
+              <br><hr><br>
+              <h3>Delevery Address</h3><hr>
+              <p>{{address.address_line}}</p>
+              <p>{{address.landmark}}</p>
+              <p>{{address.city}}</p>
+              <p>PIN:{{address.pin}}</p>
+              <p>Mob:{{address.user_id.phone}}</p>
+
+              <a href="{% url 'user_address' %}" class="btn btn-outline-secondary">Change Address</a>
+              <a href="{% url 'user_address' %}" class="btn btn-outline-primary">Proceed to Payment</a>
+
             </div>
-        </div>
-        
-        </td>
-      <td>₹{{item.price}}</td>
-    </tr>
-    {% endfor %}
-    
-  </tbody>
-</table>
+          </div>
+{% endif %}
         </div>
     </div>
 </div>
@@ -76,7 +123,11 @@
 
 
                
-
+<style>
+  .table td {
+      vertical-align: middle;
+  }
+</style>
 
 {% endblock %}
 
