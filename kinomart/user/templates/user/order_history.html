@@ -28,18 +28,32 @@
 
 
 
-            <h1>Order history page</h1>
+            <h3 style="color: rgb(18, 146, 16);">Order history page</h3>
+            <hr>
 
     
 
 {% for order in orders %}
-    <h2>Order ID: {{ order.order_id }}</h2>
-    <p>Order Date: {{ order.order_date }}</p>
-    <p>Total Price: ₹{{ order.total }}</p>
-    <p>Payment Method: {{ order.payment_method }}</p>
-    <!-- <p>Delivery Instructions: {{ order.delivery_instructions }}</p> -->
-    <p>Status: {{ order.status }}</p>
-    <button class="btn btn-outline-secondary toggleButton" data-orderid="{{ order.order_id }}">Show Details</button>
+            <div class="row">
+                <div class="col-md-5" style="margin-left: 30px; border-left: solid rgb(32, 134, 3) 2px; padding-left: 30px;">
+                    <h6>Order ID: {{ order.order_id }}</h6>
+                    <p>Order Date: {{ order.order_date }}</p>
+                    <p>Delivery Expected on: 01/01/2026</p>
+                    <p>Total Price: ₹{{ order.total }}</p>
+                </div>
+                <div class="col-md-6" style="border-left: solid rgb(32, 134, 3) 2px; padding-left: 30px;">
+                    <p>Payment Method: {{ order.payment_method }}</p>
+                    <!-- <p>Delivery Instructions: {{ order.delivery_instructions }}</p> -->
+                    <p>Status: {{ order.status }}{% if order.status == 'Pending' %}
+                        <button class="btn btn-danger btn-sm" style="margin-left: 15px;">cancel order</button>
+                        {% endif %}</p>
+                    
+                    <button class="btn btn-outline-secondary btn-sm toggleButton" data-orderid="{{ order.order_id }}">Show Details</button>
+                    
+                </div>
+            </div>
+            <hr>
+    
     <div class="details" id="details{{ order.order_id }}" style="display: none;">
     
 

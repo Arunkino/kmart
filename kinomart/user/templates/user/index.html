@@ -158,7 +158,8 @@
                                                     <p>{{product.description}}</p>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         <p class="text-dark fs-5 fw-bold mb-0">₹{{product.price}} / {{product.quantity}}{{product.unit}}</p>
-                                                        <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                        <a href="" data-product-id="{{product.product_id}}" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-cart"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                        
                                                     </div>
                                                 </div>
                                             </div>
@@ -202,7 +203,7 @@
                                                     <p>{{product.description}}</p>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         <p class="text-dark fs-5 fw-bold mb-0">₹{{product.price}} / {{product.quantity}}{{product.unit}}</p>
-                                                        <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                        <a href="" data-product-id="{{product.product_id}}" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-cart"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -779,5 +780,58 @@
         </div>
         <!-- Tastimonial End -->
 
+
+       {% endblock %}
+       {% block scripts %}
+       <script>
+        $(document).ready(function() {
+    $(".add-to-cart").click(function(e) {
+        e.preventDefault();
+
+        var quantity = 1;
+
+        // Get the product id
+        var productId = $(this).data("product-id");
+
+        // Get the id of the currently active variant
+        var variantId = $(this).data("variant-id");
+
+        // AJAX request to add to cart
+        $.ajax({
+            url: "{% url 'add_to_cart' %}",
+            type: "POST",
+            data: {
+                product_id: productId,
+                quantity: quantity,  // Include the quantity in the data
+                variantId: variantId,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function(response) {
+        if(response.error === 'login_required') {
+            window.location.href = "{% url 'login_user' %}";
+        } else if(response.message) {
+            // alert(response.message);
+
+// for changing the count on cart icon
+            updateCartCount();
+        }
+    }
+        });
+    });
+});
+
+function updateCartCount() {
+    // AJAX request to get the cart count
+    $.ajax({
+        url: "{% url 'cart_count' %}",
+        type: "GET",
+        success: function(response) {
+            // Update the count on the page
+            $(".cart-count").text(response.count);
+        }
+    });
+}
+    
+       </script>
 
        {% endblock %}

@@ -31,9 +31,11 @@
 
 
           {% if not cart_items %}
-          <br><br>
+          
           <div class="col-md-6 offset-md-3">
-            <h4>Your cart is empty... <br> <a href="/user/#tab-all">Add items to cart</a></h4>
+            <img style="height: 60vb;" src="{% static 'img/empty_cart.jpg' %}" alt="">
+            <h5>Your cart is empty...  <a href="/user/#tab-all">Add items to cart</a></h5>
+
           </div>
 
 
@@ -54,7 +56,7 @@
                   
                   {% for item in cart_items %}
                   <tr>
-                    <td><a href="{% url 'view_product' item.product_id %}"><img src="{{item.image}}" alt="Product Image" style="height: 100px;"></a></td>
+                    <td><a href="{% url 'view_product' item.product_id %}"><img src="{{item.image}}" alt="Product Image" style="height: 70px;"></a></td>
                     <td><a style="color: black;" href="{% url 'view_product' item.product_id %}">{{item.product_name}} <br>{{item.unit}}</a></td>
                     
                     <td>

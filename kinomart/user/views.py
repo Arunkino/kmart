@@ -34,6 +34,7 @@ def index(request):
     
                 product_data.append({
                     'product_id': product.id,
+                    'variant_id':variant.id,
                     'product_name': product.product_name,
                     'description': product.description,
                     'price': variant.price,
