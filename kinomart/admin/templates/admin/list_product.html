@@ -4,7 +4,7 @@
 {% block content %}
 <div class="card mb-4">
     <div class="card-header">
-        <i class="fa-solid fa-users"></i>
+        <i class="fa-solid fa-list"></i>
         PRODUCTS LIST
     
     </div>
@@ -100,7 +100,8 @@
                     <td>{{variant.stock}}</td>
                     <td>{{variant.price}}</td>
                     <td><img src="{{variant.image}}" style="height: 50px;" alt=""></td>
-                    <td>edit/hold</td>
+                    <td><a href="{% url 'edit_product' variant.id %}" title="edit" class="btn btn-sm  btn-outline-secondary " ><i class="fa-solid fa-pencil"></i></a>
+                        <a href="{% url 'hold_product' variant.id %}" title="hold" class="btn btn-sm btn-close btn-outline-danger"></a></td>
                        
                 </tr>
                 {% endfor %}

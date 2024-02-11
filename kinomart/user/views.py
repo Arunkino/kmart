@@ -76,6 +76,11 @@ def signup(request):
         city=request.POST['city']
         landmark=request.POST['landmark']
         pin=request.POST['pin']
+        if not pin.isdigit():
+            messages.info(request,'Pincode must be numeric')
+
+            return redirect('signup')
+
         
         if password != request.POST['password2']:
             messages.info(request,'Password not matching!')
@@ -99,6 +104,7 @@ def signup(request):
                 message = f' Your otp for registration is {otp}'
                 email_from = settings.EMAIL_HOST_USER
                 recipient_list = [email,]   
+                print(otp)
                 send_mail( subject, message, email_from, recipient_list )
                 print("email send success")
                 request.session['user_id']=user.id
@@ -323,7 +329,7 @@ def default_address(request):
 def order_history(request):
 
     user=request.user
-    orders=Order.objects.filter(user=user).prefetch_related('items')
+    orders=Order.objects.filter(user=user).prefetch_related('items').order_by('-id')
 
     orders_list=[]
     for order in orders:
@@ -444,8 +450,11 @@ def change_password(request):
 
         return JsonResponse({'message': 'Password changed successfully!'})
     
-@login_required
+
 def cart(request):
+    if not request.user.is_authenticated:
+            messages.info(request,'You need to login first for adding items to the cart')
+            return redirect('login_user')
     user=request.user
     cart_items=Cart.objects.filter(user=user).order_by('id')
     item_details=[]
@@ -582,11 +591,12 @@ def checkout(request):
     if request.method == 'POST':
         user=request.user
         payment_method=request.POST['payment']
-        
+        address_id=request.POST['address_id']
         instructions=request.POST.get('instructions')
         total_price=request.POST['total_price']
 
-        order=Order.objects.create(user=user,payment_method=payment_method,delivery_instructions=instructions,total_price=total_price)
+        address=UserAddress.objects.get(id=address_id)
+        order=Order.objects.create(user=user,payment_method=payment_method,delivery_instructions=instructions,total_price=total_price,delivery_address=address)
         
 
 

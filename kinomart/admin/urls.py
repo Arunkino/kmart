@@ -25,6 +25,9 @@ urlpatterns = [
     path('users/', views.user_list,name='admin_userlist'),
     path('add_product/', views.add_product,name='add_product'),
     path('list_product/', views.list_product,name='list_product'),
+    path('edit_product/<int:id>', views.edit_product, name='edit_product'),
+    path('hold_product/<int:id>', views.hold_product, name='hold_product'),
+    path('admin_orders/', views.admin_orders,name='admin_orders'),
     path('index', views.index,name='index'),
     path('block/<int:id>/', views.block_user,name='block_user'), 
     path('users/unblock/<int:id>/', views.unblock_user,name='unblock_user'), 
@@ -37,6 +40,7 @@ urlpatterns = [
     path('update_subcategory/', views.update_subcategory,name='update_subcategory'), 
     path('add_subcategory/', views.add_subcategory,name='add_subcategory'), 
     path('ajax_load_subcategories/', views.load_subcategories, name='ajax_load_subcategories'),
+    path('update_order_status/', views.update_order_status, name='update_order_status'),
 
     
 ]

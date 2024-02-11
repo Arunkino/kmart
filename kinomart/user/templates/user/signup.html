@@ -89,7 +89,7 @@
           
          
 
-        <br><div class="d-flex justify-content-center"><button type="submit" class="btn btn-secondary">Submit</button></div>
+        <br><div class="d-flex justify-content-center"><button type="submit" class="btn btn-secondary">Sign Up</button></div>
         
       </form>
     </div>
@@ -97,9 +97,12 @@
 
     <!-- image section started -->
     <div class="col-md-5">
+
         
        <img src="{% static 'img/signup_img.svg' %}" alt="">
-    </div>
+       <p style="margin-left: 50px;">If you already have an account <br> You can <a href="{% url 'login_user' %}">Sign in Here</a></p>
+
+      </div>
     
 
 <!-- end of image section -->

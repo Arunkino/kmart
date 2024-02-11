@@ -6,6 +6,8 @@ from products.models import ProductVarient
 class User(AbstractUser):
     
     phone = models.CharField(max_length=50)
+    def __str__(self) -> str:
+        return self.first_name
     
 
 class UserAddress(models.Model):
@@ -29,6 +31,7 @@ class   Order(models.Model):
     order_date = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     payment_method = models.CharField(max_length=20)
+    delivery_address=models.ForeignKey(UserAddress,on_delete=models.CASCADE,null=True)
     delivery_instructions = models.TextField(null=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, default='Pending')

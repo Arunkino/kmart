@@ -1,7 +1,9 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
-from user.models import User,UserAddress
+from user.models import User,UserAddress,Order,OrderItem
 from products.models import Category,SubCategory,ProductImages,Products,ProductVarient,Unit,Brand
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 # Create your views here.
 def index(request):
@@ -37,8 +39,7 @@ def logout(request):
 def user_list(request):
     if 'admin_email' in request.session:
 
-        users=User.objects.all()
-        add=UserAddress.objects.all()
+        users=User.objects.all().order_by('id')
         
         return render(request,'admin/userlist.html',{'users':users})
     return redirect('admin_login')
@@ -56,8 +57,9 @@ def list_product(request):
             images = ProductImages.objects.filter(product_id=product).first()
             image = images.image.url if images else None
             variant_data.append({
-                'id': product.id,
+                'id': variant.id,
                 'name': product.product_name,
+                'product_id':product.id,
                 'description': product.description,
                 'category': category.category,
                 'price': variant.price,
@@ -68,6 +70,25 @@ def list_product(request):
         return render(request, 'admin/list_product.html', {'variants': variant_data,'categories':categories})
     return redirect('admin_login')
 
+def edit_product(request,id):
+
+    varient = ProductVarient.objects.select_related('product_id', 'product_id__sub_category','product_id__brand', 'product_id__sub_category__category').get(id=id)
+    categories=Category.objects.all()
+    sub_categories=SubCategory.objects.all()
+    brands=Brand.objects.all().order_by('id')
+    images=ProductImages.objects.filter(product_id=varient.product_id)
+
+
+    return render(request,'admin/edit_product.html',{'varient':varient,'categories':categories,'sub_categories':sub_categories,'brands':brands,'images':images})
+
+def hold_product(request,id):
+    pass
+
+
+def admin_orders(request):
+
+    orders=Order.objects.all().order_by('-id')
+    return render(request, 'admin/orders.html',{'orders':orders})
 def block_user(request,id):
     if 'admin_email' in request.session:
 
@@ -288,3 +309,13 @@ def delete_category(request, id):
         return redirect('edit_categories')
     return redirect('admin_login')
     
+@csrf_exempt
+def update_order_status(request):
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id')
+        status = request.POST.get('status')
+
+        # update the order status
+        Order.objects.filter(id=order_id).update(status=status)
+
+        return JsonResponse({'status': 'success'})

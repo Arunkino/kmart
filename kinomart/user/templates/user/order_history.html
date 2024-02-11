@@ -38,15 +38,31 @@
                 <div class="col-md-5" style="margin-left: 30px; border-left: solid rgb(32, 134, 3) 2px; padding-left: 30px;">
                     <h6>Order ID: {{ order.order_id }}</h6>
                     <p>Order Date: {{ order.order_date }}</p>
+                    {% if order.status == 'Delivered' %}
+                    <p>Delivered on: 04/04/2024</p>
+                    {% else %}
                     <p>Delivery Expected on: 01/01/2026</p>
+                    {% endif %}
                     <p>Total Price: ₹{{ order.total }}</p>
                 </div>
                 <div class="col-md-6" style="border-left: solid rgb(32, 134, 3) 2px; padding-left: 30px;">
                     <p>Payment Method: {{ order.payment_method }}</p>
                     <!-- <p>Delivery Instructions: {{ order.delivery_instructions }}</p> -->
-                    <p>Status: {{ order.status }}{% if order.status == 'Pending' %}
+                    {% if order.status == 'Pending' %}
+                    <p>Status: <span style="color: rgb(167, 167, 3);">{{ order.status }}</span>
                         <button class="btn btn-danger btn-sm" style="margin-left: 15px;">cancel order</button>
-                        {% endif %}</p>
+                    </p>
+                    {% elif order.status == 'Dispatched' %}
+                    <p>Status: <span style="color: rgb(199, 108, 4);">{{ order.status }}</span>
+                        <button class="btn btn-danger btn-sm" style="margin-left: 15px;">cancel order</button>
+                    </p>
+                    {% else %}
+                    <p>Status: <span style="color: rgb(52, 208, 13);">{{ order.status }}</span>
+                        <button class="btn btn-secondary btn-sm" style="margin-left: 15px;">Return</button>
+                    </p>
+
+
+                        {% endif %}
                     
                     <button class="btn btn-outline-secondary btn-sm toggleButton" data-orderid="{{ order.order_id }}">Show Details</button>
                     
@@ -75,7 +91,7 @@
                         <td><a href="{% url 'view_product' item.product_id %}"><img src="{{ item.image.image.url }}" alt="Product Image" style="height: 50px;"></a></td>
                         {% endif %}
                         
-                        <td><a style="color: black;" href="{% url 'view_product' item.product_id %}">{{item.product}}</a></td>
+                        <td><a style="color: black;" href="{% url 'view_product' item.product_id %}">{{item.product}} - ({{item.product.quantity}}{{item.product.unit}})</a></td>
                         <td>{{ item.quantity }}</td>
                         <td>₹{{ item.price }}</td>
                     </tr>

@@ -1,0 +1,113 @@
+{% extends 'admin/admin_theme.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fa-solid fa-box"></i>
+        Orders
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Delivery Address</th>
+                            <th>Email</th>
+                            
+                            <th>Stutus</th>
+                            <!-- <th>Return/ <br>Cancel</th> -->
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        
+                    </tfoot>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{order.id}}</td>
+                            <td>{{order.user}}</td>
+                            <td>
+                                <ul>
+                                    {% for item in order.items.all %}
+                                    <li>{{item.product}} <br>{{item.product.quantity}}/{{item.product.unit}} - {{item.quantity}} Nos</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>₹{{order.total_price}}</td>
+                            <td>
+                                {{order.delivery_address.address_line}} <br>
+                                {{order.delivery_address.landmark}} <br>
+                                PIN: {{order.delivery_address.pin}} <br>
+                                {{order.delivery_address.city}} 
+        
+                            </td>
+                            <td>{{order.user.email}}</td>
+                            <td>
+                                <select class="status" data-order-id="{{order.id}}" name="status">
+                                    {% if order.status == 'Pending' %}
+                                    <option selected class="pending" value="Pending">Pending</option>
+                                    <option value="Dispatched">Dispatched</option>
+                                    <option value="Delivered">Delivered</option>
+                                
+                                    {% elif order.status == 'Dispatched' %}
+                                    <option selected class="dispatched" value="Dispatched">Dispatched</option>
+                                    <option value="Delivered">Delivered</option>
+                                
+                                    {% else %}
+                                    <option class="delivered" value="Delivered">Delivered</option>
+                                
+                                    {% endif %}
+                                </select>
+                                
+                            </td>
+                                 
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+   $(document).ready(function() {
+    $('.status').change(function() {
+        console.log("changed");
+
+        var status = $(this).val();
+        var orderId = $(this).data('order-id');
+        
+        $.ajax({
+            url: "{% url 'update_order_status' %}",  // update this with your URL
+            type: 'POST',
+            data: {
+                'order_id': orderId,
+                'status': status,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                // handle success
+                console.log(response);
+            },
+            error: function(response) {
+                // handle error
+                console.log(response);
+            }
+        });
+    });
+});
+
+</script>
+{% endblock %}
+

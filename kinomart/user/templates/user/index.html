@@ -187,28 +187,32 @@
                                         
 
                                         {% for sub in category.subcategories %}
-                                        {% for product in sub.products %}
+                                        
 
-                                        <div class="col-md-6 col-lg-4 col-xl-3" >
-                                            <div class="rounded position-relative fruite-item">
-                                                <div class="fruite-img">
-                                                    <a href="product/{{product.product_id}}"><img src="{{product.image}}" style="height: 300px;" class="img-fluid w-100 rounded-top" alt=""></a>
-                                                </div>
+{% for product in sub.products %}
+<div class="col-md-6 col-lg-4 col-xl-3">
+    <div class="rounded position-relative fruite-item">
+        <div class="fruite-img">
+            <a href="product/{{product.product_id}}"><img src="{{product.image}}" style="height: 300px;" class="img-fluid w-100 rounded-top" alt=""></a>
+        </div>
 
-                                                {% if product.is_offer %}
-                                                <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">Offer</div>
-                                                {% endif %}
-                                                <div class="p-4 border border-secondary border-top-0 rounded-bottom" style="height: 250px;">
-                                                    <h4>{{product.product_name}}</h4>
-                                                    <p>{{product.description}}</p>
-                                                    <div class="d-flex justify-content-between flex-lg-wrap">
-                                                        <p class="text-dark fs-5 fw-bold mb-0">₹{{product.price}} / {{product.quantity}}{{product.unit}}</p>
-                                                        <a href="" data-product-id="{{product.product_id}}" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-cart"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% endfor %}
+        {% if product.is_offer %}
+        <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">Offer</div>
+        {% endif %}
+        <div class="p-4 border border-secondary border-top-0 rounded-bottom d-flex flex-column" style="height: 250px;">
+            <h4>{{product.product_name}}</h4>
+            <p>{{product.description}}</p>
+            <div class="mt-auto text-center">
+                <p class="text-dark fs-5 fw-bold mb-0">₹{{product.price}} / {{product.quantity}}{{product.unit}}</p>
+                <a href="" data-product-id="{{product.product_id}}" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-cart"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+
                                         {% endfor %}
                                         
                                         
@@ -831,7 +835,7 @@ function updateCartCount() {
         }
     });
 }
-    
+
        </script>
 
        {% endblock %}
