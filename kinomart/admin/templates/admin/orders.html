@@ -11,7 +11,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <table id="datatablesSimple">
+                <table  class="table-class" id="table-id">
                     <thead>
                         <tr>
                             <th>Order ID</th>
@@ -22,15 +22,15 @@
                             <th>Email</th>
                             
                             <th>Stutus</th>
-                            <!-- <th>Return/ <br>Cancel</th> -->
-                        </tr>
+                            <th>Return/ <br>Cancel</th>
+                            
                     </thead>
                     <tfoot>
                         
                     </tfoot>
                     <tbody>
                         {% for order in orders %}
-                        <tr>
+                        <tr style="border: 2px solid red;">
                             <td>{{order.id}}</td>
                             <td>{{order.user}}</td>
                             <td>
@@ -50,23 +50,34 @@
                             </td>
                             <td>{{order.user.email}}</td>
                             <td>
-                                <select class="status" data-order-id="{{order.id}}" name="status">
+
+
+
+
                                     {% if order.status == 'Pending' %}
-                                    <option selected class="pending" value="Pending">Pending</option>
-                                    <option value="Dispatched">Dispatched</option>
-                                    <option value="Delivered">Delivered</option>
+                                    <select style="width: 120px;margin-left: 60px;" class="status btn btn-primary" data-order-id="{{order.id}}" name="status">
+
+                                        <option class="btn btn-primary" selected class="pending" value="Pending">Pending</option>
+                                        <option class="btn btn-warning" value="Dispatched">Dispatched</option>
+                                        <option class="btn btn-success" value="Delivered">Delivered</option>
+                                    </select>
                                 
                                     {% elif order.status == 'Dispatched' %}
-                                    <option selected class="dispatched" value="Dispatched">Dispatched</option>
-                                    <option value="Delivered">Delivered</option>
+                                    <select style="width: 125px;margin-left: 60px;" class="status btn btn-warning" data-order-id="{{order.id}}" name="status">
+
+                                    <option selected class="btn btn-warning" value="Dispatched">Dispatched</option>
+                                    <option class="btn btn-success" value="Delivered">Delivered</option>
+                                    </select>
                                 
                                     {% else %}
-                                    <option class="delivered" value="Delivered">Delivered</option>
+                                    
+                                    <BUtton style="width: 120px;margin-left: 60px;" class="btn btn-success">Delivered</BUtton>
                                 
                                     {% endif %}
-                                </select>
                                 
                             </td>
+                            <td>sdg</td>
+                            
                                  
                         </tr>
                         {% endfor %}

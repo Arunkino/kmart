@@ -54,7 +54,7 @@ def index(request):
             'category_name': category.category,
             'subcategories': subcategory_data,
         })
-    return render(request,'user/index.html',{'categories': category_data,'count':9})
+    return render(request,'user/index.html',{'categories': category_data,})
 
 def signup(request):
     if request.method=='POST':
@@ -433,7 +433,7 @@ def change_password(request):
         new_password1 = request.POST.get('new_password1')
         new_password2 = request.POST.get('new_password2')
 
-        user = User.objects.get(email=request.session['user_email'])
+        user =request.user
         
         # Validate old password
         if not user.check_password(old_password):
@@ -447,6 +447,8 @@ def change_password(request):
         user.set_password(new_password1)
         user.save()
         update_session_auth_hash(request, user)
+        
+
 
         return JsonResponse({'message': 'Password changed successfully!'})
     

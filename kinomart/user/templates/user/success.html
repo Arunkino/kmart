@@ -7,22 +7,23 @@
     <br><br><br><br><br><br><br>
 </div>
 <div class="row">
-    <div class="col-md-1"></div>
+    
 <div class="col-md-4 bg-white rounded-4 mt-5 p-3">
   
   
 
-    {% if messages %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        {% for message in messages %}
-           {{message}}
+    <!-- {% if messages %} -->
+    <div class="alert alert-Success alert-dismissible fade show" role="alert">
+        <!-- {% for message in messages %}
+           {{message}} -->
+           <h2 style="margin-left: 50px; color:rgb(0, 114, 19);">Order Placed Successfully</h2>
 
-        {% endfor %}
+        <!-- {% endfor %} -->
        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
      </div>
-     {% endif %}
+     <!-- {% endif %} -->
 
-     <br><br><br><br><br><h2 style="margin-left: 50px; color:rgb(0, 114, 19);">Order Placed Successfully</h2>
+    
 
     
     </div>
@@ -30,9 +31,10 @@
 
     <!-- image section started -->
     <div class="col-md-5">
-        
-       <img style="width: 100%;" src="{% static 'img/banner-fruits.jpg' %}" alt="">
-    </div>
+
+       
+       <a href="{% url 'home' %}"> <img style="width: 100%;" src="{% static 'img/order.jpg' %}" alt="Order Placed"></a>
+    
     
 
 <!-- end of image section -->
