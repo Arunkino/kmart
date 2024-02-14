@@ -34,7 +34,7 @@
           
           <div class="col-md-6 offset-md-3">
             <img style="height: 60vb;" src="{% static 'img/empty_cart.jpg' %}" alt="">
-            <h5>Your cart is empty...  <a href="/user/#tab-all">Add items to cart</a></h5>
+            <h5>Your cart is empty...  <a href="{% url 'home' %}#tab-all">Add items to cart</a></h5>
 
           </div>
 
@@ -81,7 +81,7 @@
                   
                 </tbody>
               </table>
-            <h5><a href="/user/#tab-all">Continue Shopping -></a></h5>
+            <h5><a href="/#tab-all">Continue Shopping -></a></h5>
 
             </div>
             <div class="col-md-4">
@@ -225,7 +225,11 @@
       
       </div>
   </div>
-  </div>
+</div>
+
+
+
+
                
 <style>
   .table td {

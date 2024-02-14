@@ -30,11 +30,16 @@ class   Order(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    payment_method = models.CharField(max_length=20)
     delivery_address=models.ForeignKey(UserAddress,on_delete=models.CASCADE,null=True)
     delivery_instructions = models.TextField(null=True)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, default='Pending')
+
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=20)
+    payment_status = models.BooleanField(default=False)
+    order_id=models.CharField(max_length=100,blank=True)
+    razorpay_payment_id=models.CharField(max_length=100,blank=True)
+
     
 
 class OrderItem(models.Model):

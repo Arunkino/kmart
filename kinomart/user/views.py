@@ -14,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.contrib.auth import update_session_auth_hash
+import razorpay
 
 # Create your views here.
 
@@ -414,6 +415,7 @@ def edit_profile(request):
         user.first_name = first_name
         user.last_name = last_name
         user.email = email
+        user.username = email
         user.phone = phone
 
         # Save the user and handle potential errors
@@ -492,8 +494,8 @@ def cart(request):
         
 
 
-
-    return render(request,'user/cart.html',{'cart_items':item_details,'product_total':product_total,'delivery':delivery,'total':product_total+delivery,'address':address})
+    context={'cart_items':item_details,'product_total':product_total,'delivery':delivery,'total':product_total+delivery,'address':address}
+    return render(request,'user/cart.html',context)
 
 
 # add_to_cart ajax call now from detail page
@@ -598,17 +600,50 @@ def checkout(request):
         total_price=request.POST['total_price']
 
         address=UserAddress.objects.get(id=address_id)
-        order=Order.objects.create(user=user,payment_method=payment_method,delivery_instructions=instructions,total_price=total_price,delivery_address=address)
+
+
+        
+        
+        
+        client = razorpay.Client(auth=('rzp_test_b714EP5tPrXbn2', 'I5DOPeyeM27wIDIO37uP0foG'))
+
+        # create order
+        amount = int(float(total_price) * 100)
+        response_payment = client.order.create(dict(amount=amount,currency='INR'))
+
+        print(response_payment)
+
+
+        order_id=response_payment['id']
+        order_status=response_payment['status']
+
+        if order_status == 'created':
+            order=Order.objects.create(user=user,payment_method=payment_method,delivery_instructions=instructions,total_price=total_price,delivery_address=address,order_id=order_id)
         
 
 
-        cart_items=Cart.objects.filter(user=user)
+            cart_items=Cart.objects.filter(user=user)
 
-        for item in cart_items:
-            OrderItem.objects.create(order=order,product=item.product,quantity=item.quantity,price=item.price)
+            for item in cart_items:
+                OrderItem.objects.create(order=order,product=item.product,quantity=item.quantity,price=item.price)
             
-        cart_items.delete()
-        return render(request, 'user/success.html', {'message': 'Order placed successfully!'})
+            cart_items.delete()
+
+
+
+        if payment_method=='cod':
+
+            return render(request, 'user/success.html', {'message': 'Order placed successfully!'})
+
+        return render(request,'user/razorpay.html',{'order':order})
+    
+
+def payment_status(request):
+
+    response=request.POST
+    print("******************",response)
+
+    return render(request, 'user/success.html', {'message': 'Order placed successfully!'})
 
 
 
