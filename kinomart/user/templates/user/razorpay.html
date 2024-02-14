@@ -5,7 +5,8 @@
 <br><br><br><br><br><br><br><br><br>
 <form action="{% url 'payment_status' %}" method="POST">
 
-    {% csrf_token %}
+        {% csrf_token %}
+        
     <script
         src="https://checkout.razorpay.com/v1/checkout.js"
         data-key="rzp_test_b714EP5tPrXbn2"

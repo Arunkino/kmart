@@ -41,10 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user.apps.UserConfig',
     'admin.apps.AdminAppConfig',
-    'products.apps.ProductsConfig'
+    'products.apps.ProductsConfig',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -159,5 +162,11 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'arunsubrahmanyan@gmail.com'
 EMAIL_HOST_PASSWORD = 'vbfthvmzqzjiifhl'
+
+
+
+# trying to resolve forbidden error. added middleware and app for the cors
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 

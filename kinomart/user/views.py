@@ -10,7 +10,7 @@ import random
 from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt,csrf_protect
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.contrib.auth import update_session_auth_hash
@@ -548,8 +548,7 @@ def add_to_cart(request):
 
 
 # cart quantity updating from the cart page
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+
 
 @csrf_exempt
 def update_cart(request):
@@ -637,13 +636,36 @@ def checkout(request):
 
         return render(request,'user/razorpay.html',{'order':order})
     
-
+    return redirect ('cart')
+    
+    
+    
+@csrf_exempt
 def payment_status(request):
 
     response=request.POST
     print("******************",response)
+    dic={
+    'razorpay_order_id': response['razorpay_order_id'],
+    'razorpay_payment_id': response['razorpay_payment_id'],
+    'razorpay_signature': response['razorpay_signature'],
+    }
+    client = razorpay.Client(auth=("rzp_test_b714EP5tPrXbn2", "I5DOPeyeM27wIDIO37uP0foG"))
 
-    return render(request, 'user/success.html', {'message': 'Order placed successfully!'})
+    try:
+
+        status=client.utility.verify_payment_signature(dic)
+        order=Order.objects.get(order_id=response['razorpay_order_id'])
+        order.razorpay_payment_id=response['razorpay_payment_id']
+        order.payment_status=True
+        order.save()
+        return render(request, 'user/success.html', {'status': True})
+
+
+    except:
+        return render(request, 'user/success.html', {'status': False})
+
+
 
 
 
