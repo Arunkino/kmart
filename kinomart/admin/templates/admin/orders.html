@@ -2,7 +2,17 @@
 {% load static %}
 
 {% block content %}
+<style>
+    table.table-class th, table.table-class td {
+        /* Add your styles here */
+        padding: 10px; /* Example */
+        border: 1px solid #000; /* Example */
+        text-align: center;
+        /* margin: 50px; */
+    }
 
+
+</style>
 <div class="card mb-4">
     <div class="card-header">
         <i class="fa-solid fa-box"></i>
@@ -11,7 +21,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <table  class="table-class" id="table-id">
+                <table  class="table-class" id="table-id" >
                     <thead>
                         <tr>
                             <th>Order ID</th>
@@ -21,8 +31,9 @@
                             <th>Delivery Address</th>
                             <th>Email</th>
                             
-                            <th>Stutus</th>
-                            <th>Return/ <br>Cancel</th>
+                            <th>Delivery Stutus</th>
+                            <th>Return/ Cancel</th>
+                            <th>Payment Status</th>
                             
                     </thead>
                     <tfoot>
@@ -42,10 +53,10 @@
                             </td>
                             <td>₹{{order.total_price}}</td>
                             <td>
-                                {{order.delivery_address.address_line}} <br>
-                                {{order.delivery_address.landmark}} <br>
-                                PIN: {{order.delivery_address.pin}} <br>
-                                {{order.delivery_address.city}} 
+                                {{order.address.address_line}} <br>
+                                {{order.address.landmark}} <br>
+                                PIN: {{order.address.pin}} <br>
+                                {{order.address.city}} 
         
                             </td>
                             <td>{{order.user.email}}</td>
@@ -55,7 +66,7 @@
 
 
                                     {% if order.status == 'Pending' %}
-                                    <select style="width: 120px;margin-left: 60px;" class="status btn btn-primary" data-order-id="{{order.id}}" name="status">
+                                    <select style="width: 120px;" class="status btn btn-primary" data-order-id="{{order.id}}" name="status">
 
                                         <option class="btn btn-primary" selected class="pending" value="Pending">Pending</option>
                                         <option class="btn btn-warning" value="Dispatched">Dispatched</option>
@@ -63,7 +74,7 @@
                                     </select>
                                 
                                     {% elif order.status == 'Dispatched' %}
-                                    <select style="width: 125px;margin-left: 60px;" class="status btn btn-warning" data-order-id="{{order.id}}" name="status">
+                                    <select style="width: 125px;" class="status btn btn-warning" data-order-id="{{order.id}}" name="status">
 
                                     <option selected class="btn btn-warning" value="Dispatched">Dispatched</option>
                                     <option class="btn btn-success" value="Delivered">Delivered</option>
@@ -71,12 +82,18 @@
                                 
                                     {% else %}
                                     
-                                    <BUtton style="width: 120px;margin-left: 60px;" class="btn btn-success">Delivered</BUtton>
+                                    <BUtton style="width: 120px;" class="btn btn-success">Delivered</BUtton>
                                 
                                     {% endif %}
                                 
                             </td>
-                            <td>sdg</td>
+                            <td>{{order.return_status}}</td>
+                            <td>
+                                {% if order.payment_status %}
+                                <span style="color: green; font-size: 1.1rem;"><i class="fa-regular fa-circle-check"></i> Paid </span>
+                                {% else %}
+                                 <span style="color: rgb(243, 86, 1); font-size: 1.1rem;"><i class="fa-solid fa-spinner"></i></i> Pending</span> 
+                                 {% endif %}</td>
                             
                                  
                         </tr>

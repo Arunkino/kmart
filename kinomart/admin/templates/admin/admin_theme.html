@@ -91,6 +91,11 @@
                                 </div>
                                 Orders
                             </a>
+                            <a class="nav-link" href="{% url 'coupon_management' %}">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-ticket"></i>
+                                </div>
+                                Coupon
+                            </a>
                             <div class="sb-sidenav-menu-heading">Interface</div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -188,6 +193,7 @@
 <script>
     $(document).ready(function() {
     $('.table-class').DataTable({
+        "order": [[ 0, "desc" ]],
         responsive: true,
         scrollX: true,
         createdRow: function (row, data, index) {

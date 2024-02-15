@@ -36,6 +36,8 @@ urlpatterns = [
     path('delete_address/', views.delete_address, name='delete_address'),
     path('default_address/', views.default_address, name='default_address'),
     path('order_history/', views.order_history, name='order_history'),
+    path('return_order/<int:id>', views.return_order, name='return_order'),
+    path('cancel_order/<int:id>', views.cancel_order, name='cancel_order'),
     path('wishlist/', views.wishlist, name='wishlist'),
     path('wallet/', views.wallet, name='wallet'),
 

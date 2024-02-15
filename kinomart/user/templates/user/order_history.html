@@ -49,8 +49,14 @@
                     <p>Payment Method: {{ order.payment_method }}</p>
                     <!-- <p>Delivery Instructions: {{ order.delivery_instructions }}</p> -->
                     {% if order.status == 'Pending' %}
+                    {% if order.return_status == 'none' %}
                     <p>Status: <span style="color: rgb(167, 167, 3);">{{ order.status }}</span>
-                        <button class="btn btn-danger btn-sm" style="margin-left: 15px;">cancel order</button>
+
+                        <a href="{% url 'cancel_order' order.order_id %}" class="btn btn-danger btn-sm" style="margin-left: 15px;" onclick="return confirm('Are you sure you want to cancel this order?');">cancel order</a>
+                    {% elif order.return_status == 'Cancelled' %}
+                    <p>Status: <span style="color: rgb(245, 3, 3);">Order Cancelled</span>
+                    {% endif %}
+                        
                     </p>
                     {% elif order.status == 'Dispatched' %}
                     <p>Status: <span style="color: rgb(199, 108, 4);">{{ order.status }}</span>
@@ -58,7 +64,13 @@
                     </p>
                     {% else %}
                     <p>Status: <span style="color: rgb(52, 208, 13);">{{ order.status }}</span>
-                        <button class="btn btn-secondary btn-sm" style="margin-left: 15px;">Return</button>
+                    {% if order.return_status == 'none' %}
+
+                        <a href="{% url 'return_order' order.order_id %}" class="btn btn-secondary btn-sm" style="margin-left: 15px;">Return</a>
+                    {% else %}
+                    <p>Status: <span style="color: rgb(245, 3, 3);">Item Returned</span>
+                        {% endif %}
+
                     </p>
 
 

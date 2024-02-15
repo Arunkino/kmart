@@ -30,9 +30,9 @@ class   Order(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    delivery_address=models.ForeignKey(UserAddress,on_delete=models.CASCADE,null=True)
     delivery_instructions = models.TextField(null=True)
     status = models.CharField(max_length=20, default='Pending')
+    return_status=models.CharField(max_length=50, default='none')
 
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=20)
@@ -47,3 +47,12 @@ class OrderItem(models.Model):
     product = models.ForeignKey(ProductVarient, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
+
+class OrderAddress(models.Model):
+    order = models.OneToOneField(Order,on_delete=models.CASCADE, related_name='address')
+    city= models.CharField(max_length=50,null=True)
+    state= models.CharField(max_length=50,default='Kerala')
+    landmark= models.CharField(max_length=50,null=True)
+    pin= models.BigIntegerField()
+    address_line=models.TextField(null=True)
+    

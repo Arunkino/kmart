@@ -41,6 +41,7 @@ urlpatterns = [
     path('add_subcategory/', views.add_subcategory,name='add_subcategory'), 
     path('ajax_load_subcategories/', views.load_subcategories, name='ajax_load_subcategories'),
     path('update_order_status/', views.update_order_status, name='update_order_status'),
+    path('coupon_management/', views.coupon_management, name='coupon_management'),
 
     
 ]

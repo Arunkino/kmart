@@ -1,0 +1,75 @@
+{% extends 'admin/admin_theme.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fa-solid fa-ticket"></i>
+        COUPON MANAGEMENT
+        <br>
+
+    
+    </div>
+    
+    
+    
+ 
+    
+    
+        
+
+ 
+
+      
+    <div class="card-body">
+    <a class="btn btn-primary" href="{% url 'add_product' %}">Add Coupon</a>
+
+        <table id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Brand</th>
+                    <th>Stock Bal</th>
+                    <th>Price</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tfoot>
+                
+            </tfoot>
+            <tbody>
+                {% for variant in variants %}
+                <tr>
+                    <td>{{variant.id}}</td>
+                    <td>{{variant.name}}</td>
+                    <td>{{variant.category}}</td>
+                    <td>{{variant.description}}</td>
+                    <td>{{variant.brand}}</td>
+                    <td>{{variant.stock}}</td>
+                    <td>{{variant.price}}</td>
+                    <td><img src="{{variant.image}}" style="height: 50px;" alt=""></td>
+                    <td><a href="{% url 'edit_product' variant.id %}" title="edit" class="btn btn-sm  btn-outline-secondary " ><i class="fa-solid fa-pencil"></i></a>
+                        <a href="{% url 'hold_product' variant.id %}" title="hold" class="btn btn-sm btn-close btn-outline-danger"></a></td>
+                       
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+      $('.dropdown-submenu a.test').on("click", function(e){
+        $(this).next('ul').toggle();
+        e.stopPropagation();
+        e.preventDefault();
+      });
+    });
+</script>
+{% endblock %}
+

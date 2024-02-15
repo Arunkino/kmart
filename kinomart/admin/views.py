@@ -319,3 +319,12 @@ def update_order_status(request):
         Order.objects.filter(id=order_id).update(status=status)
 
         return JsonResponse({'status': 'success'})
+    
+
+
+# all about coupons starts here
+
+def coupon_management(request):
+
+
+    return render(request,'admin/coupon.html')

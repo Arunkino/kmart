@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from . models import User,UserAddress,Cart,Order,OrderItem
+from . models import User,UserAddress,Cart,Order,OrderItem,OrderAddress
 from products.models import Category,ProductImages,Products,ProductVarient
 from django.contrib import messages
 from django.db.models import Q
@@ -371,7 +371,7 @@ def order_history(request):
                 'total':total,
                 'payment_method':payment_method,
                 'status':status,
-
+                'return_status':order.return_status,
                 'items':item_details,
 
             }
@@ -379,6 +379,20 @@ def order_history(request):
 
             
     return render(request,'user/order_history.html',{'orders':orders_list,})
+
+def cancel_order(request,id):
+    order=Order.objects.get(id=id)
+    order.return_status="Cancelled"
+    order.save()
+
+    return redirect('order_history')
+
+def return_order(request,id):
+    order=Order.objects.get(id=id)
+    order.return_status='Returned'
+    order.save()
+
+    return redirect('order_history')
 
 
 def wishlist(request):
@@ -617,8 +631,9 @@ def checkout(request):
         order_status=response_payment['status']
 
         if order_status == 'created':
-            order=Order.objects.create(user=user,payment_method=payment_method,delivery_instructions=instructions,total_price=total_price,delivery_address=address,order_id=order_id)
-        
+            order=Order.objects.create(user=user,payment_method=payment_method,delivery_instructions=instructions,total_price=total_price,order_id=order_id)
+
+            order_address = OrderAddress.objects.create(city=address.city,state=address.state,landmark=address.landmark,pin=address.pin,address_line=address.address_line,order=order)
 
 
             cart_items=Cart.objects.filter(user=user)
@@ -632,9 +647,9 @@ def checkout(request):
 
         if payment_method=='cod':
 
-            return render(request, 'user/success.html', {'message': 'Order placed successfully!'})
+            return render(request, 'user/success.html', {'status': True})
 
-        return render(request,'user/razorpay.html',{'order':order})
+        return render(request, 'user/cart.html', {'show_checkout_modal': True,'order':order})
     
     return redirect ('cart')
     
