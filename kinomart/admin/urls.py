@@ -42,6 +42,8 @@ urlpatterns = [
     path('ajax_load_subcategories/', views.load_subcategories, name='ajax_load_subcategories'),
     path('update_order_status/', views.update_order_status, name='update_order_status'),
     path('coupon_management/', views.coupon_management, name='coupon_management'),
+    path('add_coupon/', views.add_coupon, name='add_coupon'),
+    path('edit_coupon/', views.edit_coupon, name='edit_coupon'),
 
     
 ]

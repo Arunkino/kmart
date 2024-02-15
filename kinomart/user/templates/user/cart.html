@@ -248,7 +248,8 @@
           <!-- Your form goes here -->
           <form action="{% url 'payment_status' %}" method="POST">
 
-            {% csrf_token %}
+            <!-- {% csrf_token %} -->
+            headers: { "X-CSRFToken": "{{ csrf_token }}" }
             
         <script
             src="https://checkout.razorpay.com/v1/checkout.js"

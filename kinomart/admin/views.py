@@ -4,6 +4,7 @@ from user.models import User,UserAddress,Order,OrderItem
 from products.models import Category,SubCategory,ProductImages,Products,ProductVarient,Unit,Brand
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from admin.models import Coupon
 
 # Create your views here.
 def index(request):
@@ -325,6 +326,37 @@ def update_order_status(request):
 # all about coupons starts here
 
 def coupon_management(request):
+    coupons=Coupon.objects.all().order_by('-id')
 
 
-    return render(request,'admin/coupon.html')
+    return render(request,'admin/coupon.html',{'coupons':coupons})
+
+def add_coupon(request):
+    if request.method=='POST':
+        coupon_code=request.POST['coupon_code']
+        count=request.POST['count']
+        expiry_date=request.POST['expiry_date']
+        min_order=request.POST['min_order']
+        discount_percentage=request.POST['discount_percentage']
+
+        Coupon.objects.create(coupon_code=coupon_code,count=count,expiry_date=expiry_date,min_order=min_order,discount_percentage=discount_percentage)
+
+        return redirect('coupon_management')
+    
+
+def edit_coupon(request):
+    if request.method=='POST':
+        id=request.POST['coupon-id']
+
+        coupon=Coupon.objects.get(id=id)
+
+
+        coupon.coupon_code=request.POST['coupon_code']
+        coupon.count=request.POST['count']
+        coupon.expiry_date=request.POST['expiry_date']
+        coupon.min_order=request.POST['min_order']
+        coupon.discount_percentage=request.POST['discount_percentage']
+
+        coupon.save()
+
+        return redirect('coupon_management')

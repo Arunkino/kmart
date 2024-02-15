@@ -655,7 +655,7 @@ def checkout(request):
     
     
     
-@csrf_exempt
+# @csrf_exempt
 def payment_status(request):
 
     response=request.POST
