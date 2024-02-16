@@ -50,6 +50,7 @@ urlpatterns = [
     path('cart_count/', views.cart_count, name='cart_count'),
     path('checkout/', views.checkout, name='checkout'),
     path('payment_status/', views.payment_status, name='payment_status'),
+    path('apply_coupon/', views.apply_coupon, name='apply_coupon'),
 
 
 

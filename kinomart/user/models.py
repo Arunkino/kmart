@@ -56,3 +56,4 @@ class OrderAddress(models.Model):
     pin= models.BigIntegerField()
     address_line=models.TextField(null=True)
     
+

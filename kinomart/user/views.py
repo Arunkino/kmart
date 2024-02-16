@@ -15,6 +15,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.contrib.auth import update_session_auth_hash
 import razorpay
+from admin.models import Coupon,AppliedCoupon
+from datetime import datetime
 
 # Create your views here.
 
@@ -579,7 +581,10 @@ def update_cart(request):
         cart_item = Cart.objects.get(id=cart_id)
         if new_quantity==0:
             cart_item.delete()
-            return JsonResponse({'message': 'Item removed from the cart!'})
+            cart_items = Cart.objects.filter(user=request.user) 
+            new_total = sum(item.price for item in cart_items)
+            grand_total=new_total+50
+            return JsonResponse({'message': 'Item removed from the cart!','newTotal': new_total,'grand_total':grand_total})
 
         product_variant = cart_item.product
 
@@ -588,7 +593,15 @@ def update_cart(request):
         cart_item.price= new_quantity*product_variant.price
         cart_item.save()
 
-        return JsonResponse({'message': 'Cart updated successfully!'})
+
+        item_total=cart_item.price
+
+        cart_items = Cart.objects.filter(user=request.user) 
+        new_total = sum(item.price for item in cart_items)
+        grand_total=new_total+50
+
+
+        return JsonResponse({'message': 'Cart updated successfully!','newTotal': new_total,'grand_total':grand_total,'item_total':item_total})
 
     else:
         return JsonResponse({'error': 'Invalid request'})
@@ -611,6 +624,8 @@ def checkout(request):
         address_id=request.POST['address_id']
         instructions=request.POST.get('instructions')
         total_price=request.POST['total_price']
+
+        print('grand total',total_price)
 
         address=UserAddress.objects.get(id=address_id)
 
@@ -647,16 +662,31 @@ def checkout(request):
 
         if payment_method=='cod':
 
-            return render(request, 'user/success.html', {'status': True})
+            if 'coupon_code' in request.POST:
+                code = request.POST['coupon_code']
+                coupon=Coupon.objects.get(coupon_code=code)
+                AppliedCoupon.objects.create(user=request.user,coupon=coupon)
+                coupon.count-=1
+                coupon.save()
 
-        return render(request, 'user/cart.html', {'show_checkout_modal': True,'order':order})
+
+            return render(request, 'user/success.html', {'status': True})
+        
+        if 'coupon_code' in request.POST:
+                code = request.POST['coupon_code']
+                return render(request, 'user/cart.html', {'show_checkout_modal': True,'order':order,'coupon_code':code})
+
+                
+
+        return render(request, 'user/cart.html', {'show_checkout_modal': True,'order':order,})
     
     return redirect ('cart')
     
     
     
-# @csrf_exempt
+@csrf_exempt
 def payment_status(request):
+    
 
     response=request.POST
     print("******************",response)
@@ -667,6 +697,8 @@ def payment_status(request):
     }
     client = razorpay.Client(auth=("rzp_test_b714EP5tPrXbn2", "I5DOPeyeM27wIDIO37uP0foG"))
 
+
+
     try:
 
         status=client.utility.verify_payment_signature(dic)
@@ -674,12 +706,71 @@ def payment_status(request):
         order.razorpay_payment_id=response['razorpay_payment_id']
         order.payment_status=True
         order.save()
+
+
+        
+# checking for coupon code
+        if 'coupon_code' in response:
+            code = request.POST['coupon_code']
+            coupon=Coupon.objects.get(coupon_code=code)
+            AppliedCoupon.objects.create(user=order.user,coupon=coupon)
+            coupon.count-=1
+            coupon.save()
+
         return render(request, 'user/success.html', {'status': True})
 
 
-    except:
+    except Exception as e:
+        print("EXEPTION")
+        print(e)
         return render(request, 'user/success.html', {'status': False})
 
+
+
+def apply_coupon(request):
+    if request.method== 'POST':
+        coupon_code=request.POST['coupon_code']
+
+        c=Coupon.objects.filter(coupon_code=coupon_code)
+
+        if not c.exists():
+            return JsonResponse({'message': 'Not a valid coupon code!'})
+        
+        coupon=c.first()
+
+
+# checking for expiry date and count
+        if coupon.expiry_date < datetime.now().date() or coupon.count<=0:
+            return JsonResponse({'message': 'Coupon Expired!'})
+# checking for minimum order
+        
+        product_total=float(request.POST['product_total'])
+        
+        if coupon.min_order > product_total:
+            return JsonResponse({'message': f'Minimum Purchase for ₹{coupon.min_order}'})
+
+        
+        user=request.user
+
+# checking for is the user already used this coupon
+        if AppliedCoupon.objects.filter(user=user,coupon=coupon).exists():
+            return JsonResponse({'message': 'You are already used this coupon'})
+
+
+
+
+        discount = float(product_total) * (float(coupon.discount_percentage) / 100)
+        print("Discount Percentage:", coupon.discount_percentage)
+        print("Total:", product_total)
+        print("Discount:", discount)
+
+        request.session['coupon_code']=coupon_code
+
+
+
+        total=product_total-discount+50
+
+        return JsonResponse({'message': f'Coupon applied,  Discount - {coupon.discount_percentage}%','discount':discount,'total':total})
 
 
 

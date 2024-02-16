@@ -75,7 +75,7 @@
                       </div>
                       
                       </td>
-                    <td>₹{{item.price}}</td>
+                    <td id="item_total{{item.id}}">₹{{item.price}}ff</td>
                   </tr>
                   {% endfor %}
                   
@@ -87,41 +87,41 @@
             <div class="col-md-4">
 
 
-              
-                
-                    <!-- <div class="bg-light rounded">
-                        <div class="p-4">
-                            <h1 class="display-6 mb-4">Cart <span class="fw-normal">Total</span></h1>
-                            <div class="d-flex justify-content-between mb-4">
-                                <h5 class="mb-0 me-4">Subtotal:</h5>
-                                <p class="mb-0">$96.00</p>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <h5 class="mb-0 me-4">Shipping</h5>
-                                <div class="">
-                                    <p class="mb-0">Flat rate: $3.00</p>
-                                </div>
-                            </div>
-                            <p class="mb-0 text-end">Shipping to Ukraine.</p>
-                        </div>
-                        <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
-                            <h5 class="mb-0 ps-4 me-4">Total</h5>
-                            <p class="mb-0 pe-4">$99.00</p>
-                        </div> -->
-                        
+              <div class="mb-1 row">
+                <div class="col">
+                    <input type="text" class="form-control" id="coupon_code" name="coupon_code">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-secondary"  id="apply_coupon">Apply Coupon</button>
+                </div>
+              </div>   
+              <Span id="applied" style="font-size: small; color: rgb(134, 216, 11);"></Span>
+
+
+                  <!-- <div class="form-group">
+                    <input type="text" name="coupon_code" id="coupon_code"><button class="btn btn-secondary">Apply Coupon</button>
+                  </div>
+                         -->
                     <table class="table">
                       <tbody>
                           <tr>
                               <td>Products total</td>
-                              <td>₹{{ product_total }}</td>
+                              <td >₹ <span id="product_total_id" class="total">{{ product_total }}</span></td>
                           </tr>
                           <tr>
-                              <td>Delivery Charge</td>
+                              <td >Delivery Charge</td>
                               <td>₹{{ delivery }}</td>
                           </tr>
+                          <tr style="display: none;"  class="discount_row">
+                            <td style="color: rgb(134, 216, 11);">Coupon Discount</td>
+                            <td style="color: rgb(134, 216, 11);">₹<span class="discount"></span></td>
+                          </tr>
+
+
+
                           <tr>
                               <th scope="row">Total</th>
-                              <th scope="row"><strong>₹{{total}}</strong></th>
+                              <th scope="row">₹<strong class="grand_total">{{ total }}</strong></th>
                           </tr>
                       </tbody>
                   </table>
@@ -174,15 +174,19 @@
             <tbody>
                 <tr>
                     <td>Products total</td>
-                    <td>₹{{ product_total }}</td>
+                    <td>₹<span class="total">{{ product_total }}</span></td>
                 </tr>
                 <tr>
                     <td>Delivery Charge</td>
                     <td>₹{{ delivery }}</td>
                 </tr>
+                <tr style="display: none;"  class="discount_row">
+                  <td style="color: rgb(134, 216, 11);">Coupon Discount</td>
+                  <td style="color: rgb(134, 216, 11);">₹<span class="discount"></span></td>
+                </tr>
                 <tr>
                     <th scope="row">Total</th>
-                    <th scope="row"><strong>₹{{total}}</strong></th>
+                    <th scope="row">₹<strong class="grand_total">{{total}}</strong></th>
                 </tr>
             </tbody>
         </table>
@@ -217,8 +221,10 @@
           <!-- Add more fields as needed -->
           <div class="modal-footer">
 
-            <input type="hidden" name="total_price" value="{{total}}">
+            <input type="hidden" name="total_price" class="grand_total" value="{{total}}">
             <input type="hidden" name="address_id" value="{{address.id}}">
+            <input type="hidden" id="applied_coupon_code" name="coupon_code" value="">
+
           <button type="submit" id="" class="btn btn-primary">Confirm Order</button>
 
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -248,8 +254,8 @@
           <!-- Your form goes here -->
           <form action="{% url 'payment_status' %}" method="POST">
 
-            <!-- {% csrf_token %} -->
-            headers: { "X-CSRFToken": "{{ csrf_token }}" }
+            {% csrf_token %}
+            
             
         <script
             src="https://checkout.razorpay.com/v1/checkout.js"
@@ -266,6 +272,9 @@
             data-theme.color="#F37254"
         ></script>
         <input type="hidden" custom="Hidden Element" name="hidden"/>
+        {% if coupon_code %}
+        <input type="hidden" name="coupon_code" id="" value="{{coupon_code}}">
+        {% endif %}
         </form>
           
       </div>
@@ -300,12 +309,14 @@ $(".btn-minus").on('click', function() {
   var cartid = $(this).data('cartid');
   var quantityInput = $("#quantity" + cartid);
   var newQuantity = parseInt(quantityInput.val()); // Decrement quantity
+  var item_total =$("#item_total" + cartid)
+  console.log(item_total)
 
   if (newQuantity === 0) {
     if (confirm("Are you sure you want to remove this item from your cart?")) {
       quantityInput.val(newQuantity);
       $.ajax({
-        url: "/user/update_cart/", // Use the appropriate URL for removing
+        url: "/update_cart/", // Use the appropriate URL for removing
         type: "POST",
         data: {
           'cartid': cartid,
@@ -314,6 +325,10 @@ $(".btn-minus").on('click', function() {
           'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
         },
         success: function(response) {
+          $('.total').text(response.newTotal);
+          $('.grand_total').text(response.grand_total);
+          item_total.text("test")
+
           // Handle success, likely removing the item from the cart display
         }
       });
@@ -321,7 +336,7 @@ $(".btn-minus").on('click', function() {
   } else {
     quantityInput.val(newQuantity);
     $.ajax({
-      url: "/user/update_cart/",
+      url: "/update_cart/",
       type: "POST",
       data: {
         'cartid': cartid,
@@ -329,6 +344,9 @@ $(".btn-minus").on('click', function() {
         'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
       },
       success: function(response) {
+        $('.total').text(response.newTotal);
+        $('.grand_total').text(response.grand_total);
+
         // Handle success
       }
     });
@@ -343,7 +361,7 @@ $(".btn-plus").on('click', function() {
     quantityInput.val(newQuantity);
 
     $.ajax({
-        url: "/user/update_cart/",  // Update this to your URL
+        url: "/update_cart/",  // Update this to your URL
         type: "POST",
         data: {
             'cartid': cartid,
@@ -351,7 +369,53 @@ $(".btn-plus").on('click', function() {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
         },
         success: function(response) {
-            // Handle success
+          $('.total').text(response.newTotal);
+          $('.grand_total').text(response.grand_total);
+            
+          // Handle success
+        }
+    });
+});
+
+
+$("#apply_coupon").on('click', function() {
+  
+
+    var coupon_code = $('#coupon_code').val();
+    var product_total = $('#product_total_id').text();
+    console.log(coupon_code);
+    console.log(product_total);
+    
+
+    $.ajax({
+        url: "/apply_coupon/", 
+        type: "POST",
+        data: {
+            'coupon_code': coupon_code,
+            'product_total':product_total,
+            
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+        },
+        success: function(response) {
+          
+          alert(response.message);
+          $('#applied').show().text(response.message);
+          if (response.discount){
+            var discount = response.discount;
+            console.log(discount);
+            $('.discount').text(discount);
+            $('.discount_row').show();
+            $('.grand_total').text(response.total);
+            $('.grand_total').val(response.total);
+            $('#applied_coupon_code').val(coupon_code);
+
+
+
+          }
+          
+
+            
+          // Handle success
         }
     });
 });
