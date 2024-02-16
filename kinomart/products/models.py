@@ -1,4 +1,5 @@
 from django.db import models
+from offer.models import Offer
 
 # Create your models here.
 
@@ -33,6 +34,7 @@ class Products(models.Model):
     sub_category = models.ForeignKey(SubCategory,on_delete=models.SET_NULL,null=True, related_name='products')
     brand=models.ForeignKey(Brand,on_delete=models.SET_NULL,null=True)
     is_offer=models.BooleanField(default=False)
+    offer=models.ForeignKey(Offer, on_delete=models.SET_NULL, null=True, blank=True)
     
     def __str__(self) -> str:
         return self.product_name

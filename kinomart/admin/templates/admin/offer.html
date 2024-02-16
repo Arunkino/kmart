@@ -1,0 +1,223 @@
+<h1>offr</h1>
+{% extends 'admin/admin_theme.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fa-solid fa-ticket"></i>
+        OFFERS
+        <br>
+
+    
+    </div>
+    
+    
+    
+ 
+    
+    
+        
+
+ 
+
+      
+    <div class="card-body">
+        <button data-bs-toggle="modal" data-bs-target="#add_offer" class="btn border-secondary rounded-pill  text-primary  " type="button">Add new offer</button>
+    
+
+        <table id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Offer</th>
+                    <th>Expiry Date</th>
+                    <th>Discount %</th>
+                    <th>Edit/ Delete</th>
+            </thead>
+            <tfoot>
+                
+            </tfoot>
+            <tbody>
+                {% for offer in offers %}
+                <tr>
+                    <td>{{offer.id}}</td>
+                    <td>{{offer.offer_name}}</td>
+                    <td>{{offer.expiry_date}}</td>
+                    <td>{{offer.discount}}</td>
+                    <td>
+                        <button data-id="{{offer.id}}" 
+                        data-offer_name="{{offer.offer_name}}" 
+                        data-expiry="{{offer.expiry_date}}"
+                        data-discount="{{offer.discount}}" title="edit" class="btn btn-sm  btn-outline-secondary edit-btn" ><i class="fa-solid fa-pencil"></i></button>
+                        <a href="" title="hold" class="btn btn-sm btn-close btn-outline-danger"></a></td>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- model for add add_offer form -->
+
+<div class="modal fade" id="add_offer" tabindex="-1" role="dialog" aria-labelledby="add_offerLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Offer</h5>
+            <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+
+
+
+
+            <!-- Your form goes here -->
+            <form class="checkout-form" action="{% url 'add_offer' %}" method="post">
+            {% csrf_token %}
+            
+            
+            <div class="form-group">
+                <label for="instructions">Offer Name</label>
+                <input type="text" class="form-control" id="offer_name" name="offer_name" placeholder="Diwali Offer">
+            </div>
+            <div class="form-group">
+                <label for="instructions">Expiry Date</label>
+                <input type="date" class="form-control" id="expiry_date" name="expiry_date" placeholder="">
+            </div>
+
+            <div class="form-group">
+                <label for="instructions">Discount Percentage</label>
+                <input type="number" step="0.01" min="0" max="100" class="form-control" id="discount_percentage" name="discount_percentage" placeholder="">
+            </div>
+  
+          
+            
+        
+            <div class="modal-footer">
+  
+            <button type="submit" id="" class="btn btn-primary">Create</button>
+  
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+        
+        </div>
+    </div>
+  </div>
+
+
+
+  <!-- model for editing coupon -->
+  <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit Offer</h5>
+            <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+
+
+
+
+            <!-- Your form goes here -->
+            <form id="editForm" action="{% url 'edit_offer' %}" method="post">
+
+                {% csrf_token %}
+                    
+                    
+                    <div class="form-group">
+                        <label for="instructions">Offer Name</label>
+                        <input type="text" class="form-control" id="offer_name_id" name="offer_name" >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="instructions">Expiry Date</label>
+                        <input type="date" class="form-control" id="expiry_date_id" name="expiry_date" placeholder="">
+                    </div>
+          
+        
+                    <div class="form-group">
+                        <label for="instructions">Discount Percentage</label>
+                        <input type="number" step="0.01" min="0" max="100" class="form-control" id="discount_percentage_id" name="discount_percentage" placeholder="">
+                    </div>
+          
+                
+                    <div class="modal-footer">
+                        <input type="hidden" id="coupon-id" name="coupon-id">
+                    <button type="submit" id="" class="btn btn-primary">Edit</button>
+          
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                
+              </form>
+        </div>
+        
+        </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function(){
+        $(".edit-btn").click(function() {
+        
+        var id = $(this).data('id');
+        var offer_name = $(this).data('offer_name');
+        var expiry = $(this).data('expiry');
+        var discount = $(this).data('discount');
+        var date = new Date(expiry);
+        var year = date.getFullYear();
+        var month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero indexed
+        var day = ("0" + date.getDate()).slice(-2);
+    
+        var formattedDate = year + '-' + month + '-' + day; // "2024-04-10"
+    
+        
+    
+        // Populate the form fields
+        $("#coupon-id").val(id);
+        $("#offer_name_id").val(offer_name);
+        $("#expiry_date_id").val(formattedDate);
+        $("#discount_percentage_id").val(discount);
+    
+        // Show the modal
+        var editModal = new bootstrap.Modal(document.getElementById('editModal'));
+        editModal.show();
+        
+    });
+    
+      
+    });
+    </script>
+    
+{% endblock %}
+

@@ -11,27 +11,51 @@
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
-        <div class="col-md-3 bg-light">
-            <h3>Hello {{user.first_name}}</h3>
-            <ul class="list-group">
-                <li class="list-group-item"><a href="{% url 'user_page' %}">Profile</a></li>
-                <li class="list-group-item"><a href="{% url 'user_address' %}">Shopping Address</a></li>
-                <li class="list-group-item"><a href="{% url 'order_history' %}">Order History</a></li>
-                <li class="list-group-item"><a href="{% url 'wishlist' %}">My Wishlist</a></li>
-                <li class="list-group-item"><a href="{% url 'cart' %}">My Cart</a></li>
-                <li class="list-group-item"><a href="{% url 'wallet' %}">Wallet</a></li>
-                <li class="list-group-item"><a href="{% url 'logout_user' %}">Log Out</a></li>
-            </ul>
-        </div>
+        <div class="col-md-2 bg-light p-4 ms-4 rounded shadow" style="height: 60vh;">
+            <h4>Hello {{user.first_name}}</h4>
+              <ul class="list-group">
+                <a href="{% url 'user_page' %}"><li class="list-group-item rounded-4">Profile</li></a>
+                <a href="{% url 'user_address' %}"><li class="list-group-item rounded-4">Shopping Address</li></a>
+                <a href="{% url 'order_history' %}"><li class="list-group-item rounded-4">Order History</li></a>
+                <a href="{% url 'wishlist' %}"><li class="list-group-item rounded-4">My Wishlist</li></a>
+                <a href="{% url 'cart' %}"><li class="list-group-item rounded-4">My Cart</li></a>
+                <a href="{% url 'wallet' %}"><li class="list-group-item rounded-4">Wallet</li></a>
+                <a href="{% url 'logout_user' %}"><li class="list-group-item rounded-4">Log Out</li></a>
+              </ul>
+          </div>
         <!-- Main Content -->
         <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-6 offset-md-3 ">
+                    <div class="bg-light rounded shadow">
+                        <div class="p-4">
+                            <h1 class="display-6 mb-4">My <span class="fw-normal">Wallet</span></h1>
+                            <div class="d-flex justify-content-between mb-4 text-primary">
+                                <h6 class="mb-0 me-4">Last transaction:</h6>
+                                <p class="mb-0">{{wallet.last_transaction}}</p>
+                            </div>
+                            
+                            
+                        </div>
+                        <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
+                            <h5 class="mb-0 ps-4 me-4">Balance:</h5>
+                            <p class="mb-0 pe-4">₹{{wallet.balance}}</p>
+                        </div>
+                        <button class="btn border-secondary rounded-pill px-4 py-2 text-primary text-uppercase mb-4 ms-4" type="button">Add Money</button>
+                    </div>
+
+
+              
+
+                </div>
+            </div>
 
 
 
 
 
 
-            <h1>Wallet page</h1>
+            
         </div>
     </div>
 </div>

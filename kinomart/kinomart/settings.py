@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'admin.apps.AdminAppConfig',
     'products.apps.ProductsConfig',
+    'offer.apps.OfferConfig',
     'corsheaders',
 ]
 

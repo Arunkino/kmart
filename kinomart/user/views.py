@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from . models import User,UserAddress,Cart,Order,OrderItem,OrderAddress
+from . models import User,UserAddress,Cart,Order,OrderItem,OrderAddress,Wallet
 from products.models import Category,ProductImages,Products,ProductVarient
 from django.contrib import messages
 from django.db.models import Q
@@ -387,6 +387,19 @@ def cancel_order(request,id):
     order.return_status="Cancelled"
     order.save()
 
+    if order.payment_status:
+        wallet=Wallet.objects.get(user=request.user)
+        wallet.balance+=order.total_price
+        wallet.last_transaction=f'+{order.total_price}'
+        wallet.save()
+        messages.info(request,f'Order cancelled and ₹{order.total_price} has been refunded to your wallet')
+
+
+        return redirect('order_history')
+    
+    messages.info(request,f'Order cancelled')
+
+
     return redirect('order_history')
 
 def return_order(request,id):
@@ -404,9 +417,10 @@ def wishlist(request):
 
 
 def wallet(request):
+    wallet=Wallet.objects.get(user=request.user)
 
 
-    return render(request,'user/wallet.html')
+    return render(request,'user/wallet.html',{'wallet':wallet})
 
 
 
