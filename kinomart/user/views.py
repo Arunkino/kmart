@@ -34,17 +34,23 @@ def index(request):
                 images = ProductImages.objects.filter(product_id=product).first()
                 image = images.image.url if images else None
                 variant = product.varients.first()
-    
+
+                
+                    
+
+
                 product_data.append({
                     'product_id': product.id,
                     'variant_id':variant.id,
                     'product_name': product.product_name,
                     'description': product.description,
                     'price': variant.price,
+                    'offer_price':variant.offer_price,
                     'quantity':variant.quantity,
                     'unit':variant.unit, 
                     'brand': product.brand.brand_name,
                     'is_offer':product.is_offer,
+                    'offer':product.offer,
                     'image': image,      
                 })             
             subcategory_data.append({
