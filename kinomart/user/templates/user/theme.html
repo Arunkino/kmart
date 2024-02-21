@@ -90,8 +90,9 @@
                             </div>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
                         </div>
+                        <input type="search" class="form-control" id="search_bar" style="width: 350px; display: none;">
                         <div class="d-flex m-3 me-0">
-                            <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search text-primary"></i></button>
+                            <button id="btn-search" class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4"  ><i class="fas fa-search text-primary"></i></button>
                             <a href="{% url 'cart' %}" class="position-relative me-4 my-auto">
                                 <i class="fa fa-shopping-bag fa-2x"></i>
                                 <span class="cart-count position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;" ></span>
@@ -108,7 +109,7 @@
 
 
         <!-- Modal Search Start -->
-        <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <!-- <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content rounded-0">
                     <div class="modal-header">
@@ -123,7 +124,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- Modal Search End -->
         <style>
             .list-group-item:hover {
@@ -253,10 +254,34 @@
     <script src="{% static 'js/main.js' %}"></script>
 
 <script>
-    $(document).ready(function() {
-        updateCartCount();
+  $(document).ready(function() {
+    updateCartCount();
 
+    $('#search_bar').on('keyup', function() {
+        var search = $(this).val();
+
+        // if (search !== '') {
+            $.ajax({
+                url: '{% url "search_index" %}',
+                type: 'GET',
+                data: {
+                    'search': search
+                },
+                success: function(data) {
+                    console.log(data);
+                    $('#result').html(data);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        // }
     });
+
+    $('#btn-search').click(function() {
+        $('#search_bar').toggle();
+    });
+});
 
 
     function updateCartCount() {

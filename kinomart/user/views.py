@@ -65,6 +65,55 @@ def index(request):
         })
     return render(request,'user/index.html',{'categories': category_data,})
 
+
+def search_index(request):
+    search=request.GET['search']
+    categories = Category.objects.prefetch_related('subcategories').all()
+    category_data = []
+    for category in categories:
+        subcategories = category.subcategories.all()
+        subcategory_data = []    
+        for subcategory in subcategories:
+            products = subcategory.products.filter(Q(product_name__icontains=search) | Q(description__icontains=search))
+            product_data = []        
+            for product in products:
+                images = ProductImages.objects.filter(product_id=product).first()
+                image = images.image.url if images else None
+                variant = product.varients.first()
+
+                
+                    
+
+
+                product_data.append({
+                    'product_id': product.id,
+                    'variant_id':variant.id,
+                    'product_name': product.product_name,
+                    'description': product.description,
+                    'price': variant.price,
+                    'offer_price':variant.offer_price,
+                    'quantity':variant.quantity,
+                    'unit':variant.unit, 
+                    'brand': product.brand.brand_name,
+                    'is_offer':product.is_offer,
+                    'offer':product.offer,
+                    'image': image,      
+                })             
+            subcategory_data.append({
+                'subcategory_id': subcategory.id,
+                'subcategory_name': subcategory.sub_category,
+                'products': product_data,
+            })
+        category_data.append({
+            'category_id' : category.id,
+            'category_name': category.category,
+            'subcategories': subcategory_data,
+        })
+
+    
+    return render(request, 'user/search_index.html', {'categories': category_data,})
+ 
+
 def signup(request):
     if request.method=='POST':
 
