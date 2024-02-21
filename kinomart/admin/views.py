@@ -5,6 +5,8 @@ from products.models import Category,SubCategory,ProductImages,Products,ProductV
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from admin.models import Coupon
+from offer.models import Offer
+from decimal import Decimal
 
 # Create your views here.
 def index(request):
@@ -127,6 +129,13 @@ def add_product(request):
             sub=SubCategory.objects.get(id=request.POST['sub_category'])
 
             pr=Products(product_name=name,description=desc,sub_category=sub,brand_id=brand)
+            if request.POST['is_offer']:
+                pr.is_offer=True
+                off=int((request.POST['offer_select']))
+                print("offerrr idd",off)
+                offer=Offer.objects.get(id=off)
+                pr.offer=offer
+
             pr.save()
             ProductImages.objects.create(product_id=pr,image=image1)
             if 'image2' in request.FILES:
@@ -144,7 +153,20 @@ def add_product(request):
                 quantity=request.POST['quantity'+str(i)]
                 unit=Unit.objects.get(id=request.POST['unit'+str(i)])
                 stock=request.POST['stock'+str(i)]
-                price=request.POST['price'+str(i)]
+                price=Decimal(request.POST['price'+str(i)])
+                
+                if request.POST['is_offer']:
+                    print(request.POST['offer_select'])
+                    off=int((request.POST['offer_select']))
+                    print("offerrr idd",off)
+                    offer=Offer.objects.get(id=off)
+                    print("offer object",offer)
+                    offer_price=price-((price*Decimal(offer.discount))/100)
+                    print(offer_price)
+                    ProductVarient.objects.create(quantity=quantity,unit=unit,stock=stock,price=price,product_id=pr,offer_price=offer_price)
+                    return redirect('list_product')
+
+
                 ProductVarient.objects.create(quantity=quantity,unit=unit,stock=stock,price=price,product_id=pr)
                 print("variant",i,"created")
 
@@ -159,8 +181,9 @@ def add_product(request):
             sub_categories=SubCategory.objects.all()
             units=Unit.objects.all()
             brands=Brand.objects.all().order_by('id')
+            offers=Offer.objects.all()
 
-            return render(request,'admin/add_product.html',{'categories':categories,'sub_categories':sub_categories,'units':units,'brands':brands})
+            return render(request,'admin/add_product.html',{'categories':categories,'sub_categories':sub_categories,'units':units,'brands':brands,'offers':offers})
     return redirect('admin_login')
     
 

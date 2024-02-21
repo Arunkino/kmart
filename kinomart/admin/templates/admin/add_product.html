@@ -36,10 +36,22 @@
                 <br>
                 <label for="choice1" class="form-label">Yes</label>
 
-                <input type="radio" class="" id="choice1" name="is_offer" value="True" > 
+                <input type="radio" class="" id="choice1" name="is_offer" onclick="showOffer()" value="True" onclick=""> 
                 <label for="choice2" class="form-label">No</label>
 
-                <input type="radio"  id="choice2" name="is_offer" value="False" checked > 
+                <input type="radio"  id="choice2" name="is_offer" value="False" onclick="hideOffer()" checked > 
+            </div>
+
+            <div class="mb-1" id="offer_dropdown" style="display: none;">
+                <label for="choice1" class="form-label">Select the offer</label>
+
+            <select name="offer_select" id="">
+                {% for offer in offers %}
+                <option value="{{offer.id}}">{{offer}}</option>
+
+                {% endfor %}      
+            </select>
+                
             </div>
             
               
@@ -144,10 +156,21 @@
 {% block scripts %}
 
 <script>
+ function showOffer(){
+            $('#offer_dropdown').show();
+        }
+        function hideOffer(){
+            $('#offer_dropdown').hide();
+        }
 
     
     
     $(document).ready(function() {
+       
+
+
+
+
         var variantCount = 1;
         $('#addButton').click(function() {
             variantCount++;
