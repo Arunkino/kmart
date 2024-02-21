@@ -233,6 +233,8 @@ def view_product(request,id):
             'id':varient.id,
             'qty':varient.quantity,
             'unit':varient.unit,
+            'is_offer':product.is_offer,
+            'offer_price':varient.offer_price,
             'price':varient.price,
 
         })

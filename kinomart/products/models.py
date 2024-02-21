@@ -50,9 +50,11 @@ class ProductVarient(models.Model):
     unit=models.ForeignKey(Unit,on_delete=models.SET_NULL,null=True)
     stock=models.FloatField()
     price=models.DecimalField(max_digits=8,decimal_places=2)
-    offer_price=models.DecimalField(max_digits=8,decimal_places=2,default=0)
+    offer_price=models.DecimalField(max_digits=8,decimal_places=2,null=True,blank=True)
     product_id=models.ForeignKey(Products,on_delete=models.CASCADE, related_name='varients')
     is_holded=models.BooleanField(default=False)
+
+    
 
     def __str__(self) -> str:
         return f'{self.product_id}'
