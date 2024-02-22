@@ -7,21 +7,117 @@
     <div class="card-header">
         <i class="fa-solid fa-layer-group"></i>
         Edit Categories
-        <button id="add-category-btn" class="btn btn-success btn-sm" > Add new category</button>
+        <button data-bs-toggle="modal" data-bs-target="#add_category" class="btn btn-success btn-smy  " type="button"> Add new category</button>
+
 
         <div style="display: inline;" class="d-grid gap-2 d-md-flex justify-content-md-end">
 
         <a href="{% url 'add_product' %}" class="btn btn-success btn-sm" ><i class="fa-regular fa-square-plus"></i> Add Products</a>
+
         </div>
-        <form id="add-category-form" action="{% url 'add_category' %}" method="post" style="display: none;">
+
+<!-- model for add category -->
+    
+<div class="modal fade" id="add_category" tabindex="-1" role="dialog" aria-labelledby="add_categoryLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Category</h5>
+            <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+
+
+
+
+            <!-- Your form goes here -->
+            <form class="checkout-form" action="{% url 'add_category' %}" method="post">
             {% csrf_token %}
-            <div style="display: flex; justify-content: space-between; width: 400px;">
+            
+            
+            <div class="form-group">
+                <label for="instructions">Category Name</label>
                 <input type="text" name="category_name"  class="form-control" placeholder="Enter new category" required>
-                <input type="checkbox">
+            </div>
+           
+
+            <div class="form-group">
+                <div class="mb-1">
+            
+                    <label for="is_offer" class="form-label">Special Offer</label>
+                    <br>
+                    <label for="choice1" class="form-label">Yes</label>
+    
+                    <input type="radio" class="" id="choice1" name="is_offer" onclick="showOffer()" value="True"> 
+                    <label for="choice2" class="form-label">No</label>
+    
+                    <input type="radio"  id="choice2" name="is_offer" value="False" onclick="hideOffer()" checked > 
+                </div>
+                <div class="mb-1 offer_dropdown" class="" style="display: none;">
+                    <label for="choice1" class="form-label">Select the offer</label>
+    
+                    <select name="offer_select" id="">
+                        {% for offer in offers %}
+                        <option value="{{offer.id}}">{{offer}}</option>
+        
+                        {% endfor %}      
+                    </select>
+                </div>   
+            </div>
+  
+          
+            
+        
+            <div class="modal-footer">
+  
+            <button type="submit" id="" class="btn btn-primary">Create</button>
+  
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+        
+        </div>
+    </div>
+  </div>
+  <!-- add category model end here -->
+
+
+<!-- form for add new category -->
+        <!-- <form id="add-category-form" action="{% url 'add_category' %}" method="post" style="display: none;">
+            {% csrf_token %}
+            <div style="width: 400px;">
+                <input type="text" name="category_name"  class="form-control" placeholder="Enter new category" required><br>
+
+
+
+                <div class="mb-1">
+            
+                    <label for="is_offer" class="form-label">Special Offer</label>
+                    <br>
+                    <label for="choice1" class="form-label">Yes</label>
+    
+                    <input type="radio" class="" id="choice1" name="is_offer" onclick="showOffer()" value="True" onclick=""> 
+                    <label for="choice2" class="form-label">No</label>
+    
+                    <input type="radio"  id="choice2" name="is_offer" value="False" onclick="hideOffer()" checked > 
+                </div>
+                <div class="mb-1" class="offer_dropdown" style="display: none;">
+                    <label for="choice1" class="form-label">Select the offer</label>
+    
+                    <select name="offer_select" id="">
+                        {% for offer in offers %}
+                        <option value="{{offer.id}}">{{offer}}</option>
+        
+                        {% endfor %}      
+                    </select>
+                </div>
                 <input type="submit" value="Add" class="btn btn-secondary">
             </div>
-          </form>
-
+          </form> -->
+<!-- FORM END -->
 
     </div>
     <div class="card-body">
@@ -32,7 +128,8 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 style="display: inline;">{{ category.category_name }}</h5>
-        <button title="Edit category" id="update-category-btn{{category.category_id}}" class="btn btn-secondary btn-sm" ><i class="fa-regular fa-pen-to-square"></i></button>
+        <!-- button for model of edit category -->
+                    <button data-category-offer="{{category.category_offer}}" data-category-id="{{category.category_id}}" data-category-name="{{category.category_name}}" data-bs-toggle="modal" data-bs-target="#edit_category" title="Edit category" id="update-category-btn{{category.category_id}}" class="btn btn-secondary btn-sm" ><i class="fa-regular fa-pen-to-square"></i></button>
         
                     <form class="add-subcategory-form" action="{% url 'add_subcategory' %}" method="post" style="display: none;">
                         {% csrf_token %}
@@ -42,14 +139,89 @@
                             <input type="submit" class="btn btn-secondary" value="Submit">
                         </div>
                     </form>
-                    <form id="update-category-form{{category.category_id}}" action="{% url 'update_category' %}" method="post" style="display: none;">
+
+<!-- model for edit category -->
+                    
+                <div class="modal fade" id="edit_category" tabindex="-1" role="dialog" aria-labelledby="edit_categoryLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Edit Category</h5>
+                            <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+
+
+
+
+                            <!-- Your form goes here -->
+                            <form class="checkout-form" action="{% url 'update_category' %}" method="post">
+                            {% csrf_token %}
+                            
+                            
+                            <div class="form-group">
+                                <label for="instructions">Category Name</label>
+                                <input type="text" name="category_name"  class="form-control"   required>
+                                <input type="hidden" name="category_id">
+                            
+                            </div>
+                        
+
+                            <div class="form-group">
+                                <div class="mb-1">
+                            
+                                    <label for="is_offer" class="form-label">Special Offer</label>
+                                    <br>
+                                    <label for="choice01" class="form-label">Yes</label>
+                    
+                                    <input type="radio" class="" id="choice01" name="is_offer" onclick="showOffer()" value="True" onclick=""> 
+                                    <label for="choice02" class="form-label">No</label>
+                    
+                                    <input type="radio"  id="choice02" name="is_offer" value="False" onclick="hideOffer()" checked > 
+                                </div>
+                                <div class="mb-1 offer_dropdown"  style="display: none;">
+                                    <label for="choice1" class="form-label">Select the offer</label>
+                    
+                                    <select name="offer_select" id="">
+                                        {% for offer in offers %}
+                                        <option value="{{offer.id}}">{{offer}}</option>
+                        
+                                        {% endfor %}      
+                                    </select>
+                                </div>   </div>
+                
+                        
+                            
+                        
+                            <div class="modal-footer">
+                            
+                
+                            <button type="submit" id="" class="btn btn-primary">Update</button>
+                
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                            </form>
+                        </div>
+                        
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+                    <!-- <form id="update-category-form{{category.category_id}}" action="{% url 'update_category' %}" method="post" style="display: none;">
                         {% csrf_token %}
                         <div style="display: flex; justify-content: space-between; width: 400px;">
                             <input type="text" name="category_name" class="form-control" value="{{category.category_name}}" required>
                             <input type="hidden" name="category_id" value="{{category.category_id}}">
                             <input type="submit" class="btn btn-secondary" value="Update">
                         </div>
-                    </form>
+                    </form> -->
                     <div style="display: inline;" class="d-grid gap-2 d-md-flex justify-content-md-end">
 
                         <button class="btn btn-outline-success add-subcategory-btn" id="">Add new sub category</button>
@@ -130,17 +302,39 @@
 {% endblock %}
 {% block scripts %}
 <script>
+     function showOffer(){
+            $('.offer_dropdown').show();
+        }
+        function hideOffer(){
+            $('.offer_dropdown').hide();
+        }
+
     $(document).ready(function(){
-        $('#add-category-btn').click(function(){
-            $('#add-category-form').show();
-        });
+
+
+
+// for edit category, im assigning value to the form
+$('#edit_category').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var categoryName = button.data('category-name') // Extract info from data-* attributes
+  var categoryId =button.data('category-id')
+  var modal = $(this)
+  modal.find('.modal-body input[name="category_name"]').val(categoryName)
+  modal.find('.modal-body input[name="category_id"]').val(categoryId)
+})
+        // $('#add-category-btn').click(function(){
+        //     $('#add-category-form').show();
+        // });
         $('.add-subcategory-btn').click(function(){
             $('.add-subcategory-form').show();
         });
-        $('[id^="update-category-btn"]').click(function(){
-            var categoryId = this.id.replace('update-category-btn', '');
-        $('#update-category-form' + categoryId).show();
-        });
+        // $('[id^="update-category-btn"]').click(function(){
+        //     var categoryId = this.id.replace('update-category-btn', '');
+        // $('#update-category-form' + categoryId).show();
+        // });
+
+
+
 
         $('[id^="update-subcategory-btn"]').click(function(){
             var categoryId = this.id.replace('update-subcategory-btn', '');

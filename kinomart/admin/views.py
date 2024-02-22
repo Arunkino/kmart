@@ -240,11 +240,12 @@ def edit_categories(request):
             category_data.append({
                 'category_id' : category.id,
                 'category_name': category.category,
+                'category_offer': category.offer,
                 'subcategories': subcategory_data,
             })
             
-
-        return render(request, 'admin/edit_categories.html', {'categories': category_data})
+        offers=Offer.objects.all()
+        return render(request, 'admin/edit_categories.html', {'categories': category_data,'offers':offers})
     return redirect('admin_login')
     
 
@@ -254,7 +255,22 @@ def add_category(request):
 
         if request.method == 'POST':
             category_name = request.POST.get('category_name')
-            Category.objects.create(category=category_name)
+            category=Category(category=category_name)
+            
+            
+            
+            # checking for offer
+            if request.POST['is_offer']:
+                offer_id=int((request.POST['offer_select']))
+                offer=Offer.objects.get(id=offer_id)
+                category.offer=offer
+
+            category.save()
+                
+
+
+                
+                
         return redirect('edit_categories')
     return redirect('admin_login')
 
@@ -267,6 +283,14 @@ def update_category(request):
             category_id = request.POST.get('category_id')
             cat=Category.objects.get(id=category_id)
             cat.category=category_name
+
+
+            if request.POST['is_offer']:
+                offer_id=int(request.POST['offer_select'])
+                offer=Offer.objects.get(id=offer_id)
+                cat.offer=offer
+
+
             cat.save()
         return redirect('edit_categories')
     return redirect('admin_login')

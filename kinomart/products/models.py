@@ -5,6 +5,7 @@ from offer.models import Offer
 
 class Category(models.Model):
     category=models.CharField(max_length=50)
+    offer=models.ForeignKey(Offer, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self) -> str:
         return self.category
