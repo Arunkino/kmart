@@ -32,9 +32,10 @@ class   Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     delivery_instructions = models.TextField(null=True)
     status = models.CharField(max_length=20, default='Pending')
-    return_status=models.CharField(max_length=50, default='none')
+    return_status=models.CharField(max_length=50, null=True,blank=True)
 
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    actual_price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     payment_method = models.CharField(max_length=20)
     payment_status = models.BooleanField(default=False)
     order_id=models.CharField(max_length=100,blank=True)

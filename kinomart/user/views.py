@@ -709,6 +709,7 @@ def checkout(request):
         total_price=request.POST['total_price']
 
         print('grand total',total_price)
+        
 
         address=UserAddress.objects.get(id=address_id)
 
@@ -736,9 +737,17 @@ def checkout(request):
 
             cart_items=Cart.objects.filter(user=user)
 
+            actual_price=0
             for item in cart_items:
+                single_price=item.product.price
+                actual_price+=(single_price*item.quantity)
+
                 OrderItem.objects.create(order=order,product=item.product,quantity=item.quantity,price=item.price)
             
+            order.actual_price=actual_price+50 #Adding delivery charge
+            order.save()
+            print("actual_order price",actual_price)
+
             cart_items.delete()
 
 

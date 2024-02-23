@@ -45,6 +45,9 @@ urlpatterns = [
     path('add_coupon/', views.add_coupon, name='add_coupon'),
     path('edit_coupon/', views.edit_coupon, name='edit_coupon'),
 
+    
+    path('sales_report/', views.sales_report, name='sales_report'),
+
 
     
     path('offer/', include('offer.urls'),),

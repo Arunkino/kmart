@@ -7,6 +7,9 @@ from django.http import JsonResponse
 from admin.models import Coupon
 from offer.models import Offer
 from decimal import Decimal
+from django.http import HttpResponse
+import csv
+
 
 # Create your views here.
 def index(request):
@@ -440,3 +443,26 @@ def edit_coupon(request):
         coupon.save()
 
         return redirect('coupon_management')
+    
+
+# views for sales report
+    
+
+
+def sales_report(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sales_report.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['order_date', 'User', 'total_price'])
+
+    
+    data = Order.objects.all()  
+
+    for order in data:
+        order_date=order.order_date
+        user=order.user
+        total_price=order.total_price
+        writer.writerow([order_date,user,total_price])
+
+    return response
