@@ -129,7 +129,7 @@ def add_product(request):
             sub=SubCategory.objects.get(id=request.POST['sub_category'])
 
             pr=Products(product_name=name,description=desc,sub_category=sub,brand_id=brand)
-            if request.POST['is_offer']:
+            if request.POST['is_offer']=='True':
                 pr.is_offer=True
                 off=int((request.POST['offer_select']))
                 print("offerrr idd",off)
@@ -155,7 +155,7 @@ def add_product(request):
                 stock=request.POST['stock'+str(i)]
                 price=Decimal(request.POST['price'+str(i)])
                 
-                if request.POST['is_offer']:
+                if request.POST['is_offer']=='True':
                     print(request.POST['offer_select'])
                     off=int((request.POST['offer_select']))
                     print("offerrr idd",off)
@@ -164,15 +164,13 @@ def add_product(request):
                     offer_price=price-((price*Decimal(offer.discount))/100)
                     print(offer_price)
                     ProductVarient.objects.create(quantity=quantity,unit=unit,stock=stock,price=price,product_id=pr,offer_price=offer_price)
-                    return redirect('list_product')
+            
+                else:
+                    ProductVarient.objects.create(quantity=quantity,unit=unit,stock=stock,price=price,product_id=pr)
 
-
-                ProductVarient.objects.create(quantity=quantity,unit=unit,stock=stock,price=price,product_id=pr)
-                print("variant",i,"created")
-
-                        
-            print('product object created with image....')
             return redirect('list_product')
+
+
 
 
 
@@ -260,7 +258,7 @@ def add_category(request):
             
             
             # checking for offer
-            if request.POST['is_offer']:
+            if request.POST['is_offer']=='True':
                 offer_id=int((request.POST['offer_select']))
                 offer=Offer.objects.get(id=offer_id)
                 category.offer=offer
@@ -285,10 +283,29 @@ def update_category(request):
             cat.category=category_name
 
 
-            if request.POST['is_offer']:
+            if request.POST['is_offer']=='True':
                 offer_id=int(request.POST['offer_select'])
                 offer=Offer.objects.get(id=offer_id)
+                discount=Offer.discount
                 cat.offer=offer
+
+        # updating products offer
+                products = Products.objects.filter(sub_category__category=cat)
+                for product in products:
+                    product.offer=offer
+                    product.is_offer=True
+                    product.save()
+
+                    for variant in product.varients.all():
+
+                        price=variant.price
+                        variant.offer_price=price-((price*Decimal(discount))/100)
+                        variant.save()
+
+
+
+
+
 
 
             cat.save()

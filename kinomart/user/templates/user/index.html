@@ -211,13 +211,23 @@
             </div>
     
             {% if product.is_offer %}
-            <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">Offer</div>
+            <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">{{product.offer}}</div>
             {% endif %}
             <div class="p-4 border border-secondary border-top-0 rounded-bottom d-flex flex-column" style="height: 250px;">
                 <h4>{{product.product_name}}</h4>
                 <p>{{product.description}}</p>
                 <div class="mt-auto text-center">
+                    
+                    {% if product.is_offer %}
+                    <p class="text-dark fs-5 fw-bold mb-0"><strike style="font-size: small; color: brown;">₹{{product.price}}</strike> ₹{{product.offer_price}}/ {{product.quantity}}<span style="font-size: medium; color: rgb(61, 25, 25);">{{product.unit}}</span></p>
+
+
+                    {% else %}
                     <p class="text-dark fs-5 fw-bold mb-0">₹{{product.price}} / {{product.quantity}}<span style="font-size: medium; color: rgb(61, 25, 25);">{{product.unit}}</span></p>
+
+
+                    {% endif %}
+
                     <a href="" data-product-id="{{product.product_id}}" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-cart"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
                 </div>
             </div>

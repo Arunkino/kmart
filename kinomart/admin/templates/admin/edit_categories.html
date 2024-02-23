@@ -129,7 +129,7 @@
                 <div class="card-header">
                     <h5 style="display: inline;">{{ category.category_name }}</h5>
         <!-- button for model of edit category -->
-                    <button data-category-offer="{{category.category_offer}}" data-category-id="{{category.category_id}}" data-category-name="{{category.category_name}}" data-bs-toggle="modal" data-bs-target="#edit_category" title="Edit category" id="update-category-btn{{category.category_id}}" class="btn btn-secondary btn-sm" ><i class="fa-regular fa-pen-to-square"></i></button>
+                    <button data-category-offer="{{category.category_offer.id}}" data-category-id="{{category.category_id}}" data-category-name="{{category.category_name}}" data-bs-toggle="modal" data-bs-target="#edit_category" title="Edit category" id="update-category-btn{{category.category_id}}" class="btn btn-secondary btn-sm" ><i class="fa-regular fa-pen-to-square"></i></button>
         
                     <form class="add-subcategory-form" action="{% url 'add_subcategory' %}" method="post" style="display: none;">
                         {% csrf_token %}
@@ -318,9 +318,22 @@ $('#edit_category').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget) // Button that triggered the modal
   var categoryName = button.data('category-name') // Extract info from data-* attributes
   var categoryId =button.data('category-id')
+  var categoryOffer = button.data('category-offer')
+  console.log(categoryOffer);
   var modal = $(this)
   modal.find('.modal-body input[name="category_name"]').val(categoryName)
   modal.find('.modal-body input[name="category_id"]').val(categoryId)
+
+  if (categoryOffer && categoryOffer !== "None") {
+    modal.find('.modal-body input[name="is_offer"][value="True"]').prop('checked', true);
+    modal.find('.modal-body select[name="offer_select"]').val(categoryOffer).show();
+    showOffer();
+  } else {
+    modal.find('.modal-body input[name="is_offer"][value="False"]').prop('checked', true);
+    
+    hideOffer();
+  }
+
 })
         // $('#add-category-btn').click(function(){
         //     $('#add-category-form').show();

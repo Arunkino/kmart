@@ -69,8 +69,10 @@
                                 </div>
                             </div>
                             <div class="col-lg-6">
+                                {% if product.is_offer %}
                                 <h6 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-tags"></i>{{product.offer}}</h6>
-
+                                {% endif %}
+                                
                                 <h4 class="fw-bold mb-3">{{product.product_name}}</h4>
                                 <p class="mb-3">Category: {{product.sub_category}}</p>
                                 
