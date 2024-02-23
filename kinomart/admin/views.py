@@ -303,6 +303,22 @@ def update_category(request):
                         variant.save()
 
 
+            else:
+                cat.offer=None
+
+        # updating products offer to None
+                products = Products.objects.filter(sub_category__category=cat)
+                for product in products:
+                    product.offer=None
+                    product.is_offer=False
+                    product.save()
+
+                    for variant in product.varients.all():
+
+                        variant.offer_price=None
+                        variant.save()
+
+
 
 
 

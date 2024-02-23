@@ -560,7 +560,13 @@ def cart(request):
     for item in cart_items:
         variant=item.product
         quantity=item.quantity
-        price=item.price
+        
+
+        if variant.offer_price:
+            price=variant.offer_price
+
+        else:
+            price=item.price
         product_total+=price
 
         product=variant.product_id
@@ -662,7 +668,12 @@ def update_cart(request):
 
         # Update the quantity
         cart_item.quantity = new_quantity
-        cart_item.price= new_quantity*product_variant.price
+
+        if product_variant.offer_price:
+            cart_item.price= new_quantity*product_variant.offer_price
+
+        else:
+            cart_item.price= new_quantity*product_variant.price
         cart_item.save()
 
 
