@@ -286,7 +286,7 @@ def update_category(request):
             if request.POST['is_offer']=='True':
                 offer_id=int(request.POST['offer_select'])
                 offer=Offer.objects.get(id=offer_id)
-                discount=Offer.discount
+                discount=offer.discount
                 cat.offer=offer
 
         # updating products offer
