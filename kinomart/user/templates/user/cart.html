@@ -193,16 +193,16 @@
           <div class="form-group">
               <h6>Choose Payment Option</h6><hr>
 
-              <input type="radio" id="card" name="payment" value="card" >
+              <input type="radio" id="card" name="payment" value="card" required>
               <label for="card">Credit/Debit card</label><br>
 
-              <input type="radio" id="upi" name="payment" value="upi" >
+              <input type="radio" id="upi" name="payment" value="upi" required>
               <label for="upi">BHIM UPI</label><br>
 
-              <input type="radio" id="wallet" name="payment" value="wallet" >
+              <input type="radio" id="wallet" name="payment" value="wallet" required>
               <label for="wallet">Wallet</label><br>
 
-              <input type="radio" id="cod" name="payment" value="cod" >
+              <input type="radio" id="cod" name="payment" value="cod" required>
               <label for="cod">Cash on Delivery</label><br>
           
           </div>
@@ -416,7 +416,6 @@ $("#apply_coupon").on('click', function() {
           
 
             
-          // Handle success
         }
     });
 });

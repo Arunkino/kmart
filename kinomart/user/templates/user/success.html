@@ -31,14 +31,22 @@
 
     <!-- image section started -->
     <div class="col-md-5">
-
-        <h2 style="margin-left: 50px; color:rgb(0, 114, 19);">
+        <div style="margin-left: 50px; color:rgb(8, 91, 22);">
+        <h4 style=" color:rgb(0, 114, 19);">
            
             {% if status %}
             Order Placed Successfully
+            
             {% else %}error{% endif %}
-            </h2>
-       <a href="{% url 'home' %}"> <img style="width: 95%;" src="{% static 'img/order.jpg' %}" alt="Order Placed"></a>
+        </h4>
+            {% if discount != 0 %}
+
+        <p>
+            You have saved ₹{{discount}} on this order!!
+        </p>
+            {% endif %}
+    </div>
+       <a href="{% url 'home' %}"> <img style="width: 85%;" src="{% static 'img/order.jpg' %}" alt="Order Placed"></a>
     
     
 

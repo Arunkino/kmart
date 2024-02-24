@@ -17,6 +17,7 @@ from django.contrib.auth import update_session_auth_hash
 import razorpay
 from admin.models import Coupon,AppliedCoupon
 from datetime import datetime
+from decimal import Decimal
 
 # Create your views here.
 
@@ -737,14 +738,14 @@ def checkout(request):
 
             cart_items=Cart.objects.filter(user=user)
 
-            actual_price=0
+            actual_price=50 #Adding delivery charge
             for item in cart_items:
                 single_price=item.product.price
                 actual_price+=(single_price*item.quantity)
 
                 OrderItem.objects.create(order=order,product=item.product,quantity=item.quantity,price=item.price)
             
-            order.actual_price=actual_price+50 #Adding delivery charge
+            order.actual_price=actual_price 
             order.save()
             print("actual_order price",actual_price)
 
@@ -754,17 +755,20 @@ def checkout(request):
 
         if payment_method=='cod':
 
-            if 'coupon_code' in request.POST:
+            if 'coupon_code' in request.POST and request.POST['coupon_code']:
                 code = request.POST['coupon_code']
                 coupon=Coupon.objects.get(coupon_code=code)
                 AppliedCoupon.objects.create(user=request.user,coupon=coupon)
                 coupon.count-=1
                 coupon.save()
 
+            print("actualll",actual_price)
+            print("totalll",total_price)
+            discount=Decimal(actual_price)-Decimal(total_price)
 
-            return render(request, 'user/success.html', {'status': True})
+            return render(request, 'user/success.html', {'status': True,'discount':discount})
         
-        if 'coupon_code' in request.POST:
+        if 'coupon_code' in request.POST and request.POST['coupon_code']:
                 code = request.POST['coupon_code']
                 return render(request, 'user/cart.html', {'show_checkout_modal': True,'order':order,'coupon_code':code})
 

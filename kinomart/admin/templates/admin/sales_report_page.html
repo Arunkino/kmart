@@ -73,11 +73,6 @@
         </table>
     </div>
 </div>
-<!-- <script>
-    $('#custom-date').click(function(){
-        $('#date-form').css('display', 'block');
-    })
-</script> -->
 
 
 <script>
@@ -95,7 +90,7 @@
                 type: 'GET',
                 
                 success: function(data) {
-                    console.log(data);
+                    
                     $('#result').html(data);
                 },
                 error: function(error) {
@@ -113,7 +108,7 @@ $.ajax({
         type: 'GET',
         
         success: function(data) {
-            console.log(data);
+            
             $('#result').html(data);
         },
         error: function(error) {
@@ -131,7 +126,7 @@ $.ajax({
         type: 'GET',
         
         success: function(data) {
-            console.log(data);
+            
             $('#result').html(data);
         },
         error: function(error) {
@@ -142,27 +137,23 @@ $.ajax({
 })
 
 $("#date-form").submit(function(event){
-        // Prevent the form from submitting via the browser.
         event.preventDefault();
 
         var fromDate = $('#from').val();
         var toDate = $('#to').val();
 
         $.ajax({
-            url: '{% url "sales_report_custom" %}', // the URL where you want to post data
-            type: 'POST', // can be 'GET' or 'POST'
+            url: '{% url "sales_report_custom" %}',
+            type: 'POST', 
             data: {
-                'from_date': fromDate, // the from date
-                'to_date': toDate // the to date
+                'from_date': fromDate,
+                'to_date': toDate 
             },
             success: function(response) {
-                // this function will be executed if the request succeeds
-                // 'response' is the data returned from the server
-                // you can use it to change your HTML content
+            
                 $('#result').html(response);
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                // this function will be executed if the request fails
                 console.log(textStatus, errorThrown);
             }
         });
