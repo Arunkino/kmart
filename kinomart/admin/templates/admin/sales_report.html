@@ -1,0 +1,41 @@
+<h3 style="text-align: center;"> Sales Report </h3>
+<h6 style="text-align: center;">{{from_date}} to {{to_date}}</h6>
+        <a href="{% url 'sales_report_all' %}">Download CSV</a>
+        <hr>
+        <p><strong>Sales count:</strong> {{ orders.count }}</p>
+<p><strong>Order amount:</strong> ₹{{ total_order_amount }}</p>
+<p><strong>Sales discount:</strong> ₹{{ total_discount }}</p>
+
+        <hr>
+        <table id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Order Date</th>
+                    <th>Total</th>
+                    <th>Discount</th>
+                    <th>Recieved</th>
+                    <th>Payment Method</th>
+                   
+                </tr>
+            </thead>
+            <tfoot>
+                
+            </tfoot>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{order.id}}</td>
+                    <td>{{order.user}}</td>
+                    <td>{{order.order_date}}</td>
+                    <td>{{order.actual_price}}</td>
+                    <td>{{order.discount}}</td>
+                    <td>{{order.total_price}}</td>
+                    <td>{{order.payment_method}}</td>
+                    
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>

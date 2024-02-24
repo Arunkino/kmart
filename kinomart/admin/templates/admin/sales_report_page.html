@@ -8,9 +8,9 @@
         Sales Report
         <br><br>
         <div class="justify-content-between">
-            <button class="btn btn-outline-secondary btn-sm rounded-pill without-date" >Last Day</button>
-            <button class="btn btn-outline-secondary btn-sm rounded-pill without-date" >Last Week</button>
-            <button class="btn btn-outline-secondary btn-sm rounded-pill without-date" >Last Month</button>
+            <button class="btn btn-outline-secondary btn-sm rounded-pill without-date" id="day" >Last Day</button>
+            <button class="btn btn-outline-secondary btn-sm rounded-pill without-date" id="week">Last Week</button>
+            <button class="btn btn-outline-secondary btn-sm rounded-pill without-date" id="month">Last Month</button>
             <button class="btn btn-outline-secondary btn-sm rounded-pill " id="custom-date" >Custom date</button>
             <form action="" id="date-form" style="display: none;">
                 <label for="from">From</label>
@@ -29,7 +29,7 @@
     
 
       
-    <div class="card-body">
+    <div class="card-body" id="result">
         <h3 style="text-align: center;">Overall Sales Report</h3>
         <a href="{% url 'sales_report_all' %}">Download CSV</a>
         <hr>
@@ -80,11 +80,73 @@
 
 
 <script>
-    $('.without-date').click(function(){
-        $('#date-form').hide();
+    $(document).ready(function(){
 
+        $('.without-date').click(function(){
+        $('#date-form').hide();
+    })
+
+    $('#day').click(function(){
+
+
+        $.ajax({
+                url: '{% url "sales_report_day" %}',
+                type: 'GET',
+                
+                success: function(data) {
+                    console.log(data);
+                    $('#result').html(data);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
 
     })
+
+    $('#week').click(function(){
+
+
+$.ajax({
+        url: '{% url "sales_report_week" %}',
+        type: 'GET',
+        
+        success: function(data) {
+            console.log(data);
+            $('#result').html(data);
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
+
+})
+
+$('#month').click(function(){
+
+
+$.ajax({
+        url: '{% url "sales_report_month" %}',
+        type: 'GET',
+        
+        success: function(data) {
+            console.log(data);
+            $('#result').html(data);
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
+
+})
+
+
+
+
+
+        
+    })
+    
 
 
     document.addEventListener("DOMContentLoaded", function() {

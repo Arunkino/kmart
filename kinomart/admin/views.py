@@ -10,6 +10,7 @@ from decimal import Decimal
 from django.http import HttpResponse
 import csv
 from django.db.models import F,Sum
+from django.utils import timezone
 
 
 # Create your views here.
@@ -493,3 +494,38 @@ def sales_report_all(request):
         writer.writerow([id,order_date,user,total,discount,paid,method])
 
     return response
+
+def sales_report_day(request):
+
+    to_date=timezone.now()
+    from_date=to_date-timezone.timedelta(days=1)
+    orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
+    discount=F('actual_price') - F('total_price'))
+    total_discount=orders.aggregate(Sum('discount'))['discount__sum']
+    total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
+
+    return render(request,'admin/sales_report.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount,'from_date':from_date,'to_date':to_date})
+
+def sales_report_week(request):
+
+    to_date=timezone.now()
+    from_date=to_date-timezone.timedelta(days=7)
+    orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
+    discount=F('actual_price') - F('total_price'))
+    total_discount=orders.aggregate(Sum('discount'))['discount__sum']
+    total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
+
+    return render(request,'admin/sales_report.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount,'from_date':from_date,'to_date':to_date})
+
+
+
+def sales_report_month(request):
+
+    to_date=timezone.now()
+    from_date=to_date-timezone.timedelta(days=30)
+    orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
+    discount=F('actual_price') - F('total_price'))
+    total_discount=orders.aggregate(Sum('discount'))['discount__sum']
+    total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
+
+    return render(request,'admin/sales_report.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount,'from_date':from_date,'to_date':to_date})

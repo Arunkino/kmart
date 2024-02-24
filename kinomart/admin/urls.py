@@ -48,6 +48,9 @@ urlpatterns = [
     
     path('sales_report/', views.sales_report, name='sales_report'),
     path('sales_report_all/', views.sales_report_all, name='sales_report_all'),
+    path('sales_report_day/', views.sales_report_day, name='sales_report_day'),
+    path('sales_report_week/', views.sales_report_week, name='sales_report_week'),
+    path('sales_report_month/', views.sales_report_month, name='sales_report_month'),
 
 
     
