@@ -29,9 +29,9 @@
                             </div>
                             <div class="col-xl-3 col-md-6">
                                 <div class="card bg-success text-white mb-4">
-                                    <div class="card-body">Orders</div>
+                                    <div class="card-body">Sales Report</div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <a class="small text-white stretched-link" href="{% url 'sales_report' %}">View Details</a>
                                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                     </div>
                                 </div>
@@ -48,6 +48,13 @@
                         </div>
 
 <div class="row">
+    <select name="report" id="">
+        <option value="">Get sales Report</option>
+        <option value="day">Last Day</option>
+        <option value="week">Last Week</option>
+        <option value="month">Last Month</option>
+        <option value="costom_date">Costom Date</option>
+    </select>
     <a href="{% url 'sales_report' %}">sales_report</a>
 </div>
 

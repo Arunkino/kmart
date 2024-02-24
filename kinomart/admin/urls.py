@@ -47,6 +47,7 @@ urlpatterns = [
 
     
     path('sales_report/', views.sales_report, name='sales_report'),
+    path('sales_report_all/', views.sales_report_all, name='sales_report_all'),
 
 
     

@@ -9,6 +9,7 @@ from offer.models import Offer
 from decimal import Decimal
 from django.http import HttpResponse
 import csv
+from django.db.models import F,Sum
 
 
 # Create your views here.
@@ -446,23 +447,49 @@ def edit_coupon(request):
     
 
 # views for sales report
-    
-
-
 def sales_report(request):
+
+
+    orders=Order.objects.filter(payment_status=True).annotate(
+    discount=F('actual_price') - F('total_price'))
+    total_discount=orders.aggregate(Sum('discount'))['discount__sum']
+    total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
+
+    return render(request,'admin/sales_report_page.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount})
+
+
+def sales_report_all(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="sales_report.csv"'
 
+
+    orders=Order.objects.filter(payment_status=True).annotate(
+    discount=F('actual_price') - F('total_price'))
+
+    total_discount=orders.aggregate(Sum('discount'))['discount__sum']
+    total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
+
     writer = csv.writer(response)
-    writer.writerow(['order_date', 'User', 'total_price'])
+    writer.writerow(['OVERALL SALES REPORT'])
+    writer.writerow([''])
+    writer.writerow(['sales count',f'{orders.count()}'])
+    writer.writerow(['Order Amount',f'{total_order_amount}'])
+    writer.writerow(['Total Discount',f'{total_discount}'])
+    writer.writerow([''])
+
+    writer.writerow(['Id','order_date', 'User', 'Total','Discount','Paid','Payment Method'])
 
     
-    data = Order.objects.all()  
+    
 
-    for order in data:
-        order_date=order.order_date
+    for order in orders:
+        id=order.id
+        order_date=order.order_date.date()
         user=order.user
-        total_price=order.total_price
-        writer.writerow([order_date,user,total_price])
+        total=order.actual_price
+        discount=order.discount
+        paid=order.total_price
+        method=order.payment_method
+        writer.writerow([id,order_date,user,total,discount,paid,method])
 
     return response
