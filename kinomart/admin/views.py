@@ -495,16 +495,109 @@ def sales_report_all(request):
 
     return response
 
+def sales_report_range(request,range):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sales_report.csv"'
+
+    if range=='day':
+        to_date=timezone.now()
+        from_date=to_date-timezone.timedelta(days=1)
+
+    elif range =='week':
+        to_date=timezone.now()
+        from_date=to_date-timezone.timedelta(days=7)
+
+    elif range == 'month':
+        to_date=timezone.now()
+        from_date=to_date-timezone.timedelta(days=30)
+
+    
+
+
+    orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
+    discount=F('actual_price') - F('total_price'))
+    total_discount=orders.aggregate(Sum('discount'))['discount__sum']
+    total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
+
+    writer = csv.writer(response)
+    writer.writerow([f'Last {range} sales report'])
+    writer.writerow([''])
+    writer.writerow(['sales count',f'{orders.count()}'])
+    writer.writerow(['Order Amount',f'{total_order_amount}'])
+    writer.writerow(['Total Discount',f'{total_discount}'])
+    writer.writerow([''])
+
+    writer.writerow(['Id','order_date', 'User', 'Total','Discount','Paid','Payment Method'])
+
+    
+    
+
+    for order in orders:
+        id=order.id
+        order_date=order.order_date.date()
+        user=order.user
+        total=order.actual_price
+        discount=order.discount
+        paid=order.total_price
+        method=order.payment_method
+        writer.writerow([id,order_date,user,total,discount,paid,method])
+
+    return response
+
+
+def sales_report_customrange(request,from_date,to_date):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sales_report.csv"'
+
+    
+
+
+    orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
+    discount=F('actual_price') - F('total_price'))
+    total_discount=orders.aggregate(Sum('discount'))['discount__sum']
+    total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
+
+    writer = csv.writer(response)
+    writer.writerow([f'Sales report from {from_date} to {to_date}'])
+
+    writer.writerow([''])
+    writer.writerow(['sales count',f'{orders.count()}'])
+    writer.writerow(['Order Amount',f'{total_order_amount}'])
+    writer.writerow(['Total Discount',f'{total_discount}'])
+    writer.writerow([''])
+
+    writer.writerow(['Id','order_date', 'User', 'Total','Discount','Paid','Payment Method'])
+
+    
+    
+
+    for order in orders:
+        id=order.id
+        order_date=order.order_date.date()
+        user=order.user
+        total=order.actual_price
+        discount=order.discount
+        paid=order.total_price
+        method=order.payment_method
+        writer.writerow([id,order_date,user,total,discount,paid,method])
+
+    return response
+
+
+
 def sales_report_day(request):
 
     to_date=timezone.now()
     from_date=to_date-timezone.timedelta(days=1)
     orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
     discount=F('actual_price') - F('total_price'))
+
     total_discount=orders.aggregate(Sum('discount'))['discount__sum']
     total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
 
-    return render(request,'admin/sales_report.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount,'from_date':from_date,'to_date':to_date})
+    
+
+    return render(request,'admin/sales_report.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount,'from_date':from_date,'to_date':to_date,'range':'day'})
 
 def sales_report_week(request):
 
@@ -515,7 +608,7 @@ def sales_report_week(request):
     total_discount=orders.aggregate(Sum('discount'))['discount__sum']
     total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
 
-    return render(request,'admin/sales_report.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount,'from_date':from_date,'to_date':to_date})
+    return render(request,'admin/sales_report.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount,'from_date':from_date,'to_date':to_date,'range':'week'})
 
 
 
@@ -528,4 +621,22 @@ def sales_report_month(request):
     total_discount=orders.aggregate(Sum('discount'))['discount__sum']
     total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
 
-    return render(request,'admin/sales_report.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount,'from_date':from_date,'to_date':to_date})
+    return render(request,'admin/sales_report.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount,'from_date':from_date,'to_date':to_date,'range':'month'})
+
+@csrf_exempt
+def sales_report_custom(request):
+    print('function called')
+    if request.method == 'POST':
+        print('post method')
+
+        from_date=request.POST['from_date']
+        to_date=request.POST['to_date']
+
+        print(from_date)
+        print(to_date)
+        orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
+        discount=F('actual_price') - F('total_price'))
+        total_discount=orders.aggregate(Sum('discount'))['discount__sum']
+        total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
+
+        return render(request,'admin/sales_report.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount,'from_date':from_date,'to_date':to_date,'range':'custom'})

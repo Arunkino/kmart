@@ -48,9 +48,15 @@ urlpatterns = [
     
     path('sales_report/', views.sales_report, name='sales_report'),
     path('sales_report_all/', views.sales_report_all, name='sales_report_all'),
+    path('sales_report_range/<str:range>', views.sales_report_range, name='sales_report_range'),
+    path('sales_report/<str:from_date>/<str:to_date>', views.sales_report_customrange, name='sales_report_customrange'),
+    
+
+
     path('sales_report_day/', views.sales_report_day, name='sales_report_day'),
     path('sales_report_week/', views.sales_report_week, name='sales_report_week'),
     path('sales_report_month/', views.sales_report_month, name='sales_report_month'),
+    path('sales_report_custom/', views.sales_report_custom, name='sales_report_custom'),
 
 
     
