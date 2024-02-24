@@ -11,7 +11,12 @@ from django.http import HttpResponse
 import csv
 from django.db.models import F,Sum
 from django.utils import timezone
-
+import io
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import Table,TableStyle
+from reportlab.lib import colors
 
 # Create your views here.
 def index(request):
@@ -459,6 +464,7 @@ def sales_report(request):
     return render(request,'admin/sales_report_page.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount})
 
 
+#to get all orders in CSV
 def sales_report_all(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="sales_report.csv"'
@@ -500,15 +506,15 @@ def sales_report_range(request,range):
     response['Content-Disposition'] = 'attachment; filename="sales_report.csv"'
 
     if range=='day':
-        to_date=timezone.now()
+        to_date=timezone.now().date()
         from_date=to_date-timezone.timedelta(days=1)
 
     elif range =='week':
-        to_date=timezone.now()
+        to_date=timezone.now().date()
         from_date=to_date-timezone.timedelta(days=7)
 
     elif range == 'month':
-        to_date=timezone.now()
+        to_date=timezone.now().date()
         from_date=to_date-timezone.timedelta(days=30)
 
     
@@ -587,7 +593,7 @@ def sales_report_customrange(request,from_date,to_date):
 
 def sales_report_day(request):
 
-    to_date=timezone.now()
+    to_date=timezone.now().date()
     from_date=to_date-timezone.timedelta(days=1)
     orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
     discount=F('actual_price') - F('total_price'))
@@ -601,7 +607,7 @@ def sales_report_day(request):
 
 def sales_report_week(request):
 
-    to_date=timezone.now()
+    to_date=timezone.now().date()
     from_date=to_date-timezone.timedelta(days=7)
     orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
     discount=F('actual_price') - F('total_price'))
@@ -614,7 +620,7 @@ def sales_report_week(request):
 
 def sales_report_month(request):
 
-    to_date=timezone.now()
+    to_date=timezone.now().date()
     from_date=to_date-timezone.timedelta(days=30)
     orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
     discount=F('actual_price') - F('total_price'))
@@ -640,3 +646,214 @@ def sales_report_custom(request):
         total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
 
         return render(request,'admin/sales_report.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount,'from_date':from_date,'to_date':to_date,'range':'custom'})
+
+
+#***************************************************************************
+# for pdf response
+#*******************************************************
+
+def sales_report_all_pdf(request):
+    buffer = io.BytesIO()
+
+    p = canvas.Canvas(buffer, pagesize=letter)
+    p.setTitle('PDF Report')
+
+    orders = Order.objects.filter(payment_status=True).annotate(
+        discount=F('actual_price') - F('total_price')
+    )
+
+    total_discount = orders.aggregate(Sum('discount'))['discount__sum']
+    total_order_amount = orders.aggregate(Sum('total_price'))['total_price__sum']
+
+    # Set initial coordinates
+    x = 50
+    y = 750
+
+    # Draw the report title and other details
+    p.drawString(x, y, 'OVERALL SALES REPORT')
+    y -= 25
+    p.drawString(x, y, f'Sales Count: {orders.count()}')
+    y -= 25
+    p.drawString(x, y, f'Order Amount: {total_order_amount}')
+    y -= 25
+    p.drawString(x, y, f'Total Discount: {total_discount}')
+    y -= 50
+
+    data = [['Id', 'Order Date', 'User', 'Total', 'Discount', 'Paid', 'Payment Method']]  # Add headers to the data list
+    for order in orders:
+        row = [str(order.id), str(order.order_date.date()), str(order.user), str(order.actual_price), str(order.discount), str(order.total_price), str(order.payment_method)]
+        data.append(row)
+
+    table = Table(data)
+
+    table.setStyle(TableStyle(
+        [
+            ('BACKGROUND', (0,0), (-1,0), colors.grey), 
+            ('BACKGROUND', (0,1), (-1,-1), colors.white), 
+            ('GRID', (0,0), (-1,-1),1, colors.black),  # Grid color
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'),  # Center align all cells
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),  # Middle align all cells
+            ('FONTSIZE', (0,0), (-1,-1), 14),  # Increase the font size
+            ('LEFTPADDING', (0,0), (-1,-1), 12),  # Increase the left padding
+            ('RIGHTPADDING', (0,0), (-1,-1), 12),  # Increase the right padding
+            ('TOPPADDING', (0,0), (-1,-1), 12),  # Increase the top padding
+            ('BOTTOMPADDING', (0,0), (-1,-1), 12),  # Increase the bottom padding
+            ('COLUMN_WIDTHS', (0,0), (-1,-1), [50, 100, 100, 100, 100, 100, 150])  # Specify the width for each column
+        ]
+    ))
+    w, h = table.wrapOn(p, 600, 600)
+    table.drawOn(p, x, y-h)  # Draw the table at the current position
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename="overall_sales_report.pdf")
+
+
+def sales_report_pdf(request,range):
+    buffer = io.BytesIO()
+
+    p = canvas.Canvas(buffer, pagesize=letter)
+    p.setTitle(f"Last {range} sales report")
+
+
+    if range=='day':
+        to_date=timezone.now().date()
+        from_date=to_date-timezone.timedelta(days=1)
+
+    elif range == 'week':
+        to_date = timezone.now().date()
+        from_date = to_date - timezone.timedelta(days=7)
+
+
+    elif range == 'month':
+        to_date=timezone.now().date()
+        from_date=to_date-timezone.timedelta(days=30)
+
+    
+
+
+    orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
+    discount=F('actual_price') - F('total_price'))
+    total_discount=orders.aggregate(Sum('discount'))['discount__sum']
+    total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
+
+
+    x = 50
+    y = 750
+
+    # Draw the report title and other details
+    p.drawString(x, y, f"SALES REPORT  {from_date} - {to_date}")
+    y -= 25
+    p.drawString(x, y, f'Sales Count: {orders.count()}')
+    y -= 25
+    p.drawString(x, y, f'Order Amount: {total_order_amount}')
+    y -= 25
+    p.drawString(x, y, f'Total Discount: {total_discount}')
+    y -= 50
+
+    data = [['Id', 'Order Date', 'User', 'Total', 'Discount', 'Paid', 'Payment Method']]  # Add headers to the data list
+    for order in orders:
+        row = [str(order.id), str(order.order_date.date()), str(order.user), str(order.actual_price), str(order.discount), str(order.total_price), str(order.payment_method)]
+        data.append(row)
+
+    table = Table(data)
+
+    table.setStyle(TableStyle(
+        [
+            ('BACKGROUND', (0,0), (-1,0), colors.grey), 
+            ('BACKGROUND', (0,1), (-1,-1), colors.white), 
+            ('GRID', (0,0), (-1,-1),1, colors.black),  # Grid color
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'),  # Center align all cells
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),  # Middle align all cells
+            ('FONTSIZE', (0,0), (-1,-1), 14),  # Increase the font size
+            ('LEFTPADDING', (0,0), (-1,-1), 12),  # Increase the left padding
+            ('RIGHTPADDING', (0,0), (-1,-1), 12),  # Increase the right padding
+            ('TOPPADDING', (0,0), (-1,-1), 12),  # Increase the top padding
+            ('BOTTOMPADDING', (0,0), (-1,-1), 12),  # Increase the bottom padding
+            ('COLUMN_WIDTHS', (0,0), (-1,-1), [50, 100, 100, 100, 100, 100, 150])  # Specify the width for each column
+        ]
+    ))
+    w, h = table.wrapOn(p, 600, 600)
+    table.drawOn(p, x, y-h)  # Draw the table at the current position
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=f"Sales report  {from_date} - {to_date}.pdf")
+
+
+def sales_report_pdf_customrange(request,from_date,to_date):
+    buffer = io.BytesIO()
+
+    p = canvas.Canvas(buffer, pagesize=letter)
+    p.setTitle(f"Sales report {from_date} to {to_date}")
+
+
+    if range=='day':
+        to_date=timezone.now().date()
+        from_date=to_date-timezone.timedelta(days=1)
+
+    elif range == 'week':
+        to_date = timezone.now().date()
+        from_date = to_date - timezone.timedelta(days=7)
+
+
+    elif range == 'month':
+        to_date=timezone.now().date()
+        from_date=to_date-timezone.timedelta(days=30)
+
+    
+
+
+    orders=Order.objects.filter(payment_status=True, order_date__range=(from_date, to_date)).annotate(
+    discount=F('actual_price') - F('total_price'))
+    total_discount=orders.aggregate(Sum('discount'))['discount__sum']
+    total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
+
+
+    x = 50
+    y = 750
+
+    # Draw the report title and other details
+    p.drawString(x, y, f"SALES REPORT  {from_date} - {to_date}")
+    y -= 25
+    p.drawString(x, y, f'Sales Count: {orders.count()}')
+    y -= 25
+    p.drawString(x, y, f'Order Amount: {total_order_amount}')
+    y -= 25
+    p.drawString(x, y, f'Total Discount: {total_discount}')
+    y -= 50
+
+    data = [['Id', 'Order Date', 'User', 'Total', 'Discount', 'Paid', 'Payment Method']]  # Add headers to the data list
+    for order in orders:
+        row = [str(order.id), str(order.order_date.date()), str(order.user), str(order.actual_price), str(order.discount), str(order.total_price), str(order.payment_method)]
+        data.append(row)
+
+    table = Table(data)
+
+    table.setStyle(TableStyle(
+        [
+            ('BACKGROUND', (0,0), (-1,0), colors.grey), 
+            ('BACKGROUND', (0,1), (-1,-1), colors.white), 
+            ('GRID', (0,0), (-1,-1),1, colors.black),  # Grid color
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'),  # Center align all cells
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),  # Middle align all cells
+            ('FONTSIZE', (0,0), (-1,-1), 14),  # Increase the font size
+            ('LEFTPADDING', (0,0), (-1,-1), 12),  # Increase the left padding
+            ('RIGHTPADDING', (0,0), (-1,-1), 12),  # Increase the right padding
+            ('TOPPADDING', (0,0), (-1,-1), 12),  # Increase the top padding
+            ('BOTTOMPADDING', (0,0), (-1,-1), 12),  # Increase the bottom padding
+            ('COLUMN_WIDTHS', (0,0), (-1,-1), [50, 100, 100, 100, 100, 100, 150])  # Specify the width for each column
+        ]
+    ))
+    w, h = table.wrapOn(p, 600, 600)
+    table.drawOn(p, x, y-h)  # Draw the table at the current position
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=f"Sales report  {from_date} - {to_date}.pdf")

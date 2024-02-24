@@ -31,7 +31,8 @@
       
     <div class="card-body" id="result">
         <h3 style="text-align: center;">Overall Sales Report</h3>
-        <a href="{% url 'sales_report_all' %}">Download CSV</a>
+        <a href="{% url 'sales_report_all' %}">Download CSV</a><br>
+        <a href="{% url 'sales_report_all_pdf' %}">Download PDF</a>
         <hr>
         <p><strong>Sales count:</strong> {{ orders.count }}</p>
 <p><strong>Order amount:</strong> ₹{{ total_order_amount }}</p>

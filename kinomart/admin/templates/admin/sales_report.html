@@ -1,12 +1,16 @@
 <h3 style="text-align: center;"> Sales Report </h3>
 <h6 style="text-align: center;">{{from_date}} to {{to_date}}</h6>
 {% if range == 'custom' %}
-<a href="/admin/sales_report/{{from_date}}/{{to_date}}">Download CSV</a>
+<a href="/admin/sales_report/{{from_date}}/{{to_date}}">Download CSV</a><br>
+<a href="/admin/sales_report_pdf/{{from_date}}/{{to_date}}">Download PDF</a>
+
 {% else %}
 
 
 
-<a href="{% url 'sales_report_range' range %}">Download CSV</a>
+<a href="{% url 'sales_report_range' range %}">Download CSV</a><br>
+<a href="{% url 'sales_report_pdf' range %}">Download PDF</a>
+
 {% endif %}
         <hr>
         <p><strong>Sales count:</strong> {{ orders.count }}</p>

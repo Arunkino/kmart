@@ -51,6 +51,13 @@ urlpatterns = [
     path('sales_report_range/<str:range>', views.sales_report_range, name='sales_report_range'),
     path('sales_report/<str:from_date>/<str:to_date>', views.sales_report_customrange, name='sales_report_customrange'),
     
+    path('sales_report_all_pdf', views.sales_report_all_pdf, name='sales_report_all_pdf'),
+    path('sales_report_pdf/<str:range>', views.sales_report_pdf, name='sales_report_pdf'),
+    path('sales_report_pdf/<str:from_date>/<str:to_date>', views.sales_report_pdf_customrange, name='sales_report_pdfcustomrange'),
+
+
+
+    
 
 
     path('sales_report_day/', views.sales_report_day, name='sales_report_day'),
