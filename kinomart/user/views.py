@@ -40,7 +40,7 @@ def index(request):
                     
 
 
-                if variant:
+                if variant and not variant.is_holded:
                     product_data.append({
                     'product_id': product.id,
                     'variant_id':variant.id,
@@ -87,7 +87,8 @@ def search_index(request):
                     
 
 
-                product_data.append({
+                if variant and not variant.is_holded:
+                    product_data.append({
                     'product_id': product.id,
                     'variant_id':variant.id,
                     'product_name': product.product_name,
@@ -280,15 +281,16 @@ def view_product(request,id):
     varients=product.varients.all()
     varient_data=[]
     for varient in varients:
-        varient_data.append({
-            'id':varient.id,
-            'qty':varient.quantity,
-            'unit':varient.unit,
-            'is_offer':product.is_offer,
-            'offer_price':varient.offer_price,
-            'price':varient.price,
+        if not varient.is_holded:
+            varient_data.append({
+                'id':varient.id,
+                'qty':varient.quantity,
+                'unit':varient.unit,
+                'is_offer':product.is_offer,
+                'offer_price':varient.offer_price,
+                'price':varient.price,
 
-        })
+            })
         
     
 
@@ -802,6 +804,8 @@ def payment_status(request):
         order.razorpay_payment_id=response['razorpay_payment_id']
         order.payment_status=True
         order.save()
+        discount=Decimal(order.actual_price)-Decimal(order.total_price)
+
 
 
         
@@ -813,7 +817,7 @@ def payment_status(request):
             coupon.count-=1
             coupon.save()
 
-        return render(request, 'user/success.html', {'status': True})
+        return render(request, 'user/success.html', {'status': True,'discount':discount})
 
 
     except Exception as e:

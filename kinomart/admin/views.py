@@ -71,6 +71,7 @@ def list_product(request):
             image = images.image.url if images else None
             variant_data.append({
                 'id': variant.id,
+                'is_holded':variant.is_holded,
                 'name': product.product_name,
                 'product_id':product.id,
                 'description': product.description,
@@ -95,7 +96,11 @@ def edit_product(request,id):
     return render(request,'admin/edit_product.html',{'varient':varient,'categories':categories,'sub_categories':sub_categories,'brands':brands,'images':images})
 
 def hold_product(request,id):
-    pass
+    varient=ProductVarient.objects.get(id=id)
+    varient.is_holded=True
+    varient.save()
+
+    return redirect ('list_product')
 
 
 def admin_orders(request):

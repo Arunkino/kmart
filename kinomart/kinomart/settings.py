@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'products.apps.ProductsConfig',
     'offer.apps.OfferConfig',
     'corsheaders',
+    'paypal.standard.ipn',
 ]
 
 MIDDLEWARE = [

@@ -62,6 +62,8 @@
                         <label for="category" class="form-label">Category</label>
                     <br>
                     <select name="category" id="category">
+                        <option value="">choose  category</option>
+
                           {% for category in categories %}
                               <option value="{{ category.id }}">{{ category.category }}</option>
                           {% endfor %}
@@ -71,6 +73,8 @@
                         <label for="sub_category" class="form-label">Sub Category</label>
                     <br>
                     <select name="sub_category" id="sub_category">
+                        <option value="">choose sub category</option>
+
                           {% for sub_category in sub_categories %}
                               <option value="{{ sub_category.id }}">{{ sub_category.sub_category }}</option>
                           {% endfor %}

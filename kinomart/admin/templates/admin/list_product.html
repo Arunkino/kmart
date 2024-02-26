@@ -91,7 +91,8 @@
             </tfoot>
             <tbody>
                 {% for variant in variants %}
-                <tr>
+                {% if variant.is_holded %}
+                <tr class="holded">
                     <td>{{variant.id}}</td>
                     <td>{{variant.name}}</td>
                     <td>{{variant.category}}</td>
@@ -104,6 +105,24 @@
                         <a href="{% url 'hold_product' variant.id %}" title="hold" class="btn btn-sm btn-close btn-outline-danger"></a></td>
                        
                 </tr>
+
+                {% else %}
+                <tr >
+                    <td>{{variant.id}}</td>
+                    <td>{{variant.name}}</td>
+                    <td>{{variant.category}}</td>
+                    <td>{{variant.description}}</td>
+                    <td>{{variant.brand}}</td>
+                    <td>{{variant.stock}}</td>
+                    <td>{{variant.price}}</td>
+                    <td><img src="{{variant.image}}" style="height: 50px;" alt=""></td>
+                    <td><a href="{% url 'edit_product' variant.id %}" title="edit" class="btn btn-sm  btn-outline-secondary " ><i class="fa-solid fa-pencil"></i></a>
+                        <a href="{% url 'hold_product' variant.id %}" title="hold" class="btn btn-sm btn-close btn-outline-danger"></a></td>
+                       
+                </tr>
+
+                {% endif %}
+                
                 {% endfor %}
             </tbody>
         </table>
