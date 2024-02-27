@@ -55,9 +55,10 @@
                 </div>
                 <div class="col-md-6" style="border-left: solid rgb(32, 134, 3) 2px; padding-left: 30px;">
                     <p>Payment Method: {{ order.payment_method }}</p>
+                    
                     <!-- <p>Delivery Instructions: {{ order.delivery_instructions }}</p> -->
                     {% if order.status == 'Pending' %}
-                    {% if order.return_status == 'none' %}
+                    {% if not order.return_status %}
                     <p>Status: <span style="color: rgb(167, 167, 3);">{{ order.status }}</span>
 
                         <a href="{% url 'cancel_order' order.order_id %}" class="btn btn-danger btn-sm" style="margin-left: 15px;" onclick="return confirm('Are you sure you want to cancel this order?');">cancel order</a>
@@ -72,7 +73,7 @@
                     </p>
                     {% else %}
                     <p>Status: <span style="color: rgb(52, 208, 13);">{{ order.status }}</span>
-                    {% if order.return_status == 'none' %}
+                    {% if not order.return_status %}
 
                         <a href="{% url 'return_order' order.order_id %}" class="btn btn-secondary btn-sm" style="margin-left: 15px;">Return</a>
                     {% else %}
