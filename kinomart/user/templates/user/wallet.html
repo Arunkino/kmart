@@ -37,10 +37,40 @@
                             
                             
                         </div>
-                        <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
-                            <h5 class="mb-0 ps-4 me-4">Balance:</h5>
-                            <p class="mb-0 pe-4">₹{{wallet.balance}}</p>
+
+
+<button id="show-history-button" style="float: right;" class="btn btn-sm">show history</button><br>
+<table class="table table-striped" style="display: none; margin-left: 5px;" id="history-table">
+  <thead>
+    <tr>
+      <th scope="col">Date</th>
+      <th scope="col">Discription</th>
+      <th scope="col">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for transaction in transactions %}
+
+    <tr>
+      <td>{{transaction.transaction_date}}</td>
+      <td>{{transaction.discription}}</td>
+      {% if transaction.transaction_amount < 0 %}
+
+      <td class="mb-0 text-danger"> -{{transaction.transaction_amount}}</td>
+      {% else %}
+      <td class="mb-0 text-success"> +{{transaction.transaction_amount}}</td>
+      {% endif %}
+
+    </tr>
+    {% endfor %}
+    
+  </tbody>
+</table><br>
+                        <div class="d-flex justify-content-between mb-4 ms-4 ">
+                            <h4 class="mb-0 me-4">Balance:</h4>
+                            <h4 class="mb-0">₹{{wallet.balance}}</h4>
                         </div>
+                        
                         <button class="btn border-secondary rounded-pill px-4 py-2 text-primary text-uppercase mb-4 ms-4" type="button">Add Money</button>
                     </div>
 
@@ -72,6 +102,10 @@
 
 {% block scripts %}
 <script>
+    $('#show-history-button').click(function(){
+        $('#history-table').show();
+        $('#show-history-button').hide();
+    })
    
     </script>
     

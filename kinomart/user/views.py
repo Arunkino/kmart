@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from . models import User,UserAddress,Cart,Order,OrderItem,OrderAddress,Wallet
+from . models import User,UserAddress,Cart,Order,OrderItem,OrderAddress
 from products.models import Category,ProductImages,Products,ProductVarient
+from wallet.models import Wallet,WalletTransactions
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth import get_user_model,authenticate,login,logout
@@ -453,6 +454,8 @@ def cancel_order(request,id):
         wallet.balance+=order.total_price
         wallet.last_transaction=f'+{order.total_price}'
         wallet.save()
+
+        transaction=WalletTransactions.objects.create(wallet=wallet,transaction_amount=order.total_price,discription=f'Order ID:{order.id} - refund')
         messages.info(request,f'Order cancelled and ₹{order.total_price} has been refunded to your wallet')
 
 
@@ -479,9 +482,11 @@ def wishlist(request):
 
 def wallet(request):
     wallet=Wallet.objects.get(user=request.user)
+    transactions=WalletTransactions.objects.filter(wallet=wallet).order_by('id')
 
 
-    return render(request,'user/wallet.html',{'wallet':wallet})
+    transactions=WalletTransactions.objects.filter(wallet=wallet).order_by('id')
+    return render(request,'user/wallet.html',{'wallet':wallet,'transactions':transactions})
 
 
 
@@ -715,11 +720,6 @@ def checkout(request):
         
 
         address=UserAddress.objects.get(id=address_id)
-
-
-        
-        
-        
         client = razorpay.Client(auth=('rzp_test_b714EP5tPrXbn2', 'I5DOPeyeM27wIDIO37uP0foG'))
 
         # create order

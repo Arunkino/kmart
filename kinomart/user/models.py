@@ -58,7 +58,3 @@ class OrderAddress(models.Model):
     address_line=models.TextField(null=True)
     
 
-class Wallet(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    balance = models.DecimalField(max_digits=7, decimal_places=2,default=0)
-    last_transaction=models.CharField(max_length=100,default="0.00")
