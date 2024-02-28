@@ -56,7 +56,7 @@
       <td>{{transaction.discription}}</td>
       {% if transaction.transaction_amount < 0 %}
 
-      <td class="mb-0 text-danger"> -{{transaction.transaction_amount}}</td>
+      <td class="mb-0 text-danger"> {{transaction.transaction_amount}}</td>
       {% else %}
       <td class="mb-0 text-success"> +{{transaction.transaction_amount}}</td>
       {% endif %}

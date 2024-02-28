@@ -27,7 +27,15 @@
         <div class="col-md-9 ">
 
           <h3>Your Cart</h3>
+          {% if messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {% for message in messages %}
+           {{message}}
 
+        {% endfor %}
+       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+     </div>
+     {% endif %}
 
 
           {% if not cart_items %}
