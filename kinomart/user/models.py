@@ -1,14 +1,27 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from products.models import ProductVarient
+import uuid
+import base64
 
 # Create your models here.
 class User(AbstractUser):
     
     phone = models.CharField(max_length=50)
+    referral_code=models.CharField(max_length=20,blank=True,null=True)
+    
     def __str__(self) -> str:
         return self.first_name
     
+    def generate_verification_code(self):
+        return base64.urlsafe_b64encode(uuid.uuid1().bytes)[:15].decode("utf-8")
+
+    def save(self, *args, **kwargs):
+        if not self.referral_code:
+            self.referral_code = self.generate_verification_code()
+        return super(User, self).save(*args, **kwargs)
+
+
 
 class UserAddress(models.Model):
     city= models.CharField(max_length=50,null=True)

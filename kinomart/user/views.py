@@ -122,12 +122,25 @@ def signup(request):
     if request.method=='POST':
 
         User=get_user_model()
-
+        request.session.clear()
+        
 
         first_name=request.POST['first_name']
         last_name=request.POST['last_name']
         email=request.POST['email']
         phone=request.POST['mobile']
+
+        if request.POST['refferal_code']:
+            refferal_code=request.POST['refferal_code']
+            if not User.objects.filter(referral_code=refferal_code).exists():
+
+                messages.info(request,'You have entered a wrong refferal code!')
+
+                return redirect('signup')
+            else:
+                request.session['refferal_code']=refferal_code
+
+
 # validating mobile number
         if len(phone)!=10:
             messages.info(request,'Mobile number must be 10 digits')
@@ -183,7 +196,7 @@ def signup(request):
         
         otp=random.randint(10000,99999)
         request.session['otp']=otp
-
+        print("OTP SEND",otp)
 
         subject = 'Thank you for registering on Kino Mart'
         message = f' Your otp for registration is {otp}'
@@ -196,7 +209,11 @@ def signup(request):
         User=get_user_model()
         us=User(first_name=first_name,last_name=last_name,email=email,phone=phone,username=email,is_active=False)
         us.password=make_password(password)
+        
         us.save()
+        Wallet.objects.create(user=us)
+
+        
         ad=UserAddress(pin=pin,address_line=address_line,city=city,landmark=landmark,user_id=us)
         ad.save()
         request.session['user_id']=us.id
@@ -225,10 +242,41 @@ def otp_user(request):
             user.is_active=True
             user.save()
 
+
+            if request.session['refferal_code']:
+                        refferal_code=request.session['refferal_code']
+                # if refferal_code then adding money to reffered user 
+                        reffered_user=User.objects.get(referral_code=refferal_code)
+                        wallet=Wallet.objects.get(user=reffered_user)
+                        wallet.balance+=100
+                        wallet.last_transaction="+100"
+                        wallet.save()
+
+                        WalletTransactions.objects.create(wallet=wallet,transaction_amount=100,discription=f"Refferal bonus for {user}")
+                # adding money to new user 
+                        wallet=Wallet.objects.get(user=user)
+                        wallet.balance+=100
+                        wallet.last_transaction="+100"
+                        wallet.save()
+
+                        WalletTransactions.objects.create(wallet=wallet,transaction_amount=100,discription=f"Refferal bonus by {reffered_user}")
+
+
             
             # creating session when user registered succussfully with auto login
             
             request.session['user_email']=user.email
+            user = authenticate(request, username=user.username, password=user.password)
+            if user is not None:
+                # Log the user in
+                login(request, user)
+                user.is_active = True
+                user.save()
+                messages.info(request,'Signup Success!!')
+
+                return redirect('home')
+            messages.info(request,'Something went wrong!!')
+            
             return redirect('home')
         else:
             messages.info(request,'Incorrect OTP entered!!')
@@ -308,7 +356,8 @@ def user_page(request):
 
 
     if 'user_email' in request.session:
-        return render(request,'user/user_profile.html')
+        user=request.user
+        return render(request,'user/user_profile.html',{'user':user})
     
     else:
         return redirect('login_user')
@@ -399,7 +448,7 @@ def order_history(request):
     orders_list=[]
     for order in orders:
         order_id=order.id
-        order_date=order.order_date
+        order_date=order.order_date.date()
         total=order.total_price
         payment_method=order.payment_method
         status=order.status
@@ -855,7 +904,7 @@ def checkout(request):
     
 @csrf_exempt
 def payment_status(request):
-    
+    print("ghjkgfhjghj")
 
     response=request.POST
     print("******************",response)

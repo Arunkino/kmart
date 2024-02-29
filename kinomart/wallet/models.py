@@ -1,6 +1,6 @@
 from django.db import models
 from user.models import User
-from datetime import datetime
+from datetime import date
 
 # Create your models here.
 class Wallet(models.Model):
@@ -10,9 +10,9 @@ class Wallet(models.Model):
 
 class WalletTransactions(models.Model):
     wallet=models.ForeignKey(Wallet,on_delete=models.CASCADE)
-    transaction_date=models.DateField(default=datetime.now())
+    transaction_date=models.DateField(default=date.today)
     transaction_amount=models.DecimalField(max_digits=7, decimal_places=2)
     discription=models.CharField(max_length=150)
 
 
-    
+
