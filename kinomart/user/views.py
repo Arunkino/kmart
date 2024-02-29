@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from . models import User,UserAddress,Cart,Order,OrderItem,OrderAddress
+from . models import User,UserAddress,Cart,Order,OrderItem,OrderAddress,Wishlist
 from products.models import Category,ProductImages,Products,ProductVarient
 from wallet.models import Wallet,WalletTransactions
 from django.contrib import messages
@@ -24,6 +24,9 @@ from decimal import Decimal
 
 
 def index(request):
+    wishlist_items=None
+    if request.user.is_authenticated and Wishlist.objects.filter(user=request.user).exists():
+        wishlist_items=Wishlist.objects.filter(user=request.user)
     categories = Category.objects.prefetch_related('subcategories').all()
     category_data = []
     for category in categories:
@@ -36,6 +39,9 @@ def index(request):
                 images = ProductImages.objects.filter(product_id=product).first()
                 image = images.image.url if images else None
                 variant = product.varients.first()
+                is_wishlist=False
+                if wishlist_items and  wishlist_items.filter(product=variant).exists():
+                    is_wishlist=True
 
                 
                     
@@ -54,7 +60,8 @@ def index(request):
                     'brand': product.brand.brand_name,
                     'is_offer':product.is_offer,
                     'offer':product.offer,
-                    'image': image,      
+                    'image': image,     
+                    'is_wishlist':is_wishlist, 
                 })             
             subcategory_data.append({
                 'subcategory_id': subcategory.id,
@@ -647,6 +654,52 @@ def cart(request):
 
     context={'cart_items':item_details,'product_total':product_total,'delivery':delivery,'total':product_total+delivery,'address':address}
     return render(request,'user/cart.html',context)
+
+
+
+
+@csrf_exempt
+def remove_from_wishlist(request):
+    variantId=int(request.POST['variantId'])
+    product=ProductVarient.objects.get(id=variantId)
+    wishlist_item=Wishlist.objects.filter(user=request.user,product=product)
+    wishlist_item.delete()
+    return JsonResponse({'message': 'Product removed from wishlist successfully!'})
+
+
+@csrf_exempt
+def add_to_wishlist(request):
+    if request.method == 'POST':
+
+        variantId = int(request.POST.get('variantId'))
+        variant=ProductVarient.objects.get(id=variantId)
+
+# finding rate from database, not from template.
+        
+        if not request.user.is_authenticated:
+            messages.info(request,'You need to login first for adding items to the wishlist')
+
+            return JsonResponse({'error': 'login_required'})
+        user=request.user
+
+        if  not variantId or not user:
+            return JsonResponse({'error': 'An error occured!!'})
+        
+
+        
+
+
+                
+
+        try:
+            Wishlist.objects.create(user=user,product=variant)
+            print("whishlist added")
+            return JsonResponse({'message': 'Product added to wishlist successfully!'})
+
+        except:
+            return JsonResponse({'message': 'Product not added to wishlist. An error occured!!'})
+
+
 
 
 # add_to_cart ajax call now from detail page

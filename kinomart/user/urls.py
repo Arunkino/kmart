@@ -50,6 +50,8 @@ urlpatterns = [
     path('update_cart/', views.update_cart, name='update_cart'),
 
     path('add_to_cart/', views.add_to_cart, name='add_to_cart'),
+    path('add_to_wishlist/', views.add_to_wishlist, name='add_to_wishlist'),
+    path('remove_from_wishlist/', views.remove_from_wishlist, name='remove_from_wishlist'),
     path('cart_count/', views.cart_count, name='cart_count'),
     path('checkout/', views.checkout, name='checkout'),
     path('payment_status/', views.payment_status, name='payment_status'),

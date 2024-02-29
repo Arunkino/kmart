@@ -71,3 +71,7 @@ class OrderAddress(models.Model):
     address_line=models.TextField(null=True)
     
 
+class Wishlist(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    product=models.ForeignKey(ProductVarient,on_delete=models.CASCADE)
+

@@ -188,9 +188,15 @@
     
     
                                                     {% endif %}
-    
                                                             <a href="" data-product-id="{{product.product_id}}" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-cart"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
                                                             
+                                                            {% if product.is_wishlist %}
+                                                            <a href="" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary remove-from-whishlist"><i class="fa-solid fa-heart"></i></a>
+                                                            
+
+                                                            {% else %}
+                                                            <a href="" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-wishlist"><i class="fa-regular fa-heart"></i></a>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -831,6 +837,71 @@
        {% block scripts %}
        <script>
         $(document).ready(function() {
+
+// remove from wishlist
+$('.remove-from-whishlist').click(function(e){
+    e.preventDefault();
+    var variantId = $(this).data("variant-id");
+    var thisElement= $(this);
+
+    $.ajax({
+            url: "{% url 'remove_from_wishlist' %}",
+            type: "POST",
+            data: {
+                variantId: variantId,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function(response) {
+        if(response.error === 'login_required') {
+            window.location.href = "{% url 'login_user' %}";
+        } else if(response.message) {
+            // alert(response.message);
+            thisElement.replaceWith('<a href="" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-wishlist"><i class="fa-regular fa-heart"></i></a>');
+
+        }
+    }
+        });
+
+
+
+})
+
+
+
+// add to wishlist 
+$(".add-to-wishlist").click(function(e) {
+        e.preventDefault();
+
+
+
+        // Get the id of the currently active variant
+        var variantId = $(this).data("variant-id");
+
+        var thisElement= $(this);
+
+        // AJAX request to add to cart
+        $.ajax({
+            url: "{% url 'add_to_wishlist' %}",
+            type: "POST",
+            data: {
+                variantId: variantId,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function(response) {
+        if(response.error === 'login_required') {
+            window.location.href = "{% url 'login_user' %}";
+        } else if(response.message) {
+            // alert(response.message);
+            thisElement.replaceWith('<a href="" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary remove-from-whishlist"><i class="fa-solid fa-heart"></i></a>');
+
+        }
+    }
+        });
+    });
+
+
+
+
     $(".add-to-cart").click(function(e) {
         e.preventDefault();
 
