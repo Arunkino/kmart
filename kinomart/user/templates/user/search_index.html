@@ -31,6 +31,7 @@
             
             
             <div class="tab-content">
+                <p>Search result</p>
 
 <!-- for all products -->
 
@@ -70,7 +71,13 @@
                                         {% endif %}
 
                                                 <a href="" data-product-id="{{product.product_id}}" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-cart"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                {% if product.is_wishlist %}
+                                                <a href="" data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary remove-from-whishlist"><i class="fa-solid fa-heart"></i></a>
                                                 
+                            
+                                                {% else %}
+                                                <a href="" data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-wishlist"><i class="fa-regular fa-heart"></i></a>
+                                                {% endif %}  
                                             </div>
                                         </div>
                                     </div>
@@ -116,6 +123,15 @@
     <div class="mt-auto text-center">
         <p class="text-dark fs-5 fw-bold mb-0">₹{{product.price}} / {{product.quantity}}{{product.unit}}</p>
         <a href="" data-product-id="{{product.product_id}}" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-cart"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+        {% if product.is_wishlist %}
+        <button data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary remove-from-whishlist"><i class="fa-solid fa-heart"></i></button>
+        
+
+        {% else %}
+        <button data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-wishlist"><i class="fa-regular fa-heart"></i></button>
+        {% endif %}
+    
+    
     </div>
 </div>
 </div>

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from products.models import ProductVarient
+from products.models import ProductVarient,Products
 import uuid
 import base64
 
@@ -73,5 +73,5 @@ class OrderAddress(models.Model):
 
 class Wishlist(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
-    product=models.ForeignKey(ProductVarient,on_delete=models.CASCADE)
+    product=models.ForeignKey(Products,on_delete=models.CASCADE)
 

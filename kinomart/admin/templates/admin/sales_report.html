@@ -8,17 +8,24 @@
 
 
 
-<a href="{% url 'sales_report_range' range %}">Download CSV</a><br>
-<a href="{% url 'sales_report_pdf' range %}">Download PDF</a>
 
 {% endif %}
         <hr>
-        <p><strong>Sales count:</strong> {{ orders.count }}</p>
-<p><strong>Order amount:</strong> ₹{{ total_order_amount }}</p>
-<p><strong>Sales discount:</strong> ₹{{ total_discount }}</p>
+        <div class="row">
+            <div class="col-md-10">
+                <p><strong>Sales count:</strong> {{ orders.count }}</p>
+                <p><strong>Order amount:</strong> ₹{{ total_order_amount }}</p>
+                <p><strong>Sales discount:</strong> ₹{{ total_discount }}</p>
 
+            </div>
+            <div class="col-md-2 text-success">
+                <a class="btn" title="Download as .csv file" href="{% url 'sales_report_range' range %}"><i class="fa-solid fa-download fa-lg"></i> <i class="fa-solid fa-file-csv fa-lg"></i></a><br>
+                <a class="btn" title="Download as .pdf file" href="{% url 'sales_report_pdf' range %}"><i class="fa-solid fa-download fa-lg"></i> <i class="fa-solid fa-file-pdf fa-lg"></i></a>
+                
+            </div>
+        </div>
         <hr>
-        <table id="datatablesSimple">
+        <table id="datatablesSimple" class="table m-3">
             <thead>
                 <tr>
                     <th>ID</th>

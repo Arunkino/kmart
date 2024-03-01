@@ -191,11 +191,11 @@
                                                             <a href="" data-product-id="{{product.product_id}}" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-cart"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
                                                             
                                                             {% if product.is_wishlist %}
-                                                            <a href="" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary remove-from-whishlist"><i class="fa-solid fa-heart"></i></a>
+                                                            <a href="" data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary remove-from-whishlist"><i class="fa-solid fa-heart"></i></a>
                                                             
 
                                                             {% else %}
-                                                            <a href="" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-wishlist"><i class="fa-regular fa-heart"></i></a>
+                                                            <a href="" data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-wishlist"><i class="fa-regular fa-heart"></i></a>
                                                             {% endif %}
                                                         </div>
                                                     </div>
@@ -252,6 +252,15 @@
                     {% endif %}
 
                     <a href="" data-product-id="{{product.product_id}}" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-cart"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                
+                    {% if product.is_wishlist %}
+                    <button data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary remove-from-whishlist"><i class="fa-solid fa-heart"></i></button>
+                    
+
+                    {% else %}
+                    <button data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-wishlist"><i class="fa-regular fa-heart"></i></button>
+                    {% endif %}
+                
                 </div>
             </div>
         </div>
@@ -841,22 +850,24 @@
 // remove from wishlist
 $('.remove-from-whishlist').click(function(e){
     e.preventDefault();
-    var variantId = $(this).data("variant-id");
+    var productId = $(this).data("product-id");
     var thisElement= $(this);
+    console.log("ID",productId);
+
 
     $.ajax({
             url: "{% url 'remove_from_wishlist' %}",
             type: "POST",
             data: {
-                variantId: variantId,
+                productId: productId,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
             },
             success: function(response) {
         if(response.error === 'login_required') {
             window.location.href = "{% url 'login_user' %}";
         } else if(response.message) {
-            // alert(response.message);
-            thisElement.replaceWith('<a href="" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-wishlist"><i class="fa-regular fa-heart"></i></a>');
+            alert(response.message);
+            thisElement.replaceWith('<a href="" data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-wishlist"><i class="fa-regular fa-heart"></i></a>');
 
         }
     }
@@ -875,7 +886,8 @@ $(".add-to-wishlist").click(function(e) {
 
 
         // Get the id of the currently active variant
-        var variantId = $(this).data("variant-id");
+        var productId = $(this).data("product-id");
+        console.log("ID",productId);
 
         var thisElement= $(this);
 
@@ -884,15 +896,15 @@ $(".add-to-wishlist").click(function(e) {
             url: "{% url 'add_to_wishlist' %}",
             type: "POST",
             data: {
-                variantId: variantId,
+                productId: productId,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
             },
             success: function(response) {
         if(response.error === 'login_required') {
             window.location.href = "{% url 'login_user' %}";
         } else if(response.message) {
-            // alert(response.message);
-            thisElement.replaceWith('<a href="" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary remove-from-whishlist"><i class="fa-solid fa-heart"></i></a>');
+            alert(response.message);
+            thisElement.replaceWith('<a href="" data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary remove-from-whishlist"><i class="fa-solid fa-heart"></i></a>');
 
         }
     }

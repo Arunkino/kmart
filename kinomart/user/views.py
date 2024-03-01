@@ -40,7 +40,7 @@ def index(request):
                 image = images.image.url if images else None
                 variant = product.varients.first()
                 is_wishlist=False
-                if wishlist_items and  wishlist_items.filter(product=variant).exists():
+                if wishlist_items and  wishlist_items.filter(product=product).exists():
                     is_wishlist=True
 
                 
@@ -78,6 +78,9 @@ def index(request):
 
 def search_index(request):
     search=request.GET['search']
+    wishlist_items=None
+    if request.user.is_authenticated and Wishlist.objects.filter(user=request.user).exists():
+        wishlist_items=Wishlist.objects.filter(user=request.user)
     categories = Category.objects.prefetch_related('subcategories').all()
     category_data = []
     for category in categories:
@@ -87,6 +90,9 @@ def search_index(request):
             products = subcategory.products.filter(Q(product_name__icontains=search) | Q(description__icontains=search))
             product_data = []        
             for product in products:
+                is_wishlist=False
+                if wishlist_items and  wishlist_items.filter(product=product).exists():
+                    is_wishlist=True
                 images = ProductImages.objects.filter(product_id=product).first()
                 image = images.image.url if images else None
                 variant = product.varients.first()
@@ -108,7 +114,8 @@ def search_index(request):
                     'brand': product.brand.brand_name,
                     'is_offer':product.is_offer,
                     'offer':product.offer,
-                    'image': image,      
+                    'image': image, 
+                    'is_wishlist':is_wishlist,     
                 })             
             subcategory_data.append({
                 'subcategory_id': subcategory.id,
@@ -332,8 +339,11 @@ def logout_user(request):
 
 
 def view_product(request,id):
+    
     product=Products.objects.prefetch_related('varients','images').get(id=id)
-
+    is_wishlist=False
+    if request.user.is_authenticated and Wishlist.objects.filter(user=request.user,product=product).exists():
+        is_wishlist=True
     varients=product.varients.all()
     varient_data=[]
     for varient in varients:
@@ -345,13 +355,14 @@ def view_product(request,id):
                 'is_offer':product.is_offer,
                 'offer_price':varient.offer_price,
                 'price':varient.price,
+                
 
             })
         
     
 
 
-    return render(request,'user/view_product.html',{'product':product,'varient_data':varient_data})
+    return render(request,'user/view_product.html',{'product':product,'varient_data':varient_data,'is_wishlist':is_wishlist })
 
 
 
@@ -532,8 +543,28 @@ def return_order(request,id):
 
 def wishlist(request):
 
+    wishlist_items=Wishlist.objects.filter(user=request.user)
 
-    return render(request,'user/wishlist.html')
+
+    product_list=[]
+    for item in wishlist_items:
+        product=item.product
+        image=ProductImages.objects.filter(product_id=product).first()
+        image = image.image.url if image else None
+        variant=product.varients.first()
+
+        product_list.append({
+            'product_id':product.id,
+            'product_name':product.product_name,
+            'image':image,
+            'variant_id':variant.id,
+
+
+        })
+
+
+
+    return render(request,'user/wishlist.html',{'products':product_list})
 
 
 def wallet(request):
@@ -660,8 +691,8 @@ def cart(request):
 
 @csrf_exempt
 def remove_from_wishlist(request):
-    variantId=int(request.POST['variantId'])
-    product=ProductVarient.objects.get(id=variantId)
+    productId=int(request.POST['productId'])
+    product=Products.objects.get(id=productId)
     wishlist_item=Wishlist.objects.filter(user=request.user,product=product)
     wishlist_item.delete()
     return JsonResponse({'message': 'Product removed from wishlist successfully!'})
@@ -671,8 +702,8 @@ def remove_from_wishlist(request):
 def add_to_wishlist(request):
     if request.method == 'POST':
 
-        variantId = int(request.POST.get('variantId'))
-        variant=ProductVarient.objects.get(id=variantId)
+        productId = int(request.POST.get('productId'))
+        product=Products.objects.get(id=productId)
 
 # finding rate from database, not from template.
         
@@ -682,17 +713,18 @@ def add_to_wishlist(request):
             return JsonResponse({'error': 'login_required'})
         user=request.user
 
-        if  not variantId or not user:
+        if  not productId or not user:
             return JsonResponse({'error': 'An error occured!!'})
         
 
         
 
+        if Wishlist.objects.filter(user=user,product=product).exists():
+            return JsonResponse({'message': 'Product already in wishlist!'})
 
-                
 
         try:
-            Wishlist.objects.create(user=user,product=variant)
+            Wishlist.objects.create(user=user,product=product)
             print("whishlist added")
             return JsonResponse({'message': 'Product added to wishlist successfully!'})
 

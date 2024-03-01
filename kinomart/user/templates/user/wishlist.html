@@ -31,7 +31,31 @@
 
 
 
-            <h1>Wishlist page</h1>
+            <div class="container">
+            <h3>Wishlist</h3>
+
+                <div class="row">
+                    {% for product in products %}
+                    <div class="col-sm-4 col-md-3 mt-3">
+                        <div class="card">
+                            <div class="fruite-img">
+                                <a href="/product/{{product.product_id}}"><img src="{{product.image}}" style="height: 200px;" class="img-fluid w-100 rounded-top card-img-top" alt="{{product.product_name}}"></a>
+                            </div>
+                            <div class="card-body">
+                                <h4 class="card-title">{{product.product_name}}</h4>
+                                <p class="card-text">{{product.description}}</p>
+                                <a href="" data-product-id="{{product.product_id}}" data-variant-id="{{product.variant_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-cart"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                            
+                                                            <a href="" data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary remove-from-whishlist"><i class="fa-solid fa-heart"></i></a>
+                                                            
+
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
         </div>
     </div>
 </div>
@@ -48,7 +72,122 @@
 
 {% block scripts %}
 <script>
-   
+   $(document).ready(function() {
+
+// remove from wishlist
+$('.remove-from-whishlist').click(function(e){
+    e.preventDefault();
+    var productId = $(this).data("product-id");
+    var thisElement= $(this);
+    console.log("ID",productId);
+
+
+    $.ajax({
+            url: "{% url 'remove_from_wishlist' %}",
+            type: "POST",
+            data: {
+                productId: productId,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function(response) {
+        if(response.error === 'login_required') {
+            window.location.href = "{% url 'login_user' %}";
+        } else if(response.message) {
+            alert(response.message);
+            thisElement.replaceWith('<a href="" data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary add-to-wishlist"><i class="fa-regular fa-heart"></i></a>');
+
+        }
+    }
+        });
+
+
+
+})
+
+
+
+// add to wishlist 
+$(".add-to-wishlist").click(function(e) {
+        e.preventDefault();
+
+
+
+        // Get the id of the currently active variant
+        var productId = $(this).data("product-id");
+        console.log("ID",productId);
+
+        var thisElement= $(this);
+
+        // AJAX request to add to cart
+        $.ajax({
+            url: "{% url 'add_to_wishlist' %}",
+            type: "POST",
+            data: {
+                productId: productId,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function(response) {
+        if(response.error === 'login_required') {
+            window.location.href = "{% url 'login_user' %}";
+        } else if(response.message) {
+            alert(response.message);
+            thisElement.replaceWith('<a href="" data-product-id="{{product.product_id}}" class="btn border border-secondary rounded-pill px-3 text-primary remove-from-whishlist"><i class="fa-solid fa-heart"></i></a>');
+
+        }
+    }
+        });
+    });
+
+
+
+
+    $(".add-to-cart").click(function(e) {
+        e.preventDefault();
+
+        var quantity = 1;
+
+        // Get the product id
+        var productId = $(this).data("product-id");
+
+        // Get the id of the currently active variant
+        var variantId = $(this).data("variant-id");
+
+        // AJAX request to add to cart
+        $.ajax({
+            url: "{% url 'add_to_cart' %}",
+            type: "POST",
+            data: {
+                product_id: productId,
+                quantity: quantity,  // Include the quantity in the data
+                variantId: variantId,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function(response) {
+        if(response.error === 'login_required') {
+            window.location.href = "{% url 'login_user' %}";
+        } else if(response.message) {
+            // alert(response.message);
+
+// for changing the count on cart icon
+            updateCartCount();
+        }
+    }
+        });
+    });
+});
+
+function updateCartCount() {
+    // AJAX request to get the cart count
+    $.ajax({
+        url: "{% url 'cart_count' %}",
+        type: "GET",
+        success: function(response) {
+            // Update the count on the page
+            $(".cart-count").text(response.count);
+        }
+    });
+}
+
     </script>
     
 
