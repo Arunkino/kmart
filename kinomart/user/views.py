@@ -662,7 +662,7 @@ def cart(request):
 
         else:
             price=item.price
-        product_total+=price
+        product_total+=price*quantity
 
         product=variant.product_id
         image=ProductImages.objects.filter(product_id=product).first()
@@ -889,6 +889,12 @@ def checkout(request):
                     single_price=item.product.price
                     actual_price+=(single_price*item.quantity)
 
+                    # updating stock
+                    variant=item.product
+                    variant.stock-=item.quantity
+                    variant.save()
+                    print("stock updatedd:::")
+
                     OrderItem.objects.create(order=order,product=item.product,quantity=item.quantity,price=item.price)
                 
                 order.actual_price=actual_price 
@@ -918,9 +924,87 @@ def checkout(request):
                 discount=Decimal(actual_price)-Decimal(total_price)
 
                 return render(request, 'user/success.html', {'status': True,'discount':discount})
-
             
 
+
+    #Wallet payment ends here
+
+
+    #for cod payment
+            if payment_method=='cod':
+
+                wallet=Wallet.objects.get(user=user)
+
+                print("wallet balance",wallet.balance)
+                print("order amount",total_price)
+                if wallet.balance < total_price: #insuficiant balance
+                    messages.info(request,"You don't have sufficiant balance on your wallet!!")
+                    print("You don't have sufficiant balance on your wallet!!")
+
+                    return redirect('cart')
+                # if wallet has sufficiant balance, then creating order.
+                address=UserAddress.objects.get(id=address_id)
+                client = razorpay.Client(auth=('rzp_test_b714EP5tPrXbn2', 'I5DOPeyeM27wIDIO37uP0foG'))
+
+                # create order
+                amount = int(float(total_price) * 100)
+                response_payment = client.order.create(dict(amount=amount,currency='INR'))
+
+                print(response_payment)
+
+
+                order_id=response_payment['id']
+                order_status=response_payment['status']
+
+                if order_status == 'created':
+                    order=Order.objects.create(user=user,payment_method=payment_method,delivery_instructions=instructions,total_price=total_price,order_id=order_id)
+
+                    order_address = OrderAddress.objects.create(city=address.city,state=address.state,landmark=address.landmark,pin=address.pin,address_line=address.address_line,order=order)
+
+
+                    cart_items=Cart.objects.filter(user=user)
+
+                    actual_price=50 #Adding delivery charge
+                    for item in cart_items:
+                        single_price=item.product.price
+                        actual_price+=(single_price*item.quantity)
+
+                        # updating stock
+                        variant=item.product
+                        variant.stock-=item.quantity
+                        variant.save()
+                        print("stock updatedd:::")
+
+                        OrderItem.objects.create(order=order,product=item.product,quantity=item.quantity,price=item.price)
+                    
+                    order.actual_price=actual_price 
+                    order.payment_status=True
+                    order.save()
+                    print("actual_order price",actual_price)
+
+                    cart_items.delete()
+
+                    if 'coupon_code' in request.POST and request.POST['coupon_code']:
+                        code = request.POST['coupon_code']
+                        coupon=Coupon.objects.get(coupon_code=code)
+                        AppliedCoupon.objects.create(user=request.user,coupon=coupon)
+                        coupon.count-=1
+                        coupon.save()
+
+
+                    # updating wallet
+                    wallet.balance-=total_price
+                    wallet.last_transaction=f'-{total_price}'
+                    wallet.save()
+
+                    w_transaction=WalletTransactions.objects.create(wallet=wallet,transaction_amount=-(total_price),discription=f'Order ID:{order.id} purchase')
+
+                    print("actualll",actual_price)
+                    print("totalll",total_price)
+                    discount=Decimal(actual_price)-Decimal(total_price)
+
+                    return render(request, 'user/success.html', {'status': True,'discount':discount})
+                #############################################################################################
         print('grand total',total_price)
         
 

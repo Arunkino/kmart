@@ -150,7 +150,7 @@
 
               <a href="{% url 'user_address' %}" class="btn btn-outline-secondary">Change Address</a><br><br>
               
-              <button data-bs-toggle="modal" data-bs-target="#checkout" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</button>
+              <button data-bs-toggle="modal" data-bs-target="#checkout" id="proceed-checkout-button" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</button>
               
 
             </div>
@@ -210,8 +210,11 @@
               <input type="radio" id="wallet" name="payment" value="wallet" required>
               <label for="wallet">Wallet</label><br>
 
+
               <input type="radio" id="cod" name="payment" value="cod" required>
-              <label for="cod">Cash on Delivery</label><br>
+              <label for="cod" id="cod-label">Cash on Delivery</label><br>
+              <p id="cod-warning" style="font-size: smaller; color: red;">Orders above 1000 cannot be paid with Cash on Delivery.</p>
+
           
           </div>
           <hr>
@@ -258,7 +261,7 @@
           <span aria-hidden="true">×</span>
           </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="font-size: smaller; color: red;">
           <!-- Your form goes here -->
           <form action="{% url 'payment_status' %}" method="POST">
 
@@ -289,7 +292,7 @@
       
       </div>
   </div>
-</div>
+</div >
 
 
 
@@ -313,6 +316,24 @@ $(document).ready(function(){
 {% endif %}
 
 <script>
+
+$(document).ready(function(){
+
+// for cod disabling when more than 1000
+$('#proceed-checkout-button').click(function(){
+  var product_total = parseInt($('#product_total_id').text(), 10);
+    console.log(product_total)
+    if (product_total > 1000) {
+        $('#cod').prop('disabled', true);
+        $('#cod-warning').show();
+    } else {
+      $('#cod-warning').hide();
+
+    }
+})
+
+
+
 $(".btn-minus").on('click', function() {
   var cartid = $(this).data('cartid');
   var quantityInput = $("#quantity" + cartid);
@@ -428,6 +449,16 @@ $("#apply_coupon").on('click', function() {
     });
 });
 
+
+
+
+
+
+
+
+
+
+})
     </script>
     
 
