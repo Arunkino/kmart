@@ -75,3 +75,13 @@ class Wishlist(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     product=models.ForeignKey(Products,on_delete=models.CASCADE)
 
+
+class TempData(models.Model):
+    payment_method=models.CharField(max_length=50)
+    address_id=models.CharField(max_length=50)
+    instructions=models.CharField(max_length=100,blank=True,null=True)
+    total_price=models.DecimalField(max_digits=10,decimal_places=2)
+    user=models.OneToOneField(User,on_delete=models.CASCADE,blank=True,null=True,related_name='order_data')
+    coupon_code=models.CharField(max_length=100,blank=True,null=True)
+    order_id=models.CharField(max_length=100,blank=True)
+
