@@ -19,10 +19,103 @@ import razorpay
 from admin.models import Coupon,AppliedCoupon
 from datetime import datetime
 from decimal import Decimal
+import io
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import Table,TableStyle
+from reportlab.lib import colors
 
 # Create your views here.
 
+def invoice(request,id):
+    order=Order.objects.get(id=id)
+    print(order)
+    order_items=OrderItem.objects.filter(order=order)
+    order_address=OrderAddress.objects.get(order=order)
+    buffer = io.BytesIO()
 
+    p = canvas.Canvas(buffer, pagesize=letter)
+    p.setTitle('Sale Invoice')
+
+  
+    # Set initial coordinates
+    x = 50
+    y = 750
+
+    # Draw the report title and other details
+    p.drawString(x+150, y, 'SALE INVOICE')
+    y -= 25
+    p.line(x, y, x + 500, y)
+    y -= 20
+    p.drawString(x, y, f'Order Date: {order.order_date.strftime('%d-%m-%Y')}')
+    y -= 20
+    p.drawString(x, y, f'Order Amount: {order.total_price}')
+    y -= 20
+    p.drawString(x, y, f'orderid: {order.order_id}')
+    y -= 50
+
+    p.line(x, y, x + 500, y)
+    y -= 30
+#Draw address details
+    p.drawString(x,y, "Shipping Address")
+    y-=30
+    p.drawString(x,y, f"{order.user}")
+    y-=20
+    p.drawString(x,y, f"{order_address.address_line}")
+    y-=20
+    
+    p.drawString(x,y, f"{order_address.landmark}")
+    y-=20
+    p.drawString(x,y, f"PINCODE: {order_address.pin}")
+    y-=20
+    p.drawString(x,y, f"{order_address.city}")
+    y-=20
+    p.drawString(x,y, f"{order_address.state}")
+    y-=20
+    p.drawString(x,y, f"MOB: {order.user.phone}")
+    y-=25
+
+    data = [['Sl','Item Id', 'Product', 'Qty', 'Total']]  # Add headers to the data list
+    for i,item in enumerate(order_items, start=1) :
+        row = [str(i),str(item.id), str(item.product), str(item.quantity),str(item.price)]
+        data.append(row)
+
+    table = Table(data)
+
+    table.setStyle(TableStyle(
+        [
+            ('BACKGROUND', (0,0), (-1,0), colors.grey), 
+            ('BACKGROUND', (0,1), (-1,-1), colors.white), 
+            ('GRID', (0,0), (-1,-1),1, colors.black),  # Grid color
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'),  # Center align all cells
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),  # Middle align all cells
+            ('FONTSIZE', (0,0), (-1,-1), 14),  # Increase the font size
+            ('LEFTPADDING', (0,0), (-1,-1), 12),  # Increase the left padding
+            ('RIGHTPADDING', (0,0), (-1,-1), 12),  # Increase the right padding
+            ('TOPPADDING', (0,0), (-1,-1), 12),  # Increase the top padding
+            ('BOTTOMPADDING', (0,0), (-1,-1), 12),  # Increase the bottom padding
+            ('COLUMN_WIDTHS', (0,0), (-1,-1), [50, 100, 100, 100, 100, 100, 150])  # Specify the width for each column
+        ]
+    ))
+    w, h = table.wrapOn(p, 600, 600)
+    table.drawOn(p, x, y-h)  # Draw the table at the current position
+
+    y-=h
+
+
+    p.drawRightString(x+500,y-100, "Authorised Signature")
+    p.drawRightString(x+500,y-130, "Kino Mart")
+    
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename="invoice.pdf")
+
+
+
+    return redirect('/')
 def index(request):
     wishlist_items=None
     if request.user.is_authenticated and Wishlist.objects.filter(user=request.user).exists():
@@ -896,7 +989,7 @@ def continue_checkout(request):
 
                 discount=Decimal(order.actual_price)-Decimal(order.total_price)
 
-                return render(request, 'user/success.html', {'status': True,'discount':discount})
+                return render(request, 'user/success.html', {'status': True,'discount':discount,'order_id':order.id})
             
 
 
@@ -1013,7 +1106,7 @@ def checkout(request):
                 print("totalll",total_price)
                 discount=Decimal(actual_price)-Decimal(total_price)
 
-                return render(request, 'user/success.html', {'status': True,'discount':discount})
+                return render(request, 'user/success.html', {'status': True,'discount':discount,'order_id':order.id})
             
 
 
@@ -1083,7 +1176,7 @@ def checkout(request):
                 print("totalll",total_price)
                 discount=Decimal(actual_price)-Decimal(total_price)
 
-                return render(request, 'user/success.html', {'status': True,'discount':discount})
+                return render(request, 'user/success.html', {'status': True,'discount':discount,})
             #COD ENDS HERE  ############################################################################################
 
 
@@ -1202,7 +1295,7 @@ def payment_status(request):
             
             
 
-            return render(request, 'user/success.html', {'status': True,'discount':discount})
+            return render(request, 'user/success.html', {'status': True,'discount':discount,'order_id':order.id})
 
 
     except Exception as e:
@@ -1249,7 +1342,7 @@ def continue_payment_status(request):
             
             
 
-            return render(request, 'user/success.html', {'status': True,'discount':discount})
+            return render(request, 'user/success.html', {'status': True,'discount':discount,'order_id':order.id})
 
 
     except Exception as e:

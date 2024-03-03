@@ -61,6 +61,7 @@ urlpatterns = [
 
 
 
+    path('invoice/<int:id>', views.invoice, name='invoice'),
     
 
     

@@ -47,7 +47,10 @@
             </p>
                 {% endif %}
         </div>
-       <a href="{% url 'order_history' %}"> <img style="width: 85%;" src="{% static 'img/order.jpg' %}" alt="Order Placed"></a>
+        {% if order_id %}
+        <a href="{% url 'invoice' order_id %}"><i class="fa-solid fa-receipt"></i> Download Invoice</a>
+       {% endif %}
+        <a href="{% url 'order_history' %}"> <img style="width: 85%;" src="{% static 'img/order.jpg' %}" alt="Order Placed"></a>
     
     
         {% else %}
