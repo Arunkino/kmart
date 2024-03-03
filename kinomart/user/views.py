@@ -931,97 +931,108 @@ def checkout(request):
 
 
     #for cod payment
-            if payment_method=='cod':
+        if payment_method=='cod':
 
-                if total_price >=1000:
-                    messages.info(request,"Order above 1000 can't be cash on delevery")
-                    return redirect('cart')
+            if total_price >=1000:
+                messages.info(request,"Order above 1000 can't be cash on delevery")
+                return redirect('cart')
 
+            
+            # if wallet has sufficiant balance, then creating order.
+            address=UserAddress.objects.get(id=address_id)
+            client = razorpay.Client(auth=('rzp_test_b714EP5tPrXbn2', 'I5DOPeyeM27wIDIO37uP0foG'))
+
+            # create order
+            amount = int(float(total_price) * 100)
+            response_payment = client.order.create(dict(amount=amount,currency='INR'))
+
+            print(response_payment)
+
+
+            order_id=response_payment['id']
+            order_status=response_payment['status']
+
+            if order_status == 'created':
+                order=Order.objects.create(user=user,payment_method=payment_method,delivery_instructions=instructions,total_price=total_price,order_id=order_id)
+
+                order_address = OrderAddress.objects.create(city=address.city,state=address.state,landmark=address.landmark,pin=address.pin,address_line=address.address_line,order=order)
+
+
+                cart_items=Cart.objects.filter(user=user)
+
+                actual_price=50 #Adding delivery charge
+                for item in cart_items:
+                    single_price=item.product.price
+                    actual_price+=(single_price*item.quantity)
+
+                    # updating stock
+                    variant=item.product
+                    variant.stock-=item.quantity
+                    variant.save()
+                    print("stock updatedd:::")
+
+                    OrderItem.objects.create(order=order,product=item.product,quantity=item.quantity,price=item.price)
                 
-                # if wallet has sufficiant balance, then creating order.
-                address=UserAddress.objects.get(id=address_id)
-                client = razorpay.Client(auth=('rzp_test_b714EP5tPrXbn2', 'I5DOPeyeM27wIDIO37uP0foG'))
+                order.actual_price=actual_price 
+                order.payment_status=False
+                order.save()
+                print("actual_order price",actual_price)
 
-                # create order
-                amount = int(float(total_price) * 100)
-                response_payment = client.order.create(dict(amount=amount,currency='INR'))
+                cart_items.delete()
 
-                print(response_payment)
-
-
-                order_id=response_payment['id']
-                order_status=response_payment['status']
-
-                if order_status == 'created':
-                    order=Order.objects.create(user=user,payment_method=payment_method,delivery_instructions=instructions,total_price=total_price,order_id=order_id)
-
-                    order_address = OrderAddress.objects.create(city=address.city,state=address.state,landmark=address.landmark,pin=address.pin,address_line=address.address_line,order=order)
-
-
-                    cart_items=Cart.objects.filter(user=user)
-
-                    actual_price=50 #Adding delivery charge
-                    for item in cart_items:
-                        single_price=item.product.price
-                        actual_price+=(single_price*item.quantity)
-
-                        # updating stock
-                        variant=item.product
-                        variant.stock-=item.quantity
-                        variant.save()
-                        print("stock updatedd:::")
-
-                        OrderItem.objects.create(order=order,product=item.product,quantity=item.quantity,price=item.price)
-                    
-                    order.actual_price=actual_price 
-                    order.payment_status=False
-                    order.save()
-                    print("actual_order price",actual_price)
-
-                    cart_items.delete()
-
-                    if 'coupon_code' in request.POST and request.POST['coupon_code']:
-                        code = request.POST['coupon_code']
-                        coupon=Coupon.objects.get(coupon_code=code)
-                        AppliedCoupon.objects.create(user=request.user,coupon=coupon)
-                        coupon.count-=1
-                        coupon.save()
-
-
-                    
-                    print("actualll",actual_price)
-                    print("totalll",total_price)
-                    discount=Decimal(actual_price)-Decimal(total_price)
-
-                    return render(request, 'user/success.html', {'status': True,'discount':discount})
-                #COD ENDS HERE  ############################################################################################
-
-
-                # for order like upi or card, creating razorpay order and storing details in tempdata
-
-                client = razorpay.Client(auth=('rzp_test_b714EP5tPrXbn2', 'I5DOPeyeM27wIDIO37uP0foG'))
-
-                # create order
-                amount = int(float(total_price) * 100)
-                response_payment = client.order.create(dict(amount=amount,currency='INR'))
-
-                order_id=response_payment['id']
-                order_status=response_payment['status']
-
-                if order_status == 'created':
-                    
-                    data=TempData.objects.create(address_id=address_id,user=user,payment_method=payment_method,delivery_instructions=instructions,total_price=total_price,order_id=order_id)
-
-        
-        
                 if 'coupon_code' in request.POST and request.POST['coupon_code']:
-                        code = request.POST['coupon_code']
-                        data.coupon_code=code
-                        data.save()
-                
+                    code = request.POST['coupon_code']
+                    coupon=Coupon.objects.get(coupon_code=code)
+                    AppliedCoupon.objects.create(user=request.user,coupon=coupon)
+                    coupon.count-=1
+                    coupon.save()
 
-                return render(request, 'user/cart.html', {'show_checkout_modal': True,'order':order,})
-    
+
+                
+                print("actualll",actual_price)
+                print("totalll",total_price)
+                discount=Decimal(actual_price)-Decimal(total_price)
+
+                return render(request, 'user/success.html', {'status': True,'discount':discount})
+            #COD ENDS HERE  ############################################################################################
+
+
+        # for order like upi or card, creating razorpay order and storing details in tempdata
+        print("CARD OR UPI")
+        client = razorpay.Client(auth=('rzp_test_b714EP5tPrXbn2', 'I5DOPeyeM27wIDIO37uP0foG'))
+
+        # create order
+        amount = int(float(total_price) * 100)
+        response_payment = client.order.create(dict(amount=amount,currency='INR'))
+
+        order_id=response_payment['id']
+        order_status=response_payment['status']
+
+        if order_status == 'created':
+            
+            if TempData.objects.filter(user=user).exists():
+                data=TempData.objects.get(user=user)
+                data.address_id=address_id
+                data.payment_method=payment_method
+                data.instructions=instructions
+                data.total_price=total_price
+                data.order_id=order_id
+                data.save()
+            else:
+                data=TempData.objects.create(address_id=address_id,user=user,payment_method=payment_method,instructions=instructions,total_price=total_price,order_id=order_id)
+            print("TEMP DATA CREATED")
+
+
+        if 'coupon_code' in request.POST and request.POST['coupon_code']:
+                code = request.POST['coupon_code']
+                data.coupon_code=code
+                data.save()
+        
+
+        return render(request, 'user/cart.html', {'show_checkout_modal': True,'order':data,})
+
+
+#FOR GET METHOD
     return redirect ('cart')
     
     
@@ -1044,30 +1055,64 @@ def payment_status(request):
     try:
 
         status=client.utility.verify_payment_signature(dic)
+        print("status:",status)
+        print(type(status))
 
-        data=TempData.objects.get(user=request.user)
-        print("checking both order id is same or not")
-        print("razorpay order:",response['razorpay_order_id'])
-        print("temp data id:",data.order_id)
+        if status:
+
+            data=TempData.objects.get(order_id=response['razorpay_order_id'])
+            print("checking both order id is same or not")
+            print("razorpay order:",response['razorpay_order_id'])
+            print("temp data id:",data.order_id)
+    # checking for coupon code
+
+            if data.coupon_code:
+                code = data.coupon_code
+                coupon=Coupon.objects.get(coupon_code=code)
+                AppliedCoupon.objects.create(user=data.user,coupon=coupon)
+                coupon.count-=1
+                coupon.save()
+                print("coupon count updated")
+
+            order=Order.objects.create(order_id=data.order_id,user=data.user,delivery_instructions=data.instructions,total_price=data.total_price,payment_method=data.payment_method,payment_status=True)
+            order.razorpay_payment_id=response['razorpay_payment_id']
+            order.save()
+
+            address=UserAddress.objects.get(id=data.address_id)
+            order_address = OrderAddress.objects.create(city=address.city,state=address.state,landmark=address.landmark,pin=address.pin,address_line=address.address_line,order=order)
 
 
-        order=Order.objects.create(order_id=data.order_id,user=request.user,delivery_instructions=data.instructions,total_price=data.total_price,payment_method=data.payment_method,payment_status=True)
-        order.razorpay_payment_id=response['razorpay_payment_id']
-        order.save()
-        discount=Decimal(order.actual_price)-Decimal(order.total_price)
+            cart_items=Cart.objects.filter(user=data.user)
+
+            actual_price=50 #Adding delivery charge
+            for item in cart_items:
+                single_price=item.product.price
+                actual_price+=(single_price*item.quantity)
+
+                # updating stock
+                variant=item.product
+                variant.stock-=item.quantity
+                variant.save()
+                print("stock updatedd:::")
+
+                OrderItem.objects.create(order=order,product=item.product,quantity=item.quantity,price=item.price)
+            
+            order.actual_price=actual_price 
+            order.payment_status=status
+            order.save()
+            print("actual_order price",actual_price)
+
+            cart_items.delete()
+
+
+            discount=Decimal(order.actual_price)-Decimal(order.total_price)
 
 
 
-        
-# checking for coupon code
-        if 'coupon_code' in response:
-            code = request.POST['coupon_code']
-            coupon=Coupon.objects.get(coupon_code=code)
-            AppliedCoupon.objects.create(user=order.user,coupon=coupon)
-            coupon.count-=1
-            coupon.save()
+            
+            
 
-        return render(request, 'user/success.html', {'status': True,'discount':discount})
+            return render(request, 'user/success.html', {'status': True,'discount':discount})
 
 
     except Exception as e:
