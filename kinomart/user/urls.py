@@ -54,7 +54,9 @@ urlpatterns = [
     path('remove_from_wishlist/', views.remove_from_wishlist, name='remove_from_wishlist'),
     path('cart_count/', views.cart_count, name='cart_count'),
     path('checkout/', views.checkout, name='checkout'),
+    path('continue_checkout/', views.continue_checkout, name='continue_checkout'),
     path('payment_status/', views.payment_status, name='payment_status'),
+    path('continue_payment_status/', views.continue_payment_status, name='continue_payment_status'),
     path('apply_coupon/', views.apply_coupon, name='apply_coupon'),
 
 

@@ -16,7 +16,7 @@
               <ul class="list-group">
                 <a href="{% url 'user_page' %}"><li class="list-group-item rounded-4">Profile</li></a>
                 <a href="{% url 'user_address' %}"><li class="list-group-item rounded-4">Shopping Address</li></a>
-                <a href="{% url 'order_history' %}"><li class="list-group-item rounded-4">Order History</li></a>
+                <a href="{% url 'order_history' %}"><li class="list-group-item rounded-4 active">Order History</li></a>
                 <a href="{% url 'wishlist' %}"><li class="list-group-item rounded-4">My Wishlist</li></a>
                 <a href="{% url 'cart' %}"><li class="list-group-item rounded-4">My Cart</li></a>
                 <a href="{% url 'wallet' %}"><li class="list-group-item rounded-4">Wallet</li></a>
@@ -84,8 +84,10 @@
 
 
                         {% endif %}
-                    
-                    <button class="btn btn-outline-secondary btn-sm toggleButton" data-orderid="{{ order.order_id }}">Show Details</button>
+                    {% if not order.payment_status %}
+                    <button data-bs-toggle="modal" data-razorpay_order_id="{{order.razorpay_order_id}}" data-user="{{order.user}}" data-orderid="{{order.order_id}}" data-total="{{order.total}}" data-bs-target="#checkout" class="btn btn-outline-primary btn-sm make-payment-button"><i class="fa-solid fa-money-check-dollar"></i> Make Payment</button><br><br>
+                    {% endif %}
+                    <button class="btn btn-outline-secondary btn-sm toggleButton" data-orderid="{{ order.order_id }}">Show Details <i class="fa-solid fa-angle-right"></i></button>
                     
                 </div>
             </div>
@@ -138,6 +140,118 @@
 
 
 
+<!-- modal for checkout -->
+<div class="modal fade" id="checkout" tabindex="-1" role="dialog" aria-labelledby="checkoutLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Continue Payment</h5>
+            <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Your form goes here -->
+            <form class="checkout-form" action="{% url 'continue_checkout' %}" method="post">
+            {% csrf_token %}
+  
+            <table class="table">
+              <tbody>
+                  <tr>
+                  
+                  <tr>
+                      <th scope="row">Pending Amount</th>
+                      <th scope="row">₹<strong class="grand_total">{{total}}</strong></th>
+                  </tr>
+              </tbody>
+          </table>
+            <div class="form-group">
+                <h6>Choose Payment Option</h6><hr>
+  
+                <input type="radio" id="card" name="payment" value="card" required>
+                <label for="card">Credit/Debit card</label><br>
+  
+                <input type="radio" id="upi" name="payment" value="upi" required>
+                <label for="upi">BHIM UPI</label><br>
+  
+                <input type="radio" id="wallet" name="payment" value="wallet" required>
+                <label for="wallet">Wallet</label><br>
+  
+
+                
+                
+            
+            </div>
+            <hr>
+            
+        
+            
+  
+            
+          
+            
+            <!-- Add more fields as needed -->
+            <div class="modal-footer">
+  
+              <input type="hidden" name="total_price" class="grand_total" value="">
+              <input type="hidden" id="order_id" name="order_id" value="">
+  
+            <button type="submit" id="" class="btn btn-primary">Confirm Order</button>
+  
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </form>
+            
+        </div>
+        
+        </div>
+    </div>
+  </div>
+  
+<!-- model for razorpay -->
+<div class="modal fade" id="razorpay" tabindex="-1" role="dialog" aria-labelledby="razorpayLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Choose payment gateway {{selected_order.total_price}}</h5>
+            <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body" style="font-size: smaller; color: red;">
+            <!-- Your form goes here -->
+            <form action="{% url 'continue_payment_status' %}" method="POST">
+  
+              {% csrf_token %}
+              
+              
+          <script
+              src="https://checkout.razorpay.com/v1/checkout.js"
+              data-key="rzp_test_b714EP5tPrXbn2"
+              data-amount="{{selected_order.total_price}}"
+              data-currency="INR"
+              data-order_id="{{selected_order.order_id}}"
+              data-buttontext="Pay with Razorpay"
+              data-name="Kino Mart Grocery"
+              data-description="Compleate Grocery Store"
+              data-image="https://example.com/your_logo.jpg"
+              data-prefill.name="{{selected_order.user}}"
+              data-prefill.email="abc@ss.com"
+              data-theme.color="#F37254"
+          ></script>
+          <input type="hidden" custom="Hidden Element" name="hidden"/>
+          {% if coupon_code %}
+          <input type="hidden" name="coupon_code" id="" value="{{coupon_code}}">
+          {% endif %}
+          </form>
+            
+        </div>
+        
+        </div>
+    </div>
+  </div >
+  
+  
 
 
                
@@ -146,18 +260,44 @@
 {% endblock %}
 
 {% block scripts %}
+{% if show_checkout_modal %}
 <script>
 $(document).ready(function(){
+    $("#razorpay").modal('show');
+});
+</script>
+{% endif %}
+<script>
+$(document).ready(function(){
+
+    console.log("ready         ")
+
+    $('.make-payment-button').click(function(){
+        console.log("clicked")
+    var total = parseFloat($(this).data('total'));
+    var orderId = $(this).data('orderid');
+    var user = $(this).data('user');
+    var razorpay_order_id = $(this).data('razorpay_order_id');
+    $('.grand_total').val("34567");
+    $('.grand_total').text(total);
+    $('#order_id').val(orderId);
+    console.log("clicked")
+
+
+    
+});
+
+
     $(".toggleButton").click(function(){
         var orderId = $(this).data("orderid");
         var detailsDiv = $("#details" + orderId);
         
         if (detailsDiv.is(":visible")) {
             detailsDiv.fadeOut();
-            $(this).text("Show Details");
+            $(this).html("Show Details <i class='fa-solid fa-angle-right'></i>");
         } else {
             detailsDiv.fadeIn();
-            $(this).text("Hide Details");
+            $(this).html("Hide Details <i class='fa-solid fa-angle-down'></i>");
         }
     });
 });

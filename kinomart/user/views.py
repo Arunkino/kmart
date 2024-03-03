@@ -470,6 +470,7 @@ def order_history(request):
         total=order.total_price
         payment_method=order.payment_method
         status=order.status
+        payment_status=order.payment_status
 
         item_details=[]
 
@@ -504,6 +505,9 @@ def order_history(request):
                 'status':status,
                 'return_status':order.return_status,
                 'items':item_details,
+                'payment_status':payment_status,
+                'user':order.user,
+                'razorpay_order_id':order.order_id,
 
             }
         )
@@ -840,7 +844,93 @@ def cart_count(request):
         return JsonResponse({'count': count})
     else:
         return JsonResponse({'count': 0})
-    
+
+def continue_checkout(request):
+    if request.method == 'POST':
+        order_id=request.POST['order_id']
+        payment_method=request.POST['payment']
+
+        order=Order.objects.get(id=order_id)
+        user=order.user
+        print(order)
+
+    #for wallet payment
+        if payment_method=='wallet':
+            wallet=Wallet.objects.get(user=user)
+
+            print("wallet balance",wallet.balance)
+            if wallet.balance < order.total_price: #insuficiant balance
+                messages.info(request,"You don't have sufficiant balance on your wallet!!")
+                print("You don't have sufficiant balance on your wallet!!")
+
+                return redirect('wallet')
+            # if wallet has sufficiant balance, then creating order.
+            client = razorpay.Client(auth=('rzp_test_b714EP5tPrXbn2', 'I5DOPeyeM27wIDIO37uP0foG'))
+
+            # create order
+            amount = int(float(order.total_price) * 100)
+            response_payment = client.order.create(dict(amount=amount,currency='INR'))
+
+            print(response_payment)
+
+
+            order_id=response_payment['id']
+            order_status=response_payment['status']
+
+            if order_status == 'created':
+           
+
+                
+                # updating wallet
+                wallet.balance-=order.total_price
+                wallet.last_transaction=f'-{order.total_price}'
+                wallet.save()
+
+                w_transaction=WalletTransactions.objects.create(wallet=wallet,transaction_amount=-(order.total_price),discription=f'Order ID:{order.id} purchase')
+
+                #updating order status
+                order.order_id=order_id
+                order.payment_status=True
+                order.payment_method=payment_method
+                order.save()
+
+                discount=Decimal(order.actual_price)-Decimal(order.total_price)
+
+                return render(request, 'user/success.html', {'status': True,'discount':discount})
+            
+
+
+    #Wallet payment ends here
+            
+            #for upi or cart
+        else:
+            
+    # for order like upi or card, creating razorpay order and storing details in tempdata
+            print("CARD OR UPI")
+            client = razorpay.Client(auth=('rzp_test_b714EP5tPrXbn2', 'I5DOPeyeM27wIDIO37uP0foG'))
+
+            # create order
+            amount = int(float(order.total_price) * 100)
+            response_payment = client.order.create(dict(amount=amount,currency='INR'))
+
+            order_id=response_payment['id']
+            order_status=response_payment['status']
+
+            if order_status == 'created':
+                order.order_id=order_id
+                order.payment_method=payment_method
+                order.save()
+                
+
+            
+            
+
+                return render(request, 'user/order_history.html', {'show_checkout_modal': True,'selected_order':order,})
+
+
+
+
+        return redirect('order_history')
 
 def checkout(request):
     if request.method == 'POST':
@@ -1103,6 +1193,53 @@ def payment_status(request):
             print("actual_order price",actual_price)
 
             cart_items.delete()
+
+
+            discount=Decimal(order.actual_price)-Decimal(order.total_price)
+
+
+
+            
+            
+
+            return render(request, 'user/success.html', {'status': True,'discount':discount})
+
+
+    except Exception as e:
+        print("EXEPTION")
+        print(e)
+        return render(request, 'user/success.html', {'status': False})
+
+    
+@csrf_exempt
+def continue_payment_status(request):
+
+    response=request.POST
+    print("******************",response)
+    dic={
+    'razorpay_order_id': response['razorpay_order_id'],
+    'razorpay_payment_id': response['razorpay_payment_id'],
+    'razorpay_signature': response['razorpay_signature'],
+    }
+    client = razorpay.Client(auth=("rzp_test_b714EP5tPrXbn2", "I5DOPeyeM27wIDIO37uP0foG"))
+
+
+
+    try:
+
+        status=client.utility.verify_payment_signature(dic)
+        print("status:",status)
+
+        if status:
+
+            order=Order.objects.get(order_id=response['razorpay_order_id'])
+            print("checking both order id is same or not")
+            print("razorpay order:",response['razorpay_order_id'])
+   
+
+            order.payment_status=status
+            order.save()
+
 
 
             discount=Decimal(order.actual_price)-Decimal(order.total_price)
