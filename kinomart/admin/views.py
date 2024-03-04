@@ -17,11 +17,26 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import Table,TableStyle
 from reportlab.lib import colors
+from datetime import datetime,timedelta
 
 # Create your views here.
 def index(request):
     if 'admin_email' in request.session:
-        return render(request,'admin/index_admin.html')
+        end_date=timezone.now().date()
+        start_date=end_date-timezone.timedelta(days=10)
+
+        delta=end_date-start_date
+        label=[]
+        data=[]
+
+        for i in range(delta.days+1):
+            current_date = start_date + timedelta(days=i)
+            label.append(current_date.strftime('%b %d'))
+
+            order_count=Order.objects.filter(order_date__date=current_date).count()
+            data.append(order_count)
+        
+        return render(request,'admin/index_admin.html',{'label':label,'data':data})
     return redirect('admin_login')
 
 def login(request):
