@@ -28,6 +28,9 @@ class Unit(models.Model):
 class Brand(models.Model):
     brand_name=models.CharField(max_length=50)
 
+    def __str__(self) -> str:
+        return self.brand_name
+
 
 class Products(models.Model):
     product_name=models.CharField(max_length=100)

@@ -30,6 +30,7 @@ urlpatterns = [
     path('admin_orders/', views.admin_orders,name='admin_orders'),
     path('index', views.index,name='index'),
     path('chart_date_index', views.chart_date_index,name='chart_date_index'),
+    path('top_selling', views.top_selling,name='top_selling'),
     path('block/<int:id>/', views.block_user,name='block_user'), 
     path('users/unblock/<int:id>/', views.unblock_user,name='unblock_user'), 
     path('edit_categories/', views.edit_categories,name='edit_categories'),

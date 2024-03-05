@@ -21,6 +21,41 @@ from datetime import datetime,timedelta
 from dateutil.relativedelta import relativedelta
 
 # Create your views here.
+
+def top_selling(request):
+    top_selling_range=request.GET.get('data')
+    print(top_selling_range)
+    result=[]
+
+    if top_selling_range =='product':
+        header="Top Selling Products"   
+        product_sales = OrderItem.objects.values('product').annotate(total_quantity=Sum('quantity')).order_by('-total_quantity')
+        for i in range (9):
+            product =ProductVarient.objects.get(id=product_sales[i]['product'])
+            result.append(product.product_id.product_name)
+    
+    elif top_selling_range == 'category':
+        header = "Top Selling Categories"
+        
+        # Aggregate the total quantity of each category sold
+        category_sales = OrderItem.objects.values('product__product_id__sub_category__category__category').annotate(Total_quantity=Sum('quantity')).order_by('-Total_quantity')
+
+        for i in range(min(9, len(category_sales))):
+            category = Category.objects.get(category=category_sales[i]['product__product_id__sub_category__category__category'])
+            result.append(category.category)
+    elif top_selling_range == 'brand':
+        header = "Top Selling Brand"
+
+        brand_sales = OrderItem.objects.values('product__product_id__brand__brand_name').annotate(total_quantity=Sum('quantity')).order_by('-total_quantity')
+
+        for i in range (min(9, len(brand_sales))):
+
+            brand = Brand.objects.get(brand_name=brand_sales[i]['product__product_id__brand__brand_name'])
+            result.append(brand.brand_name)
+    
+
+    print(result)
+    return JsonResponse({'result':result,'header':header})
 def chart_date_index(request):
     date_range = request.GET.get('date_range')
     print(date_range)

@@ -8,6 +8,7 @@
                         <ol class="breadcrumb mb-4">
                             <li class="breadcrumb-item active"></li>
                         </ol>
+                        <hr>
                         <div class="row">
                             <div class="col-xl-3 col-md-6">
                                 <div class="card bg-primary text-white mb-4">
@@ -47,43 +48,62 @@
                             </div>
                         </div>
 
-
-                        <div class="row p-4 ">
+<hr>
+                        <div class="row p-4" style="display: none;" id="top-selling-div">
+                          <h3 style="text-align: center; color: burlywood;"><i class="fa-regular fa-star"></i><span id="header"></span><i class="fa-regular fa-star"></i></h3>
                             <div class="col-xl-3 col-md-4">
                               <div class="card bg-secondary text-white mb-4">
-                                  <div class="card-body">sample 1</div>
+                                  <div class="card-body result" style="display: none; text-align: center;" id="res-1">sample 1</div>
                                   
                               </div>
                             </div>
 
                             <div class="col-xl-3 col-md-4">
                               <div class="card bg-secondary text-white mb-4">
-                                  <div class="card-body">sample 2</div>
+                                  <div class="card-body result" id="res-2" style="display: none; text-align: center;">sample 2</div>
                                   
                               </div>
                             </div>
 
                             <div class="col-xl-3 col-md-4">
                               <div class="card bg-secondary text-white mb-4">
-                                  <div class="card-body">sample 3</div>
+                                  <div class="card-body result" id="res-3" style="display: none; text-align: center;">sample 3</div>
                                   
                               </div>
                             </div>
 
                             <div class="col-xl-3 col-md-4">
                               <div class="card bg-secondary text-white mb-4">
-                                  <div class="card-body">sample 1</div>
+                                  <div class="card-body result" id="res-4" style="display: none; text-align: center;">sample 4</div>
                                   
                               </div>
                             </div>
 
                             <div class="col-xl-3 col-md-4">
                               <div class="card bg-secondary text-white mb-4">
-                                  <div class="card-body">sample 1</div>
+                                  <div class="card-body result" id="res-5" style="display: none; text-align: center;">sample 5</div>
                                   
                               </div>
                             </div>
-
+                            <div class="col-xl-3 col-md-4">
+                              <div class="card bg-secondary text-white mb-4">
+                                  <div class="card-body result" id="res-6" style="display: none; text-align: center;">sample 6</div>
+                                  
+                              </div>
+                            </div>
+                            <div class="col-xl-3 col-md-4">
+                              <div class="card bg-secondary text-white mb-4">
+                                  <div class="card-body result" id="res-7" style="display: none; text-align: center;">sample 7</div>
+                                  
+                              </div>
+                            </div>
+                            <div class="col-xl-3 col-md-4">
+                              <div class="card bg-secondary text-white mb-4">
+                                  <div class="card-body result" id="res-8" style="display: none; text-align: center;">sample 8</div>
+                                  
+                              </div>
+                            </div>
+                            <hr>
                         </div>
                         
                         <div class="row mt-4 ">
@@ -92,10 +112,10 @@
 
                             <div class="col-md-2 bg-light p-1  rounded shadow" style="height: auto;">
                                 <ul class="list-group">
-                                  <button class="btn rounded-4 "><li class="list-group-item active" data-range="10">Last 10 Days</li></button>
-                                  <button class="btn rounded-4"><li class="list-group-item" data-range="week">Last Week</li></button>
-                                  <button class="btn rounded-4"><li class="list-group-item" data-range="month">Last Month</li></button>
-                                  <button class="btn rounded-4"><li class="list-group-item"data-range="year">Last Year</li></button>
+                                  <button class="btn rounded-4 "><li class="list-group-item active chart-button" data-range="10">Last 10 Days</li></button>
+                                  <button class="btn rounded-4"><li class="list-group-item chart-button" data-range="week">Last Week</li></button>
+                                  <button class="btn rounded-4"><li class="list-group-item chart-button" data-range="month">Last Month</li></button>
+                                  <button class="btn rounded-4"><li class="list-group-item chart-button"data-range="year">Last Year</li></button>
                                   
                                   
                                 </ul>
@@ -122,16 +142,15 @@
                                 </div>
                             </div>
 
-                            <!-- <div class="col-md-2 bg-light p-1  rounded shadow" style="height: auto;">
+                            <div class="col-md-2 bg-light p-1  rounded shadow" style="height: auto;">
                               <ul class="list-group">
-                                <button class="btn rounded-4 "><li class="list-group-item active" data-range="10">Last 10 Days</li></button>
-                                <button class="btn rounded-4"><li class="list-group-item" data-range="week">Last Week</li></button>
-                                <button class="btn rounded-4"><li class="list-group-item" data-range="month">Last Month</li></button>
-                                <button class="btn rounded-4"><li class="list-group-item"data-range="year">Last Year</li></button>
+                                <button class="btn rounded-4 "><li class="top-selling list-group-item" data-select="product">Top Selling Product</li></button>
+                                <button class="btn rounded-4"><li class="top-selling list-group-item" data-select="category">Top Selling Category</li></button>
+                                <button class="btn rounded-4"><li class="top-selling list-group-item" data-select="brand">Top Selling Brand</li></button>
                                 
                                 
                               </ul>
-                            </div> -->
+                            </div>
 
 
 
@@ -142,7 +161,7 @@
                             <div class="card mb-4">
                               <div class="card-header">
                                   <i class="fas fa-chart-area me-1"></i>
-                                  Area Chart Order
+                                  Order Chart
                               </div>
                               <div class="card-body"><canvas id="order-chart-area" width="100%" height="40"></canvas></div>
                           </div>
@@ -206,9 +225,41 @@ var myAreaChart = new Chart(ctxArea, {
     }
 });
 
+
+$(".top-selling").click(function(){
+  $('.result').hide();
+    $(".top-selling").removeClass("active");
+    $(this).addClass("active");
+    $('#top-selling-div').show();
+    var data = $(this).data('select');
+
+
+    $.ajax({
+      url: "{% url 'top_selling' %}",
+      data: {
+        'data':data
+      },
+      dataType:'json',
+      success: function(data){
+        console.log(data)
+        console.log(data.result)
+
+        for (let i = 0; i < data.result.length; i++) {
+            // Set the text of each div
+            $('#res-' + (i + 1)).text(data.result[i]);
+            $('#res-' + (i + 1)).show();
+        }
+        $('#header').text(data.header);
+
+
+      }
+    })
+
+})
+
 // Add click event listener to the list items
-$(".list-group-item").click(function(){
-    $(".list-group-item").removeClass("active");
+$(".chart-button").click(function(){
+    $(".chart-button").removeClass("active");
     $(this).addClass("active");
 
     var date_range = $(this).data('range');
