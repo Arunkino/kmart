@@ -33,15 +33,17 @@ def chart_date_index(request):
     end_date = datetime.now().date()
     if date_range == 'week':
         start_date = end_date - timedelta(days=7)
+        delta = end_date - start_date
+
     elif date_range == 'month':
         start_date = end_date - timedelta(days=30)
-    if date_range == 'year':
+        delta = end_date - start_date
+
+    elif date_range == 'year':
         end_month = datetime.now()
         start_month = end_month - relativedelta(months=12)
 
-        label = []
-        data = []
-        data_revenue = []
+        
 
         for i in range(13):  # 12 months + current month
             current_month = start_month + relativedelta(months=i)
