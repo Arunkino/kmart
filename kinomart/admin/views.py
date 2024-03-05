@@ -20,6 +20,42 @@ from reportlab.lib import colors
 from datetime import datetime,timedelta
 
 # Create your views here.
+def chart_date_index(request):
+    date_range = request.GET.get('date_range')
+    print(date_range)
+
+    label=[]
+    data=[]
+    data_revenue=[]
+
+
+    end_date = datetime.now().date()
+    if date_range == 'week':
+        start_date = end_date - timedelta(days=7)
+    elif date_range == 'month':
+        start_date = end_date - timedelta(days=30)
+    elif date_range == 'year':
+        pass
+    else:
+        start_date = end_date-timedelta(days=10)
+    delta = end_date - start_date
+
+    
+    for i in range(delta.days+1):
+        current_date = start_date + timedelta(days=i)
+        label.append(current_date.strftime('%b %d'))
+
+        order_count=Order.objects.filter(order_date__date=current_date).count()
+        revenue=Order.objects.filter(order_date__date=current_date,payment_status=True).aggregate(Sum('total_price'))['total_price__sum']
+        data.append(order_count)
+        if revenue:
+            data_revenue.append(float(revenue))
+        else:
+            data_revenue.append(0)
+
+    return JsonResponse({'label':label,'data':data,'data_revenue':data_revenue})
+
+
 def index(request):
     if 'admin_email' in request.session:
         end_date=timezone.now().date()
@@ -28,15 +64,20 @@ def index(request):
         delta=end_date-start_date
         label=[]
         data=[]
+        data_revenue=[]
 
         for i in range(delta.days+1):
             current_date = start_date + timedelta(days=i)
             label.append(current_date.strftime('%b %d'))
 
             order_count=Order.objects.filter(order_date__date=current_date).count()
+            revenue=Order.objects.filter(order_date__date=current_date,payment_status=True).aggregate(Sum('total_price'))['total_price__sum']
             data.append(order_count)
-        
-        return render(request,'admin/index_admin.html',{'label':label,'data':data})
+            if revenue:
+                data_revenue.append(float(revenue))
+            else:
+                data_revenue.append(0)
+        return render(request,'admin/index_admin.html',{'label':label,'data':data,'data_revenue':data_revenue})
     return redirect('admin_login')
 
 def login(request):

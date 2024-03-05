@@ -52,7 +52,7 @@ def invoice(request,id):
     y -= 20
     p.drawString(x, y, f'Order Amount: {order.total_price}')
     y -= 20
-    p.drawString(x, y, f'orderid: {order.order_id}')
+    p.drawString(x, y, f'Order Id: {order.order_id}')
     y -= 50
 
     p.line(x, y, x + 500, y)
@@ -61,18 +61,18 @@ def invoice(request,id):
     p.drawString(x,y, "Shipping Address")
     y-=30
     p.drawString(x,y, f"{order.user}")
-    y-=20
+    y-=15
     p.drawString(x,y, f"{order_address.address_line}")
-    y-=20
+    y-=15
     
     p.drawString(x,y, f"{order_address.landmark}")
-    y-=20
+    y-=15
     p.drawString(x,y, f"PINCODE: {order_address.pin}")
-    y-=20
+    y-=15
     p.drawString(x,y, f"{order_address.city}")
-    y-=20
+    y-=15
     p.drawString(x,y, f"{order_address.state}")
-    y-=20
+    y-=15
     p.drawString(x,y, f"MOB: {order.user.phone}")
     y-=25
 
