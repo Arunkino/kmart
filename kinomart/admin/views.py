@@ -18,6 +18,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import Table,TableStyle
 from reportlab.lib import colors
 from datetime import datetime,timedelta
+from dateutil.relativedelta import relativedelta
 
 # Create your views here.
 def chart_date_index(request):
@@ -34,13 +35,37 @@ def chart_date_index(request):
         start_date = end_date - timedelta(days=7)
     elif date_range == 'month':
         start_date = end_date - timedelta(days=30)
-    elif date_range == 'year':
-        pass
+    if date_range == 'year':
+        end_month = datetime.now()
+        start_month = end_month - relativedelta(months=12)
+
+        label = []
+        data = []
+        data_revenue = []
+
+        for i in range(13):  # 12 months + current month
+            current_month = start_month + relativedelta(months=i)
+            label.append(current_month.strftime('%b'))
+
+            order_count = Order.objects.filter(order_date__year=current_month.year, order_date__month=current_month.month).count()
+            revenue = Order.objects.filter(order_date__year=current_month.year, order_date__month=current_month.month, payment_status=True).aggregate(Sum('total_price'))['total_price__sum']
+            data.append(order_count)
+
+            if revenue:
+                data_revenue.append(float(revenue))
+            else:
+                data_revenue.append(0)
+
+        print(label)
+        print(data)
+        print(data_revenue)
+
+        return JsonResponse({'label': label, 'data': data, 'data_revenue': data_revenue})
     else:
         start_date = end_date-timedelta(days=10)
-    delta = end_date - start_date
+        delta = end_date - start_date
 
-    
+        
     for i in range(delta.days+1):
         current_date = start_date + timedelta(days=i)
         label.append(current_date.strftime('%b %d'))
