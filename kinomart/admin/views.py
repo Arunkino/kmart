@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from user.models import User,UserAddress,Order,OrderItem
+from wallet.models import Wallet,WalletTransactions
 from products.models import Category,SubCategory,ProductImages,Products,ProductVarient,Unit,Brand
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -530,7 +531,22 @@ def update_order_status(request):
         status = request.POST.get('status')
 
         # update the order status
-        Order.objects.filter(id=order_id).update(status=status)
+        
+        order=Order.objects.get(id=order_id)
+        order.status=status
+        order.save()
+        print(status)
+        print(order.payment_status)
+        if status == 'Cancel' and order.payment_status:
+            print("cancelling paid order")
+            user=order.user
+            amount=order.total_price
+            wallet=Wallet.objects.get(user=user)
+            wallet.balance+=amount
+            wallet.last_transaction=f'+{amount}'
+            wallet.save()
+
+            WalletTransactions.objects.create(wallet=wallet,transaction_amount=amount,discription=f'Refund of cancelled order {order.id}')
 
         return JsonResponse({'status': 'success'})
     

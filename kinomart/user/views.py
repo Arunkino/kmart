@@ -858,8 +858,12 @@ def add_to_cart(request):
 
 
                 
+        # if the item is already in the wishlist, we need delete that
+        wishlist_item = Wishlist.objects.filter(user=user,product=product_id)
 
         try:
+            if wishlist_item:
+                wishlist_item.delete()
             if cart_item:
                 print("cart already exists")
                 cart_item.quantity+=quantity
@@ -867,7 +871,6 @@ def add_to_cart(request):
                 cart_item.save()
                 print("cart added")
                 return JsonResponse({'message': 'Product added to cart successfully!'})
-
 
             price=var.price*quantity
 

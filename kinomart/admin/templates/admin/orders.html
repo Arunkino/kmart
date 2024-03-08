@@ -71,6 +71,7 @@
                                         <option class="btn btn-primary" selected class="pending" value="Pending">Pending</option>
                                         <option class="btn btn-warning" value="Dispatched">Dispatched</option>
                                         <option class="btn btn-success" value="Delivered">Delivered</option>
+                                        <option class="btn btn-danger" value="Cancel">Cancel</option>
                                     </select>
                                 
                                     {% elif order.status == 'Dispatched' %}
@@ -78,7 +79,12 @@
 
                                     <option selected class="btn btn-warning" value="Dispatched">Dispatched</option>
                                     <option class="btn btn-success" value="Delivered">Delivered</option>
+                                    <option class="btn btn-danger" value="Cancel">Cancel</option>
+
                                     </select>
+                                    {% elif order.status == 'Cancel' %}
+                                    <BUtton style="width: 120px;" class="btn btn-danger">Cancelled</BUtton>
+
                                 
                                     {% else %}
                                     
@@ -115,6 +121,7 @@
 
         var status = $(this).val();
         var orderId = $(this).data('order-id');
+        console.log(status)
         
         $.ajax({
             url: "{% url 'update_order_status' %}",  // update this with your URL
