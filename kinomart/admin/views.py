@@ -20,6 +20,8 @@ from reportlab.platypus import Table,TableStyle
 from reportlab.lib import colors
 from datetime import datetime,timedelta
 from dateutil.relativedelta import relativedelta
+from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -118,9 +120,9 @@ def chart_date_index(request):
 
     return JsonResponse({'label':label,'data':data,'data_revenue':data_revenue})
 
-
+@login_required
 def index(request):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
         end_date=timezone.now().date()
         start_date=end_date-timezone.timedelta(days=10)
 
@@ -143,40 +145,43 @@ def index(request):
         return render(request,'admin/index_admin.html',{'label':label,'data':data,'data_revenue':data_revenue})
     return redirect('admin_login')
 
-def login(request):
+def login_admin(request):
     if request.method=='POST':
         email=request.POST['email']
         password=request.POST['password']
-        if email!='admin@kino.com':
-            messages.info(request,'Invalid Email Address!')
-            return redirect('admin_login')
-        elif password!='1234':
-            messages.info(request,'Incorrct Password')
-            return redirect('admin_login')
-        else:
-            request.session['admin_email']=email
+        user=authenticate(request,username=email,password=password)
+        if user is not None:
+            login(request,user)
             return redirect('index')
+        else:
+            messages.info(request,'Invalid Email or Password!')
+            return redirect('admin_login')
+        
+
+        
 
     else:
-        if 'admin_email' in request.session:
+        if request.user.is_authenticated and request.user.is_superuser:
             return redirect('index')
 
         return render(request,'admin/admin_login.html')
     
-def logout(request):
+def logout_admin(request):
     request.session.clear()
+    logout(request)
     return redirect('admin_login')
     
-
+@login_required
 def user_list(request):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         users=User.objects.all().order_by('id')
         
         return render(request,'admin/userlist.html',{'users':users})
     return redirect('admin_login')
+@login_required
 def list_product(request):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
         categories=Category.objects.prefetch_related('subcategories').all()
         variants = ProductVarient.objects.select_related('product_id', 'product_id__sub_category','product_id__brand', 'product_id__sub_category__category').all()
         variant_data = []
@@ -221,13 +226,17 @@ def hold_product(request,id):
 
     return redirect ('list_product')
 
-
+@login_required
 def admin_orders(request):
+    if request.user.is_authenticated and request.user.is_superuser:
 
-    orders=Order.objects.all().order_by('-id')
-    return render(request, 'admin/orders.html',{'orders':orders})
+        orders=Order.objects.all().order_by('-id')
+        return render(request, 'admin/orders.html',{'orders':orders})
+    
+
+@login_required
 def block_user(request,id):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         us=User.objects.get(id=id)
         us.is_active=False
@@ -236,8 +245,9 @@ def block_user(request,id):
     return redirect('admin_login')
     
 
+@login_required
 def unblock_user(request,id):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         us=User.objects.get(id=id)
         us.is_active=True
@@ -246,8 +256,9 @@ def unblock_user(request,id):
     return redirect('admin_login')
     
 
+@login_required
 def add_product(request):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         if request.method=='POST':
 
@@ -325,9 +336,10 @@ def load_subcategories(request):
 
     return render(request, 'admin/subcategory_dropdown_list_options.html', {'subcategories': subcategories})
 
-        
+ 
+@login_required       
 def edit_categories(request):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
         
         categories = Category.objects.prefetch_related('subcategories').all().order_by('category')
         category_data = []
@@ -382,8 +394,9 @@ def edit_categories(request):
     
 
 
+@login_required
 def add_category(request):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         if request.method == 'POST':
             category_name = request.POST.get('category_name')
@@ -407,8 +420,9 @@ def add_category(request):
     return redirect('admin_login')
 
 
+@login_required
 def update_category(request):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         if request.method == 'POST':
             category_name = request.POST.get('category_name')
@@ -462,8 +476,9 @@ def update_category(request):
         return redirect('edit_categories')
     return redirect('admin_login')
 
+@login_required
 def update_subcategory(request):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         if request.method == 'POST':
             subcategory_name = request.POST.get('subcategory_name')
@@ -475,8 +490,9 @@ def update_subcategory(request):
     return redirect('admin_login')
     
 
+@login_required
 def add_subcategory(request):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         if request.method=='POST':
             sub_category=request.POST['subcategory_name']
@@ -488,8 +504,9 @@ def add_subcategory(request):
     return redirect('admin_login')
     
 
+@login_required
 def delete_subcategory(request,id):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         sub_category=SubCategory.objects.get(id=id)
         products=sub_category.products.all()
@@ -504,8 +521,9 @@ def delete_subcategory(request,id):
     return redirect('admin_login')
     
 
+@login_required
 def delete_category(request, id):
-    if 'admin_email' in request.session:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         category = Category.objects.get(id=id)
         subcategories = category.subcategories.all()
@@ -592,15 +610,17 @@ def edit_coupon(request):
     
 
 # views for sales report
+@login_required
 def sales_report(request):
+    if request.user.is_authenticated and request.user.is_superuser:
 
 
-    orders=Order.objects.filter(payment_status=True).annotate(
-    discount=F('actual_price') - F('total_price'))
-    total_discount=orders.aggregate(Sum('discount'))['discount__sum']
-    total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
+        orders=Order.objects.filter(payment_status=True).annotate(
+        discount=F('actual_price') - F('total_price'))
+        total_discount=orders.aggregate(Sum('discount'))['discount__sum']
+        total_order_amount=orders.aggregate(Sum('total_price'))['total_price__sum']
 
-    return render(request,'admin/sales_report_page.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount})
+        return render(request,'admin/sales_report_page.html',{'orders':orders,'total_discount':total_discount,'total_order_amount':total_order_amount})
 
 
 #to get all orders in CSV
