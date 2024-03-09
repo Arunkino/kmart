@@ -209,15 +209,65 @@ def list_product(request):
     return redirect('admin_login')
 
 def edit_product(request,id):
+    if request.method == 'POST':
+        product_name=request.POST.get('product_name')
+        description=request.POST.get('description')
+        brand=request.POST['brand']
+        brand=Brand.objects.get(id=brand)
+        cat=Category.objects.get(id=request.POST['category'])
+        sub=SubCategory.objects.get(id=request.POST['sub_category'])
 
+        product_varient=ProductVarient.objects.get(id=id)
+        product=product_varient.product_id
+
+
+        if request.POST['is_offer']=='True':
+                product.is_offer=True
+                off=int((request.POST['offer_select']))
+                print("offerrr idd",off)
+                offer=Offer.objects.get(id=off)
+                product.offer=offer
+        else:
+            product.is_offer=False
+            product.offer=None
+
+        product.product_name=product_name
+        product.description=description
+        product.brand=brand
+        product.sub_category=sub
+
+        product.save()
+        
+        if 'image1' in request.FILES:
+            image1 = request.FILES['image1']
+            ProductImages.objects.create(product_id=product,image=image3)
+
+        if 'image2' in request.FILES:
+            image2 = request.FILES['image2']
+            ProductImages.objects.create(product_id=product,image=image2)
+
+        if 'image3' in request.FILES:
+            image3 = request.FILES['image3']
+            ProductImages.objects.create(product_id=product,image=image3)
+
+
+
+
+        
+
+
+
+
+# for get method
     varient = ProductVarient.objects.select_related('product_id', 'product_id__sub_category','product_id__brand', 'product_id__sub_category__category').get(id=id)
     categories=Category.objects.all()
     sub_categories=SubCategory.objects.all()
     brands=Brand.objects.all().order_by('id')
+    units=Unit.objects.all()
     images=ProductImages.objects.filter(product_id=varient.product_id)
+    offers=Offer.objects.all()
 
-
-    return render(request,'admin/edit_product.html',{'varient':varient,'categories':categories,'sub_categories':sub_categories,'brands':brands,'images':images})
+    return render(request,'admin/edit_product.html',{'varient':varient,'categories':categories,'sub_categories':sub_categories,'units':units,'brands':brands,'images':images,'offers':offers})
 
 def hold_product(request,id):
     varient=ProductVarient.objects.get(id=id)
@@ -270,10 +320,12 @@ def add_product(request):
             name=request.POST['product_name']
             desc=request.POST['description']
             brand=request.POST['brand']
+
+            brand=Brand.objects.get(id=brand)
             cat=Category.objects.get(id=request.POST['category'])
             sub=SubCategory.objects.get(id=request.POST['sub_category'])
 
-            pr=Products(product_name=name,description=desc,sub_category=sub,brand_id=brand)
+            pr=Products(product_name=name,description=desc,sub_category=sub,brand=brand)
             if request.POST['is_offer']=='True':
                 pr.is_offer=True
                 off=int((request.POST['offer_select']))

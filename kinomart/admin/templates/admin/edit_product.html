@@ -22,14 +22,14 @@
                 {% csrf_token %}
             <div class="mb-1">
             
-            <label for="first_name" class="form-label">Product Name</label>
+            <label for="product_name" class="form-label">Product Name</label>
             <br>
             <input type="text" class="form-control" id="product_name" name="product_name" value="{{varient.product_id}}"> 
             </div>
 
             <div class="mb-1">
             
-                <label for="first_name" class="form-label">Description</label>
+                <label for="description" class="form-label">Description</label>
                 <br>
                 <input type="text" class="form-control" id="description" name="description" value="{{varient.product_id.description}}"> 
             </div>
@@ -53,6 +53,21 @@
 
                 <input type="radio"  id="choice2" name="is_offer" value="False" checked>
                 {% endif %}
+            </div>
+            <div class="mb-1 offer_dropdown"  style="display: none;">
+                <label for="offer_select" class="form-label">Select the offer</label>
+
+                <select name="offer_select" id="">
+                    {% for offer in offers %}
+
+                        {% if offer == varient.product_id.offer %}
+                        <option value="{{offer.id}}" selected>{{offer}}</option>
+                        {% else %}
+                        <option value="{{offer.id}}" >{{offer}}</option>
+                        {% endif %}
+    
+                    {% endfor %}      
+                </select>
             </div>
             
               
@@ -89,7 +104,12 @@
                            
 
                           {% for brand in brands %}
-                              <option value="{{ brand.id }}">{{ brand.brand_name }}</option>
+                          {% if brand == varient.product_id.brand %}
+                                <option value="{{ brand.id }}" selected>{{ brand.brand_name }}</option>
+                            {% else %}
+                            <option value="{{ brand.id }}">{{ brand.brand_name }}</option>
+
+                            {% endif %}
                           {% endfor %}
                     </select>
                     </div>
@@ -133,14 +153,24 @@
                     <br>
                     <div id="variantContainer">
                         <div class="variant" style="display: flex; justify-content: space-between;">
-                            <input type="text" class="form-control" name="quantity1" placeholder="Quantity" required>
+                            <label for="quantity1" class="form-label">Quantity</label>
+                            <input type="text" class="form-control" id="quantity1" name="quantity1" placeholder="Quantity" value="{{varient.quantity}}" required>
                             <select name="unit1">
                                 {% for unit in units %}
+                                    {% if unit == varient.unit %}
+                                    <option class="form-control" value="{{ unit.id }}" selected>{{ unit.unit }}</option>
+                                    {% else %}
                                     <option class="form-control" value="{{ unit.id }}">{{ unit.unit }}</option>
+                                    {% endif %}
                                 {% endfor %}
                             </select>
-                            <input type="text" name="stock1" class="form-control" placeholder="Stock" required>
-                            <input type="text" name="price1" class="form-control" placeholder="Price" required>
+                            <br>
+                            <label for="stock1" class="form-label">Stock</label>
+
+                            <input type="text" id="stock1" name="stock1" class="form-control" placeholder="Stock" value="{{varient.stock}}" required><br>
+                            
+                            <label for="price" class="form-label">Price</label>
+                            <input type="text" id="price" name="price1" class="form-control" placeholder="Price" value="{{varient.price}}"  required>
                             <!-- Add more fields as needed -->
                         </div>
                         
@@ -186,6 +216,28 @@
     
     
     $(document).ready(function() {
+
+
+// offer checkbox
+if($('input[name="is_offer"]:checked').val() == "True"){
+        $(".offer_dropdown").show();
+    } else {
+        $(".offer_dropdown").hide();
+    }
+
+    // Check the condition when the radio button is clicked
+    $('input[type="radio"]').click(function(){
+        if($(this).attr("value")=="True"){
+            $(".offer_dropdown").show();
+        }
+        if($(this).attr("value")=="False"){
+            $(".offer_dropdown").hide();
+        }
+    });
+
+
+
+
         var variantCount = 1;
         $('#addButton').click(function() {
             variantCount++;
