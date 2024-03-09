@@ -28,6 +28,10 @@ from reportlab.lib import colors
 
 # Create your views here.
 
+def forgot_password(request):
+
+    return render(request,'user/forgot_password.html')
+
 def invoice(request,id):
     order=Order.objects.get(id=id)
     print(order)
@@ -224,6 +228,60 @@ def search_index(request):
     
     return render(request, 'user/search_index.html', {'categories': category_data,})
  
+def reset_password(request):
+    if request.method == 'POST':
+        email=request.POST.get('mob_email')
+
+        if not User.objects.filter(email=email).exists():
+            messages.info(request,'Email not existing!')
+            return redirect('forgot_password')
+        
+        otp=random.randint(10000,99999)
+        request.session['otp']=otp
+        request.session['email']=email
+
+
+        subject = 'RESET PASSWORD'
+        message = f' Your otp for PASSWORD RESET is {otp} \n If it is not from you, please change your password immedietly!'
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [email,]   
+        print(otp)
+        send_mail( subject, message, email_from, recipient_list )
+        print("email send success")
+        return render(request,'user/otp_forgot_password.html',{'email':email})
+    
+    email=request.session['email']
+    return render(request,'user/otp_forgot_password.html',{'email':email})
+    
+
+
+
+def otp_check_forgot_password(request):
+    if request.method == 'POST':
+        otp= request.POST['otp']     
+        if otp != str(request.session['otp']):
+            messages.info(request,'You Entered a Wrong OTP!')  
+            return redirect('reset_password')
+        else:
+            if request.POST['password1'] != request.POST['password2']:
+                messages.info(request,'Password not matching!')
+                return redirect('reset_password')
+            else:
+
+            # everything is correct, then changing password and redirect to login
+                password= request.POST['password1']
+                email= request.POST['email']
+                user=User.objects.get(email=email)
+                user.set_password(password)
+                user.save()
+                update_session_auth_hash(request, user)
+
+
+                messages.info(request,'Password changed successfully')
+                return redirect('login_user')
+                
+
+
 
 def signup(request):
     if request.method=='POST':

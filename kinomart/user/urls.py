@@ -26,6 +26,10 @@ urlpatterns = [
 
 
     path('signup/', views.signup,name='signup'),
+    path('forgot_password/', views.forgot_password, name='forgot_password'),
+    path('reset_password/', views.reset_password, name='reset_password'),
+    path('otp_check_forgot_password/', views.otp_check_forgot_password, name='otp_check_forgot_password'),
+
     path('login/', views.login_user,name='login_user'),
     path('profile/', views.user_page,name='user_page'),
     path('edit_profile/', views.edit_profile,name='edit_profile'),
