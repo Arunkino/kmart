@@ -25,6 +25,24 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
+def add_unit(request):
+    if request.method=='POST':
+        unit_name=request.POST.get('unit_name')
+        unit_symbol=request.POST.get('unit_symbol')
+
+
+        Unit.objects.create(name=unit_name,unit=unit_symbol)
+        print("Unit created")
+        return redirect('add_product')
+    
+
+
+def add_brand(request):
+    if request.method=='POST':
+        brand_name=request.POST.get('brand_name')
+        Brand.objects.create(brand_name=brand_name)
+        print("brand created")
+        return redirect('add_product')
 def top_selling(request):
     top_selling_range=request.GET.get('data')
     print(top_selling_range)

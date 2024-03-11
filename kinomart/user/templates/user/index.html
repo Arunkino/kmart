@@ -177,7 +177,7 @@
                                                     {% endif %}
                                                     <div class="p-4 border border-secondary border-top-0 rounded-bottom" style="height: 250px;">
                                                         <h4>{{product.product_name}}</h4>
-                                                        <p>{{product.description}}</p>
+                                                        <p>{{product.description|truncatechars:50}}</p>
                                                         <div class="d-flex justify-content-between flex-lg-wrap">
                                                     {% if product.is_offer %}
                                                     <p class="text-dark fs-5 fw-bold mb-0"><strike style="font-size: small; color: brown;">₹{{product.price}}</strike> ₹{{product.offer_price}}/ {{product.quantity}}<span style="font-size: medium; color: rgb(61, 25, 25);">{{product.unit}}</span></p>
@@ -238,7 +238,7 @@
             {% endif %}
             <div class="p-4 border border-secondary border-top-0 rounded-bottom d-flex flex-column" style="height: 250px;">
                 <h4>{{product.product_name}}</h4>
-                <p>{{product.description}}</p>
+                <p>{{product.description|truncatechars:50}}</p>
                 <div class="mt-auto text-center">
                     
                     {% if product.is_offer %}

@@ -21,7 +21,8 @@ class SubCategory(models.Model):
     
 
 class Unit(models.Model):
-    unit=models.CharField(max_length=10)
+    name=models.CharField(max_length=10,null=True)
+    unit=models.CharField(max_length=5)
     def __str__(self) -> str:
         return f'{self.unit}'
 

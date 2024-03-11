@@ -407,9 +407,9 @@ def otp_user(request):
             user.is_active=True
             user.save()
 
+            refferal_code=request.session.get('refferal_code')
 
-            if request.session['refferal_code']:
-                        refferal_code=request.session['refferal_code']
+            if refferal_code:
                 # if refferal_code then adding money to reffered user 
                         reffered_user=User.objects.get(referral_code=refferal_code)
                         wallet=Wallet.objects.get(user=reffered_user)

@@ -62,7 +62,7 @@
                         <label for="category" class="form-label">Category</label>
                     <br>
                     <select name="category" id="category">
-                        <option value="">choose  category</option>
+                        <option value="">Choose  category</option>
 
                           {% for category in categories %}
                               <option value="{{ category.id }}">{{ category.category }}</option>
@@ -73,7 +73,7 @@
                         <label for="sub_category" class="form-label">Sub Category</label>
                     <br>
                     <select name="sub_category" id="sub_category">
-                        <option value="">choose sub category</option>
+                        <option value="">Choose sub category</option>
 
                           {% for sub_category in sub_categories %}
                               <option value="{{ sub_category.id }}">{{ sub_category.sub_category }}</option>
@@ -82,8 +82,10 @@
                     </div>
                     <div class="col-md-4 col-sm-4">
                         <label for="brand" class="form-label">Brand</label>
+                        <button id="brand-add-new" class="btn btn-sm btn-outline-success"  data-bs-toggle="modal" data-bs-target="#add_brand">Add New</button> 
                     <br>
                     <select name="brand">
+                        <option>Choose brand</option>
                            
 
                           {% for brand in brands %}
@@ -117,6 +119,8 @@
                                     <option class="form-control" value="{{ unit.id }}">{{ unit.unit }}</option>
                                 {% endfor %}
                             </select>
+                        <button id="unit-add-new" class="btn btn-sm btn-outline-success"  data-bs-toggle="modal" data-bs-target="#add_unit">Add New</button> 
+
                             <input type="text" name="stock1" class="form-control" placeholder="Stock" required>
                             <input type="text" name="price1" class="form-control" placeholder="Price" required>
                             <!-- Add more fields as needed -->
@@ -155,6 +159,100 @@
 </div>
 
 
+
+<!-- model for add brand form -->
+
+<div class="modal fade" id="add_brand" tabindex="-1" role="dialog" aria-labelledby="add_brandLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Brand</h5>
+            <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+
+
+
+
+            <!-- Your form goes here -->
+            <form class="checkout-form" action="{% url 'add_brand' %}" method="post">
+            {% csrf_token %}
+            
+            
+            <div class="form-group">
+                <label for="brand_name">Brand Name:</label>
+                <input type="text" class="form-control" id="brand_name" name="brand_name" placeholder="Enter brand name">
+            </div>
+          
+            
+        
+            <div class="modal-footer">
+  
+            <button type="submit" id="" class="btn btn-primary">Create</button>
+  
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+        
+        </div>
+    </div>
+  </div>
+
+
+
+  
+
+<!-- model for add unit form -->
+
+<div class="modal fade" id="add_unit" tabindex="-1" role="dialog" aria-labelledby="add_unitLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Unit</h5>
+            <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+
+
+
+
+            <!-- Your form goes here -->
+            <form class="checkout-form" action="{% url 'add_unit' %}" method="post">
+            {% csrf_token %}
+            
+            
+            <div class="form-group">
+                <label for="unit_name">Unit Name:</label>
+                <input type="text" class="form-control" id="unit_name" name="unit_name" placeholder="Kilo gram">
+            </div>
+
+            <div class="form-group">
+                <label for="unit_symbol">Unit Symbol:</label>
+                <input type="text" class="form-control" id="unit_symbol" name="unit_symbol" placeholder="kg">
+            </div>
+          
+            
+        
+            <div class="modal-footer">
+  
+            <button type="submit" id="" class="btn btn-primary">Create</button>
+  
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+        
+        </div>
+    </div>
+  </div>
+
+
+
 {% endblock %}
 
 {% block scripts %}
@@ -170,6 +268,9 @@
     
     
     $(document).ready(function() {
+        $('#brand-add-new').click(function(){
+            console.log("ffafdfk")
+        })
        
 
 
