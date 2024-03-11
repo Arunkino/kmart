@@ -44,9 +44,13 @@
         <!-- Main Content -->
         <div class="col-md-9">
             
+<!-- Button trigger modal for adding address -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" style="float: right;">
+  Add Address
+</button>
         {% for address in addresses %}
 
-            <div class="card">
+            <div class="card p-2 m-4 col-md-4" >
                 <div class="card-body">
                     <h5 class="card-title">{{address.address_line}}</h5>
                     <p class="card-text">{{address.landmark}}<br>{{address.city}}<br>PIN : {{address.pin}}<br>{{address.state}}<br>
@@ -130,10 +134,6 @@
 
 
 
-<!-- Button trigger modal for adding address -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Add Address
-  </button>
 
   <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

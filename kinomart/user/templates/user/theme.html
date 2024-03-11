@@ -93,6 +93,7 @@
                         {% block search %}
 
                         {% endblock %}
+                        {% if request.user.is_authenticated %}
                             <a href="{% url 'cart' %}" class="position-relative me-4 my-auto" title="Cart">
                                 <i class="fa fa-shopping-bag fa-2x"></i>
                                 <span class="cart-count position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;" ></span>
@@ -102,7 +103,7 @@
                                 <i class="fa-solid fa-heart fa-2x"></i>
                                 
                             </a>
-
+                        {% endif %}
                             <a href="{% url 'user_page' %}" class="my-auto" title="Profile">
                                 <i class="fas fa-user fa-2x"></i>
                             </a>
