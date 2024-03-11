@@ -810,14 +810,14 @@ def cart(request):
     for item in cart_items:
         variant=item.product
         quantity=item.quantity
-        
+        price=0
 
         if variant.offer_price:
             price=variant.offer_price
 
         else:
-            price=item.price
-        product_total+=price*quantity
+            price=variant.price
+        product_total+=(price*quantity)
 
         product=variant.product_id
         image=ProductImages.objects.filter(product_id=product).first()
