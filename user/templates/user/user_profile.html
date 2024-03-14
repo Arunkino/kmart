@@ -327,7 +327,11 @@
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(), // Get the CSRF token
             },
             success: function(response) {
-                if(response.message) {
+                if (response.success){
+                    window.location.href = "{% url 'login_user' %}"; // Redirect to the login page
+
+                }
+                else if(response.message) {
                     alert(response.message); // Show a success message
                     window.location.href = "{% url 'user_page' %}"; // Redirect to the old page
                 } else if(response.error) {

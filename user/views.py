@@ -883,9 +883,11 @@ def change_password(request):
         user.save()
         update_session_auth_hash(request, user)
         
+        logout_user(request)
+        messages.info(request, 'Password changed successfully!')
+        messages.info(request, 'Please login with your new password')
 
-
-        return JsonResponse({'message': 'Password changed successfully!'})
+        return JsonResponse({'success': 'Password changed successfully!'})
     
 
 def cart(request):
