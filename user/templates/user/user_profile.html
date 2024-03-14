@@ -199,9 +199,45 @@
 </div>
     
 
+<!-- modal for entering otp (when email is updating ) -->
 
 
 
+
+<div class="modal fade" id="otp_modal" tabindex="-1" role="dialog" aria-labelledby="otp_modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Verify Your Email</h5>
+            <button type="button" class="close bg-danger text-white" style="border-radius: 3px; border: hidden;" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body" >
+            <!-- Your form goes here -->
+            <form id="update_email">
+  
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="otp">OTP</label>
+                <input type="password" class="form-control" id="otp" name="otp" required>
+            </div>
+            
+
+            <div class="modal-footer">
+                <button type="submit" id="" class="btn btn-primary">Submit</button>
+
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+            </div>
+          
+          </form>
+            
+        </div>
+        
+        </div>
+    </div>
+  </div >
+  
 
                
 
@@ -209,8 +245,43 @@
 {% endblock %}
 
 {% block scripts %}
+
+<!-- for otp modal show  -->
+
+    
+
+
+
 <script>
     $(document).ready(function() {
+
+        //for updating email with otp
+        $('#update_email').on('submit',function(event){
+
+            event.preventDefault();
+
+            $.ajax({
+                url: "{% url 'update_email' %}",
+                type : "POST",
+                data: {
+                    otp: $('#otp').val(),
+                    email: $('#email').val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+
+                },
+
+                success: function(response){
+                    if (response.message) {
+                        alert(response.message);
+                    window.location.href = "{% url 'user_page' %}"; // Redirect to the old page
+
+                    }
+                    else if (response.error){
+                        alert(response.error)
+                    }
+                }
+            })
+        })
     // Event handler for profile edit form submission
     $(".edit_profile-form").on('submit', function(event) {
         event.preventDefault(); // Prevent the form from being submitted normally
@@ -226,7 +297,13 @@
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(), // Get the CSRF token
             },
             success: function(response) {
-                if(response.message) {
+                if (response.show_otp){
+                    alert(response.message)
+                $("#edit_profile").modal('hide');
+                $("#otp_modal").modal('show');
+
+                }
+                else if(response.message) {
                     alert(response.message); // Show a success message
                     window.location.href = "{% url 'user_page' %}"; // Redirect to the old page
                 } else if(response.error) {

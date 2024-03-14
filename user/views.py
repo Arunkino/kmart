@@ -785,8 +785,24 @@ def wallet(request):
 
 
 
+def update_email(request):
+    if request.method == 'POST':
+        otp= request.POST.get('otp')
+        print("Entered otp:",otp)
+        print(type(otp))
+        print("Session otp:",request.session['otp'])
+        print(type(request.session['otp']))
 
 
+        if str(request.session['otp']) != otp:
+            return JsonResponse({ 'error':'You entered a wrong otp!!'})
+        
+        email= request.POST.get('email')
+        user= request.user
+        user.email=email
+        user.username = email
+        user.save()
+        return JsonResponse({'message':'Email Updated'})
 
 @login_required
 def edit_profile(request):
@@ -798,21 +814,47 @@ def edit_profile(request):
 
         user = request.user  # Get the logged in user
 
+        if user.phone != phone:
+            print("enteredd here")
+            if User.objects.filter(phone__exact=phone).exists():
+                print("enteredd here- existssss")
+                    
+                return JsonResponse({'message': 'This phone number is already registerd with another account. Please try different one'})
+
         # Validate the data
         if not first_name or not last_name or not email or not phone:
             return JsonResponse({'error': 'All fields are required'})
+        
+        
+
 
         # Update user details
         user.first_name = first_name
         user.last_name = last_name
-        user.email = email
-        user.username = email
         user.phone = phone
 
         # Save the user and handle potential errors
         try:
             user.full_clean()  # Validate the model
             user.save()
+            # if the email changed , then sending otp to new email
+            if email != user.email:
+                if User.objects.filter(email=email).exists():
+                    return JsonResponse({'message': 'This email is already registerd with another account. Please try different one'})
+                otp=random.randint(10000,99999)
+                request.session['otp']=otp
+                print("OTP SEND",otp)
+
+                subject = 'Thank you for registering on Kino Mart'
+                message = f' Your otp for changing email is {otp}'
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = [email,]   
+                send_mail( subject, message, email_from, recipient_list )
+                print("email send success")
+
+                return JsonResponse({'message': f'OTP sent successfull! Check your new email {email}','show_otp':True})
+
+
         except ValidationError as e:
             return JsonResponse({'error': str(e)})
 
