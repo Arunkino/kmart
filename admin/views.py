@@ -51,9 +51,9 @@ def top_selling(request):
     if top_selling_range =='product':
         header="Top Selling Products"   
         product_sales = OrderItem.objects.values('product').annotate(total_quantity=Sum('quantity')).order_by('-total_quantity')
-        for i in range (9):
+        for i in range (min(9,len(product_sales))):
             product =ProductVarient.objects.get(id=product_sales[i]['product'])
-            result.append(product.product_id.product_name)
+            result.append(f'{product.product_id.product_name} ({product.quantity}{product.unit})')
     
     elif top_selling_range == 'category':
         header = "Top Selling Categories"
