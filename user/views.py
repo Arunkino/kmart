@@ -48,19 +48,41 @@ def invoice(request,id):
     y = 750
 
     # Draw the report title and other details
-    p.drawString(x+150, y, 'SALE INVOICE')
+    p.drawString(x+200, y, '-- TAX INVOICE --')
     y -= 25
     p.line(x, y, x + 500, y)
+    y -= 25
+    p.drawString(x, y, f'KINO MART')
+    y -= 15
+    p.drawString(x, y, f'Bangalore, 600123')
+    y -= 15
+    p.drawString(x, y, f'Email : mart@kino.com')
+    y -= 15
+    p.drawString(x, y, f'Customer Care: +91 9876543210')
+    y -= 50
+
+    p.line(x, y+20, x + 500, y+20)
+    y += 135
+
+    x+=280
+
+
+
+     # Draw the report title and other details
+    y -= 25
     y -= 20
-    p.drawString(x, y, f'Order Date: {order.order_date.strftime('%d-%m-%Y')}')
-    y -= 20
+    p.drawString(x, y, f'Invoice No: {order.id}')
+    y -=15
+    p.drawString(x, y, f'Invoice Date: {order.order_date.strftime('%d-%m-%Y')}')
+    y -= 15
     p.drawString(x, y, f'Order Amount: {order.total_price}')
-    y -= 20
+    y -= 15
     p.drawString(x, y, f'Order Id: {order.order_id}')
     y -= 50
 
-    p.line(x, y, x + 500, y)
     y -= 30
+
+    x-=280
 #Draw address details
     p.drawString(x,y, "Shipping Address")
     y-=30
@@ -80,6 +102,37 @@ def invoice(request,id):
     p.drawString(x,y, f"MOB: {order.user.phone}")
     y-=25
 
+#Draw payment summary
+    y+=145
+    x+= 280
+    p.drawString(x,y, "Payment Summary")
+    y-=30
+    p.drawString(x,y, "Sub Total")
+    p.drawString(x+100,y, f":  {order.actual_price-50}")
+    y-=15
+
+    p.drawString(x,y, "Delivery Charge")
+    p.drawString(x+100,y, f":  50.00")
+    y-=15
+
+    p.drawString(x,y, "Discount")
+    p.drawString(x+100,y, f":  {order.actual_price-order.total_price}")
+    y-=15
+
+    p.drawString(x,y, "Tax")
+    p.drawString(x+100,y, f":  0.00")
+    y-=20
+
+    p.drawString(x,y, "TOTAL")
+    p.drawString(x+100,y, f":  {order.total_price}")
+    y-=25
+
+
+    y-=25
+
+
+
+    x-= 280
     data = [['Sl','Item Id', 'Product', 'Qty', 'Total']]  # Add headers to the data list
     for i,item in enumerate(order_items, start=1) :
         row = [str(i),str(item.id), str(item.product), str(item.quantity),str(item.price)]
@@ -431,18 +484,18 @@ def otp_user(request):
             # creating session when user registered succussfully with auto login
             
             request.session['user_email']=user.email
-            user = authenticate(request, username=user.username, password=user.password)
+            # user = authenticate(request, username=user.username, password=user.password)
             if user is not None:
                 # Log the user in
-                login(request, user)
+                # login(request, user)
                 user.is_active = True
                 user.save()
                 messages.info(request,'Signup Success!!')
 
-                return redirect('home')
+                return redirect('login_user')
             messages.info(request,'Something went wrong!!')
             
-            return redirect('home')
+            return redirect('otp_user')
         else:
             messages.info(request,'Incorrect OTP entered!!')
             return redirect('otp_user')
