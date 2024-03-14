@@ -96,34 +96,49 @@
             </div>
             <hr>
     
-    <div class="details" id="details{{ order.order_id }}" style="display: none;">
+    <div class="details p-2 m-2" id="details{{ order.order_id }}" style="display: none; background-color: rgba(244, 236, 224, 0.648);">
+        <div class="row">
+            <div class="col-md-3 p-4">
+                <h6>Delivery Address :</h6>
+                <p> {{ order.address.address_line }} <br>
+                    {{ order.address.landmark }}<br>
+                    pin: {{ order.address.pin }}<br>
+                    {{ order.address.city }}
+                </p>
+            </div>
+            <div class="col-md-9">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Product Image</th>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items %}
+        
+                            <tr>
+                                {% if item.image %}
+        
+                                <td><a href="{% url 'view_product' item.product_id %}"><img src="{{ item.image.image.url }}" alt="Product Image" style="height: 50px;"></a></td>
+                                {% endif %}
+                                
+                                <td><a style="color: black;" href="{% url 'view_product' item.product_id %}">{{item.product}} - ({{item.product.quantity}}{{item.product.unit}})</a></td>
+                                <td>{{ item.quantity }}</td>
+                                <td>₹{{ item.price }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+
     
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Product Image</th>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in order.items %}
-
-                    <tr>
-                        {% if item.image %}
-
-                        <td><a href="{% url 'view_product' item.product_id %}"><img src="{{ item.image.image.url }}" alt="Product Image" style="height: 50px;"></a></td>
-                        {% endif %}
-                        
-                        <td><a style="color: black;" href="{% url 'view_product' item.product_id %}">{{item.product}} - ({{item.product.quantity}}{{item.product.unit}})</a></td>
-                        <td>{{ item.quantity }}</td>
-                        <td>₹{{ item.price }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        
     </div>
 
 {% endfor %}

@@ -675,6 +675,8 @@ def order_history(request):
         payment_method=order.payment_method
         status=order.status
         payment_status=order.payment_status
+        address=OrderAddress.objects.get(order=order)
+    
 
         item_details=[]
 
@@ -712,6 +714,7 @@ def order_history(request):
                 'payment_status':payment_status,
                 'user':order.user,
                 'razorpay_order_id':order.order_id,
+                'address':address
 
             }
         )
