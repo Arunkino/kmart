@@ -625,6 +625,7 @@ def update_order_status(request):
         order.save()
         print(status)
         print(order.payment_status)
+        print(order.payment_method)
         if status == 'Cancel' and order.payment_status:
             print("cancelling paid order")
             user=order.user
@@ -635,6 +636,9 @@ def update_order_status(request):
             wallet.save()
 
             WalletTransactions.objects.create(wallet=wallet,transaction_amount=amount,discription=f'Refund of cancelled order {order.id}')
+        elif status =='Delivered' and order.payment_method=='cod':
+            order.payment_status=True
+            order.save()
 
         return JsonResponse({'status': 'success'})
     

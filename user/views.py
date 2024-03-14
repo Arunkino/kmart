@@ -749,6 +749,15 @@ def return_order(request,id):
     order.return_status='Returned'
     order.save()
 
+    if order.payment_status:
+        user=order.user
+        wallet=Wallet.objects.get(user=user)
+        wallet.balance+=order.total_price
+        wallet.last_transaction=f'+{order.total_price}'
+        wallet.save()
+
+        WalletTransactions.objects.create(wallet=wallet,transaction_amount=order.total_price,discription=f'Refund for returned order {order.id}')
+        messages.info(request,f'Order has been returned. The order amount ₹{order.total_price} will be credited to your wallet')
     return redirect('order_history')
 
 
