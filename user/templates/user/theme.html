@@ -76,7 +76,7 @@
                     </button>
                     <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
                         <div class="navbar-nav mx-auto">
-                            <a href="index.html" class="nav-item nav-link active">Home</a>
+                            <!-- <a href="index.html" class="nav-item nav-link active">Home</a>
                             <a href="shop.html" class="nav-item nav-link">Shop</a>
                             <a href="shop-detail.html" class="nav-item nav-link">Shop Detail</a>
                             <div class="nav-item dropdown">
@@ -88,7 +88,7 @@
                                     <a href="404.html" class="dropdown-item">404 Page</a>
                                 </div>
                             </div>
-                            <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            <a href="contact.html" class="nav-item nav-link">Contact</a> -->
                         </div>
                         {% block search %}
 
@@ -183,9 +183,8 @@
                     <div class="col-lg-3 col-md-6">
                         <div class="footer-item">
                             <h4 class="text-light mb-3">Why People Like us!</h4>
-                            <p class="mb-4">typesetting, remaining essentially unchanged. It was 
-                                popularised in the 1960s with the like Aldus PageMaker including of Lorem Ipsum.</p>
-                            <a href="" class="btn border-secondary py-2 px-4 rounded-pill text-primary">Read More</a>
+                            <p class="mb-4">People love shopping with us because we offer a wide variety of fresh and quality products at competitive prices. <span id="hidden_text" style="display: none;"> Our friendly and helpful staff, commitment to local farmers, and sustainable practices make us a preferred choice for grocery shopping. Experience the difference with us!</span></p>
+                            <button id="read_more" class="btn border-secondary py-2 px-4 rounded-pill text-primary">Read More</button>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
@@ -193,6 +192,7 @@
                             <h4 class="text-light mb-3">Shop Info</h4>
                             <a class="btn-link" href="">About Us</a>
                             <a class="btn-link" href="">Contact Us</a>
+                            <a class="btn-link" href="">Become a Seller</a>
                             <a class="btn-link" href="">Privacy Policy</a>
                             <a class="btn-link" href="">Terms & Condition</a>
                             <a class="btn-link" href="">Return Policy</a>
@@ -202,22 +202,22 @@
                     <div class="col-lg-3 col-md-6">
                         <div class="d-flex flex-column text-start footer-item">
                             <h4 class="text-light mb-3">Account</h4>
-                            <a class="btn-link" href="">My Account</a>
-                            <a class="btn-link" href="">Shop details</a>
-                            <a class="btn-link" href="">Shopping Cart</a>
-                            <a class="btn-link" href="">Wishlist</a>
-                            <a class="btn-link" href="">Order History</a>
+                            <a class="btn-link" href="{% url 'user_page' %}">My Account</a>
+                            <a class="btn-link" href="{% url 'wallet' %}">Wallet</a>
+                            <a class="btn-link" href="{% url 'cart' %}">Shopping Cart</a>
+                            <a class="btn-link" href="{% url 'wishlist' %}">Wishlist</a>
+                            <a class="btn-link" href="{% url 'order_history' %}">Order History</a>
                             <a class="btn-link" href="">International Orders</a>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <div class="footer-item">
                             <h4 class="text-light mb-3">Contact</h4>
-                            <p>Address: 1429 Netus Rd, NY 48247</p>
-                            <p>Email: Example@gmail.com</p>
-                            <p>Phone: +0123 4567 8910</p>
+                            <p>Address: 1429 Netus Rd, Kino City</p>
+                            <p>Email: mart@kino.com</p>
+                            <p>Phone: +91 9876543210</p>
                             <p>Payment Accepted</p>
-                            <img src="img/payment.png" class="img-fluid" alt="">
+                            <img src="{% static 'img/payment.png' %}" class="img-fluid" alt="">
                         </div>
                     </div>
                 </div>
@@ -263,6 +263,10 @@
 <script>
   $(document).ready(function() {
     updateCartCount();
+
+    $('#read_more').click(function(){
+        $('#hidden_text').show();
+    })
 
     $('#search_bar').on('keyup', function() {
         var search = $(this).val();

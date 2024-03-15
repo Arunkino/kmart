@@ -73,7 +73,7 @@ def invoice(request,id):
     y -= 20
     p.drawString(x, y, f'Invoice No: {order.id}')
     y -=15
-    p.drawString(x, y, f'Invoice Date: {order.order_date.strftime('%d-%m-%Y')}')
+    p.drawString(x, y, f'Invoice Date: {order.order_date.strftime("%d-%m-%Y")}')
     y -= 15
     p.drawString(x, y, f'Order Amount: {order.total_price}')
     y -= 15
