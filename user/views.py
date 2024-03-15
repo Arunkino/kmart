@@ -661,7 +661,7 @@ def default_address(request):
         
         return JsonResponse({'status': 'success'})
     
-
+@login_required
 def order_history(request):
 
     user=request.user
@@ -760,7 +760,7 @@ def return_order(request,id):
         messages.info(request,f'Order has been returned. The order amount ₹{order.total_price} will be credited to your wallet')
     return redirect('order_history')
 
-
+@login_required
 def wishlist(request):
 
     wishlist_items=Wishlist.objects.filter(user=request.user)
@@ -786,7 +786,7 @@ def wishlist(request):
 
     return render(request,'user/wishlist.html',{'products':product_list})
 
-
+@login_required
 def wallet(request):
     wallet=Wallet.objects.get(user=request.user)
     transactions=WalletTransactions.objects.filter(wallet=wallet).order_by('id')
