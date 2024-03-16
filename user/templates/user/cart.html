@@ -63,7 +63,7 @@
                 <tbody>
                   
                   {% for item in cart_items %}
-                  <tr>
+                  <tr id="item-id-{{item.id}}">
                     <td><a href="{% url 'view_product' item.product_id %}"><img src="{{item.image}}" alt="Product Image" style="height: 70px;"></a></td>
                     <td><a style="color: black;" href="{% url 'view_product' item.product_id %}">{{item.product_name}} <br>{{item.unit}}</a></td>
                     
@@ -356,8 +356,14 @@ $(".btn-minus").on('click', function() {
         success: function(response) {
           $('.total').text(response.newTotal);
           $('.grand_total').text(response.grand_total);
-          item_total.text("test")
+          var trId='#item-id-'+cartid;
+          $(trId).hide();
 
+          if (response.newTotal == 0){
+          $('.grand_total').text(response.newTotal);
+          $('#proceed-checkout-button').hide();
+
+          }
           // Handle success, likely removing the item from the cart display
         }
       });
