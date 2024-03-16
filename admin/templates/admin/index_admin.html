@@ -182,8 +182,9 @@ var data = {{ data|safe }};
 var data_revenue = {{ data_revenue|safe }};
 
 // Get the context of the canvas
-var ctxBar = document.getElementById('myChart').getContext('2d');
-var ctxArea = document.getElementById('order-chart-area').getContext('2d');
+var ctxBar = $('#myChart')[0].getContext('2d');
+var ctxArea = $('#order-chart-area')[0].getContext('2d');
+
 
 // Create the bar chart
 var myBarChart = new Chart(ctxBar, {
