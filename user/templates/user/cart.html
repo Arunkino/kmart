@@ -362,8 +362,6 @@ $(".btn-minus").on('click', function() {
           if (response.newTotal == 0){
           $('.grand_total').text(response.newTotal);
           $('#proceed-checkout-button').hide();
-    updateCartCount();
-
 
           }
           // Handle success, likely removing the item from the cart display
